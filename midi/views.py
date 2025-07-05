@@ -67,16 +67,27 @@ def portal(request):
         preset_name_value = request.POST.get('preset_name', preset.name if preset else '')
 
         if knob_formset.is_valid() and midi_form.is_valid():
-            knob_instances = knob_formset.save(commit=False)
-            # Assign preset to new/changed knobs
-            for knob in knob_instances:
+            # Persist each knob form explicitly so that every new knob is saved.
+            knobs_saved = 0  # Counter for the number of active (non-deleted) knobs
+
+            for form in knob_formset:
+                # Skip forms that are marked for deletion
+                if form.cleaned_data.get('DELETE', False):
+                    # If an existing knob is marked for deletion, remove it from DB
+                    if form.instance.pk:
+                        form.instance.delete()
+                    continue
+
+                # Save new or updated knob instance
+                knob = form.save(commit=False)
+                # Ensure the knob is linked to the current preset before saving
                 knob.preset = preset
                 knob.save()
-            # Delete knobs marked for deletion
-            for obj in knob_formset.deleted_objects:
-                obj.delete()
-            
-            preset.number_of_knobs = knob_formset.total_form_count()
+                knobs_saved += 1
+
+            # After processing all forms, knobs_saved reflects the actual knob count
+            # (i.e., total forms minus deleted ones).
+            preset.number_of_knobs = knobs_saved
             preset.keys_channel = midi_form.cleaned_data['midi_channel']
             new_name = preset_name_value.strip()
             if new_name and new_name != preset.name:
@@ -272,4 +283,3 @@ def dashboard(request):
         'preset_count':preset_count,
     }   
     return render(request, 'midi/dashboard.html', context)
-
