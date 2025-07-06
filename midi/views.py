@@ -2,8 +2,9 @@
 # contains  mod x, y settings 
 # generate firmware of class "preset", flash firmware to either atmega 32u4, rp2040 or esp32 s3
 
+# Core Django utilities
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, FileResponse
 from .forms import UserForm
 from .forms import KnobFormSet
 from .models import Preset, Knob
@@ -11,7 +12,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.views.decorators.csrf import csrf_exempt
 import os
-from django.http import FileResponse
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
