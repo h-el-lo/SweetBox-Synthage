@@ -1,8 +1,9 @@
 from django import forms
-from django.forms import ModelForm, BaseModelFormSet, ValidationError
-from .models import Preset, Knob, Joystick, ModWheel, PitchWheel
+from django.forms import ModelForm, BaseModelFormSet, ValidationError, modelformset_factory
 from django.contrib.auth.models import User
-from django.forms import modelformset_factory
+
+# Local models actually referenced in this file
+from .models import Preset, Knob
 
 
 class UserForm(ModelForm):
@@ -124,54 +125,46 @@ class KnobForm(ModelForm):
 
 
 class BaseKnobFormSet(BaseModelFormSet):
+    """Custom formset for Knobs.
+
+    Changes from previous behaviour:
+    1. Allows duplicates for CC and Pin numbers.
+    2. Permits submitting zero knobs (no ValidationError raised).
+    3. Hides the automatically-added ORDER field so we can use it for drag-and-drop re-ordering in the UI.
+    """
+
+    # Hide the ORDER field generated when can_order=True so it doesn't show in the table
+    ordering_widget = forms.HiddenInput
+
     def clean(self):
+        """Ensure each non-deleted form is fully filled out (all required fields present)."""
         super().clean()
-        seen_cc = set()
-        seen_pin = set()
-        non_empty_forms = 0
-        
+
         for form in self.forms:
             if not hasattr(form, 'cleaned_data') or not form.cleaned_data:
                 continue
+
+            # Skip rows flagged for deletion
             if form.cleaned_data.get('DELETE', False):
                 continue
-            
-            # Count non-empty forms
-            if any(form.cleaned_data.get(field) is not None for field in ['channel', 'CC', 'min', 'max', 'pin']):
-                non_empty_forms += 1
-            
-            # Check for required fields
+
+            # Verify required fields are provided (duplicates now allowed)
             required_fields = ['channel', 'CC', 'min', 'max', 'pin']
             for field in required_fields:
                 if form.cleaned_data.get(field) is None:
-                    raise ValidationError(f'All fields are required for each knob.')
-            
-            # Check for duplicate CC numbers
-            cc = form.cleaned_data.get('CC')
-            if cc in seen_cc:
-                raise ValidationError(f'Duplicate CC Number {cc} detected. Each knob must have a unique CC Number.')
-            seen_cc.add(cc)
-            
-            # Check for duplicate pin numbers
-            pin = form.cleaned_data.get('pin')
-            if pin in seen_pin:
-                raise ValidationError(f'Duplicate Pin Number {pin} detected. Each knob must have a unique Pin Number.')
-            seen_pin.add(pin)
-        
-        # Ensure at least one knob is configured
-        if non_empty_forms == 0:
-            raise ValidationError('At least one knob must be configured.')
+                    raise ValidationError('All fields are required for each knob.')
 
 
 KnobFormSet = modelformset_factory(
-    Knob, 
-    form=KnobForm, 
-    formset=BaseKnobFormSet, 
-    extra=0, 
+    Knob,
+    form=KnobForm,
+    formset=BaseKnobFormSet,
+    extra=0,
     can_delete=True,
-    validate_min=True,
-    min_num=1,
-    max_num=16
+    can_order=True,
+    validate_min=False,  # We now allow zero knobs
+    min_num=0,
+    max_num=24
 )
 
 
@@ -212,11 +205,11 @@ class PresetForm(forms.ModelForm):
         })
     )
     number_of_knobs = forms.IntegerField(
-        min_value=1,
-        max_value=16,
+        min_value=0,
+        max_value=24,
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
-            'placeholder': '1-16'
+            'placeholder': '0-24'
         })
     )
     
@@ -247,6 +240,6 @@ class PresetForm(forms.ModelForm):
         knobs = self.cleaned_data.get('number_of_knobs')
         if knobs is None:
             raise forms.ValidationError('Number of knobs is required.')
-        if not (1 <= knobs <= 16):
-            raise forms.ValidationError('Number of knobs must be between 1 and 16.')
+        if not (0 <= knobs <= 24):
+            raise forms.ValidationError('Number of knobs must be between 0 and 24.')
         return knobs
