@@ -78,159 +78,281 @@
     <form method="POST">
         {% csrf_token %}
         {{ knob_formset.management_form }}
+        {{ button_formset.management_form }}
             
-            <!-- General MIDI Settings -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-light border-0">
-                    <h3 class="h5 mb-0" style="color: #1e293b;">
-                        <i class="bi bi-gear me-2"></i>General MIDI Settings
-                    </h3>
-                </div>
-                <div class="card-body p-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Preset Name</label>
-                            <input type="text" name="preset_name" class="form-control" 
-                                   value="{{ preset_name_value|default:preset.name }}" required>
-        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Keys Channel</label>
-            {{ midi_form.midi_channel }}
-        </div>
-                        <div class="col-md-6">
-                            <label class="form-label fw-semibold">Number of Knobs</label>
-            <input type="text" id="number-of-knobs" class="form-control" value="{{ knob_formset.total_form_count }}" readonly>
-        </div>
-                    </div>
+        <!-- General MIDI Settings -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light border-0">
+                <h3 class="h5 mb-0" style="color: #1e293b;">
+                    <i class="bi bi-gear me-2"></i>General MIDI Settings
+                </h3>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Preset Name</label>
+                        <input type="text" name="preset_name" class="form-control" 
+                               value="{{ preset_name_value|default:preset.name }}" required>
+            </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Keys Channel</label>
+        {{ midi_form.midi_channel }}
+    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Number of Knobs</label>
+        <input type="text" id="number-of-knobs" class="form-control" value="{{ knob_formset.total_form_count }}" readonly>
+    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Knob Configuration -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center">
-                    <h3 class="h5 mb-0" style="color: #1e293b;">
-                        <i class="bi bi-sliders me-2"></i>Knob Configuration
-                    </h3>
-                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addRow()">
-                        <i class="bi bi-plus-circle me-1"></i>Add Knob
-                    </button>
-                </div>
-                <div class="card-body p-0">
-                    {% if knob_formset.non_form_errors %}
-                        <div class="alert alert-danger mb-3">
-                            <ul class="mb-0">
-                                {% for error in knob_formset.non_form_errors %}
-                                    <li>{{ error }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
-                    <div class="table-responsive">
-                        <table class="table table-hover mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 50px;">#</th>
-                                    <th>Channel</th>
-                                    <th>CC Number</th>
-                                    <th>Min CC Value</th>
-                                    <th>Max CC Value</th>
-                                    <th>Pin Number</th>
-                                    <th style="width: 60px;">Actions</th>
-                                    <th style="width: 40px;">Reorder</th>
-                                </tr>
-                            </thead>
-                            <tbody id="knob-table-body">
-                                {% if knob_formset.total_form_count > 0 %}
-                                    {% for form in knob_formset %}
-                                        {% if form.non_field_errors %}
+        <!-- Configuration Tabs -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-light border-0">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="knobs-tab" data-bs-toggle="tab" href="#knobs-content">
+                            <i class="bi bi-sliders me-2"></i>Knobs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="buttons-tab" data-bs-toggle="tab" href="#buttons-content">
+                            <i class="bi bi-circle me-2"></i>Buttons
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="tab-content">
+                <!-- Knobs Tab Content -->
+                <div class="tab-pane fade show active" id="knobs-content">
+                    <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center">
+                        <h3 class="h5 mb-0" style="color: #1e293b;">
+                            <i class="bi bi-sliders me-2"></i>Knob Configuration
+                        </h3>
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="addKnobRow()">
+                            <i class="bi bi-plus-circle me-1"></i>Add Knob
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if knob_formset.non_form_errors %}
+                            <div class="alert alert-danger mb-3">
+                                <ul class="mb-0">
+                                    {% for error in knob_formset.non_form_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">#</th>
+                                        <th>Channel</th>
+                                        <th>CC Number</th>
+                                        <th>Min CC Value</th>
+                                        <th>Max CC Value</th>
+                                        <th>Pin Number</th>
+                                        <th style="width: 60px;">Actions</th>
+                                        <th style="width: 40px;">Reorder</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="knob-table-body">
+                                    {% if knob_formset.total_form_count > 0 %}
+                                        {% for form in knob_formset %}
+                                            {% if form.non_field_errors %}
+                                                <tr>
+                                                    <td colspan="7">
+                                                        <div class="alert alert-danger mb-0 py-2">
+                                                            {% for error in form.non_field_errors %}
+                                                                {{ error }}
+                                                            {% endfor %}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
                                             <tr>
-                                                <td colspan="7">
-                                                    <div class="alert alert-danger mb-0 py-2">
-                                                        {% for error in form.non_field_errors %}
-                                                            {{ error }}
-                                                        {% endfor %}
-                                                    </div>
+                                                {% for hidden in form.hidden_fields %}
+                                                    {{ hidden }}
+                                                {% endfor %}
+                                                <td class="text-center fw-semibold">{{ forloop.counter }}</td>
+                                                {% for field in form.visible_fields %}
+                                                    {% if field.name != 'DELETE' %}
+                                                        <td>
+                                                            {{ field }}
+                                                            {% if field.errors %}
+                                                                <div class="text-danger small mt-1">
+                                                                    {% for error in field.errors %}
+                                                                        {{ error }}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm" 
+                                                            title="Delete knob" onclick="deleteKnobRow(this)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                    {{ form.DELETE }}
+                                                </td>
+                                                <td class="text-center drag-handle" style="cursor: grab;">
+                                                    <i class="bi bi-grip-vertical"></i>
                                                 </td>
                                             </tr>
-                                        {% endif %}
-                                        <tr>
-                                            {% for hidden in form.hidden_fields %}
-                                                {{ hidden }}
-                                            {% endfor %}
-                                            <td class="text-center fw-semibold">{{ forloop.counter }}</td>
-                                            {% for field in form.visible_fields %}
-                                                {% if field.name != 'DELETE' %}
-                                                    <td>
-                                                        {{ field }}
-                                                        {% if field.errors %}
-                                                            <div class="text-danger small mt-1">
-                                                                {% for error in field.errors %}
-                                                                    {{ error }}
-                                                                {% endfor %}
-                                                            </div>
-                                                        {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Buttons Tab Content -->
+                <div class="tab-pane fade" id="buttons-content">
+                    <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center">
+                        <h3 class="h5 mb-0" style="color: #1e293b;">
+                            <i class="bi bi-circle me-2"></i>Button Configuration
+                        </h3>
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="addButtonRow()">
+                            <i class="bi bi-plus-circle me-1"></i>Add Button
+                        </button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th style="width: 50px;">#</th>
+                                        <th>Channel</th>
+                                        <th>Mode</th>
+                                        <th>Note/CC Number</th>
+                                        <th>Velocity/Min CC</th>
+                                        <th>Max CC</th>
+                                        <th>Pin Number</th>
+                                        <th style="width: 60px;">Actions</th>
+                                        <th style="width: 40px;">Reorder</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="button-table-body">
+                                    {% if button_formset.total_form_count > 0 %}
+                                        {% for form in button_formset %}
+                                            {% if form.non_field_errors %}
+                                                <tr>
+                                                    <td colspan="9">
+                                                        <div class="alert alert-danger mb-0 py-2">
+                                                            {% for error in form.non_field_errors %}
+                                                                {{ error }}
+                                                            {% endfor %}
+                                                        </div>
                                                     </td>
-                                                {% endif %}
-                                            {% endfor %}
-                                            <td class="text-center">
-                                                <button type="button" class="btn btn-outline-danger btn-sm" 
-                                                        title="Delete knob" onclick="deleteRow(this)">
-                                                    <i class="bi bi-trash"></i>
-                                                </button>
-                                                {{ form.DELETE }}
-                                            </td>
-                                            <td class="text-center drag-handle" style="cursor: grab;">
-                                                <i class="bi bi-grip-vertical"></i>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                {% endif %}
-                            </tbody>
-                        </table>
+                                                </tr>
+                                            {% endif %}
+                                            <tr>
+                                                {% for hidden in form.hidden_fields %}
+                                                    {{ hidden }}
+                                                {% endfor %}
+                                                <td class="text-center fw-semibold">{{ forloop.counter }}</td>
+                                                {% for field in form.visible_fields %}
+                                                    {% if field.name != 'DELETE' %}
+                                                        <td>
+                                                            {{ field }}
+                                                            {% if field.errors %}
+                                                                <div class="text-danger small mt-1">
+                                                                    {% for error in field.errors %}
+                                                                        {{ error }}
+                                                                    {% endfor %}
+                                                                </div>
+                                                            {% endif %}
+                                                        </td>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <td class="text-center">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm" 
+                                                            title="Delete button" onclick="deleteButtonRow(this)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                    {{ form.DELETE }}
+                                                </td>
+                                                <td class="text-center drag-handle" style="cursor: grab;">
+                                                    <i class="bi bi-grip-vertical"></i>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Action Buttons -->
-            <div class="d-flex gap-3 mb-4">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="bi bi-check-circle me-2"></i>Save Changes
-                </button>
-                {% if download_url %}
-                    <a href="{{ download_url }}" class="btn btn-success btn-lg">
-                        <i class="bi bi-download me-2"></i>Download Firmware
-                    </a>
-                {% endif %}
-                <button type="button" class="btn btn-outline-primary btn-sm ms-auto" onclick="addRow()">
-                    <i class="bi bi-plus-circle me-1"></i>Add Knob
-                </button>
-            </div>
-        </form>
-
-        <!-- Hidden empty form template for JS cloning -->
-        <div style="display:none;">
-            <table><tbody><tr id="empty-form-row">
-                {% for hidden in knob_formset.empty_form.hidden_fields %}
-                    {{ hidden }}
-                {% endfor %}
-                <td class="text-center fw-semibold">__num__</td>
-                {% for field in knob_formset.empty_form.visible_fields %}
-                    {% if field.name != 'DELETE' %}
-                        <td>{{ field }}</td>
-                    {% endif %}
-                {% endfor %}
-                <td class="text-center">
-                    <button type="button" class="btn btn-outline-danger btn-sm" 
-                            title="Delete knob" onclick="deleteRow(this)">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                    {{ knob_formset.empty_form.DELETE }}
-                </td>
-                <td class="text-center drag-handle" style="cursor: grab;">
-                    <i class="bi bi-grip-vertical"></i>
-                </td>
-            </tr></tbody></table>
         </div>
+
+        <!-- Action Buttons -->
+        <div class="d-flex gap-3 mb-4">
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="bi bi-check-circle me-2"></i>Save Changes
+            </button>
+            {% if download_url %}
+                <a href="{{ download_url }}" class="btn btn-success btn-lg">
+                    <i class="bi bi-download me-2"></i>Download Firmware
+                </a>
+            {% endif %}
+            <button type="button" class="btn btn-outline-primary btn-sm ms-auto" onclick="addKnobRow()">
+                <i class="bi bi-plus-circle me-1"></i>Add Knob
+            </button>
+        </div>
+    </form>
+
+    <!-- Hidden empty form templates -->
+    <div style="display:none;">
+        <!-- Knob form template -->
+        <table><tbody><tr id="empty-form-row">
+            {% for hidden in knob_formset.empty_form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            <td class="text-center fw-semibold">__num__</td>
+            {% for field in knob_formset.empty_form.visible_fields %}
+                {% if field.name != 'DELETE' %}
+                    <td>{{ field }}</td>
+                {% endif %}
+            {% endfor %}
+            <td class="text-center">
+                <button type="button" class="btn btn-outline-danger btn-sm" 
+                        title="Delete knob" onclick="deleteKnobRow(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+                {{ knob_formset.empty_form.DELETE }}
+            </td>
+            <td class="text-center drag-handle" style="cursor: grab;">
+                <i class="bi bi-grip-vertical"></i>
+            </td>
+        </tr></tbody></table>
+
+        <!-- Button form template -->
+        <table><tbody><tr id="empty-button-form-row">
+            {% for hidden in button_formset.empty_form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            <td class="text-center fw-semibold">__num__</td>
+            {% for field in button_formset.empty_form.visible_fields %}
+                {% if field.name != 'DELETE' %}
+                    <td>{{ field }}</td>
+                {% endif %}
+            {% endfor %}
+            <td class="text-center">
+                <button type="button" class="btn btn-outline-danger btn-sm" 
+                        title="Delete button" onclick="deleteButtonRow(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+                {{ button_formset.empty_form.DELETE }}
+            </td>
+            <td class="text-center drag-handle" style="cursor: grab;">
+                <i class="bi bi-grip-vertical"></i>
+            </td>
+        </tr></tbody></table>
+    </div>
     {% else %}
         <!-- No Preset Selected -->
         <div class="card border-0 shadow-sm">
@@ -380,6 +502,32 @@ input[type="checkbox"][name$="-DELETE"] {
         font-size: 0.9rem;
     }
 }
+
+/* Tab styles */
+.nav-tabs .nav-link {
+    border: none;
+    color: #64748b;
+    padding: 1rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    color: #3b82f6;
+    border: none;
+}
+
+.nav-tabs .nav-link.active {
+    color: #3b82f6;
+    border: none;
+    border-bottom: 2px solid #3b82f6;
+    background: none;
+}
+
+/* Mode select styles */
+select[name$="-mode"] {
+    min-width: 120px;
+}
 </style>
 
 <script>
@@ -391,7 +539,7 @@ function updateNumberOfKnobs() {
     }
 }
 
-function addRow() {
+function addKnobRow() {
     var totalForms = document.querySelector('input[name$="-TOTAL_FORMS"]');
     var tableBody = document.getElementById('knob-table-body');
     var newIndex = parseInt(totalForms.value);
@@ -438,7 +586,7 @@ function addRow() {
     updateNumberOfKnobs();
 }
 
-function deleteRow(btn) {
+function deleteKnobRow(btn) {
     const row = btn.closest('tr');
     var deleteInput = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
     if (deleteInput) {
@@ -491,21 +639,121 @@ function updateFormOrder() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    updateSerialNumbers();
-    updateNumberOfKnobs();
-    initSortable();
+function addButtonRow() {
+    var totalForms = document.querySelector('input[name$="-TOTAL_FORMS"]');
+    var tableBody = document.getElementById('button-table-body');
+    var newIndex = parseInt(totalForms.value);
+    var template = document.getElementById('empty-button-form-row').outerHTML;
+    var regexPrefix = new RegExp('__prefix__', 'g');
+    var regexNum = new RegExp('__num__', 'g');
+    var newRow = template.replace(regexPrefix, newIndex).replace(regexNum, newIndex + 1);
+    var tempDiv = document.createElement('tbody');
+    tempDiv.innerHTML = newRow;
+    var row = tempDiv.firstElementChild;
+
+    // Update hidden fields
+    var hiddenFields = row.querySelectorAll('input[type="hidden"]');
+    hiddenFields.forEach(function(input) {
+        if (input.name) {
+            input.name = input.name.replace('__prefix__', newIndex);
+        }
+        if (input.id) {
+            input.id = input.id.replace('__prefix__', newIndex);
+        }
+        if (input.name.endsWith('-id')) {
+            input.value = '';
+        }
+    });
+
+    tableBody.appendChild(row);
+    totalForms.value = newIndex + 1;
+
+    // Set default values
+    var channel = row.querySelector('input[name$="-channel"]');
+    var mode = row.querySelector('select[name$="-mode"]');
+    var noteCC = row.querySelector('input[name$="-noteCC"]');
+    var velocityMin = row.querySelector('input[name$="-velocityMin"]');
+    var max = row.querySelector('input[name$="-max"]');
+    var pin = row.querySelector('input[name$="-pin"]');
     
-    var form = document.querySelector('form[method="POST"]');
-    if (form) {
-        form.addEventListener('submit', function() {
-            var knobRows = document.querySelectorAll('#knob-table-body tr:not([style*="display: none"])');
-            var numberOfKnobsInput = document.getElementById('number-of-knobs');
-            if (numberOfKnobsInput) {
-                numberOfKnobsInput.value = knobRows.length;
+    if (channel) channel.value = 1;
+    if (mode) mode.value = 'note';
+    if (noteCC) noteCC.value = newIndex;
+    if (velocityMin) velocityMin.value = 100;
+    if (max) max.value = 127;
+    if (pin) pin.value = newIndex;
+
+    updateButtonSerialNumbers();
+}
+
+function deleteButtonRow(btn) {
+    const row = btn.closest('tr');
+    var deleteInput = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+    if (deleteInput) {
+        deleteInput.checked = true;
+    }
+    row.style.display = 'none';
+    updateButtonSerialNumbers();
+}
+
+function updateButtonSerialNumbers() {
+    var rows = document.querySelectorAll('#button-table-body tr:not([style*="display: none"])');
+    rows.forEach(function(row, idx) {
+        var serialCell = row.querySelector('td:first-child');
+        if (serialCell) {
+            serialCell.textContent = idx + 1;
+        }
+    });
+}
+
+// Initialize Sortable for the button table
+function initButtonSortable() {
+    var tableBody = document.getElementById('button-table-body');
+    if (tableBody) {
+        Sortable.create(tableBody, {
+            handle: '.drag-handle',
+            animation: 150,
+            ghostClass: 'sortable-ghost',
+            chosenClass: 'sortable-chosen',
+            dragClass: 'sortable-drag',
+            onEnd: function() {
+                updateButtonSerialNumbers();
+                updateButtonFormOrder();
             }
         });
     }
+}
+
+function updateButtonFormOrder() {
+    var rows = document.querySelectorAll('#button-table-body tr:not([style*="display: none"])');
+    rows.forEach(function(row, idx) {
+        // Update any order-specific data if needed
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    updateSerialNumbers();
+    updateNumberOfKnobs();
+    updateButtonSerialNumbers();
+    initSortable();
+    initButtonSortable();
+    
+    // Handle mode change to show/hide relevant fields
+    document.addEventListener('change', function(e) {
+        if (e.target.name && e.target.name.endsWith('-mode')) {
+            var row = e.target.closest('tr');
+            var velocityMinCell = row.querySelector('td:nth-child(5)');
+            var maxCell = row.querySelector('td:nth-child(6)');
+            
+            if (e.target.value === 'note') {
+                velocityMinCell.querySelector('label').textContent = 'Velocity';
+                maxCell.style.display = 'none';
+            } else {
+                velocityMinCell.querySelector('label').textContent = 'Min CC';
+                maxCell.style.display = '';
+            }
+        }
+    });
 });
 </script>
 {% endblock %}

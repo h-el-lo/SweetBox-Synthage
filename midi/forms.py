@@ -3,7 +3,7 @@ from django.forms import ModelForm, BaseModelFormSet, ValidationError, modelform
 from django.contrib.auth.models import User
 
 # Local models actually referenced in this file
-from .models import Preset, Knob
+from .models import Preset, Knob, Button
 
 
 class UserForm(ModelForm):
@@ -243,3 +243,164 @@ class PresetForm(forms.ModelForm):
         if not (0 <= knobs <= 24):
             raise forms.ValidationError('Number of knobs must be between 0 and 24.')
         return knobs
+
+
+class ButtonForm(ModelForm):
+    channel = forms.IntegerField(
+        label='Channel', 
+        min_value=1, 
+        max_value=16,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': '1-16'
+        })
+    )
+    mode = forms.ChoiceField(
+        label='Mode',
+        choices=Button.MODE_CHOICES,
+        widget=forms.Select(attrs={
+            'class': 'form-control'
+        })
+    )
+    noteCC = forms.IntegerField(
+        label='Note/CC Number', 
+        min_value=0, 
+        max_value=127,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': '0-127'
+        })
+    )
+    velocityMin = forms.IntegerField(
+        label='Velocity/Min CC', 
+        min_value=0, 
+        max_value=127,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': '0-127'
+        })
+    )
+    max = forms.IntegerField(
+        label='Max CC Value', 
+        min_value=0, 
+        max_value=127,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': '0-127'
+        })
+    )
+    pin = forms.IntegerField(
+        label='Pin Number', 
+        min_value=0, 
+        max_value=99,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': '0-99'
+        })
+    )
+    
+    class Meta:
+        model = Button
+        fields = ['channel', 'mode', 'noteCC', 'velocityMin', 'max', 'pin']
+        labels = {
+            'channel': 'Channel',
+            'mode': 'Mode',
+            'noteCC': 'Note/CC Number',
+            'velocityMin': 'Velocity/Min CC',
+            'max': 'Max CC Value',
+            'pin': 'Pin Number',
+        }
+
+    def clean_channel(self):
+        channel = self.cleaned_data.get('channel')
+        if channel is None:
+            raise forms.ValidationError('Channel is required.')
+        if not (1 <= channel <= 16):
+            raise forms.ValidationError('Channel must be between 1 and 16.')
+        return channel
+
+    def clean_noteCC(self):
+        noteCC = self.cleaned_data.get('noteCC')
+        if noteCC is None:
+            raise forms.ValidationError('Note/CC Number is required.')
+        if not (0 <= noteCC <= 127):
+            raise forms.ValidationError('Note/CC number must be between 0 and 127.')
+        return noteCC
+
+    def clean_velocityMin(self):
+        velocityMin = self.cleaned_data.get('velocityMin')
+        if velocityMin is None:
+            raise forms.ValidationError('Velocity/Min CC value is required.')
+        if not (0 <= velocityMin <= 127):
+            raise forms.ValidationError('Velocity/Min CC value must be between 0 and 127.')
+        return velocityMin
+
+    def clean_max(self):
+        max_value = self.cleaned_data.get('max')
+        if max_value is None:
+            raise forms.ValidationError('Maximum CC value is required.')
+        if not (0 <= max_value <= 127):
+            raise forms.ValidationError('Maximum CC value must be between 0 and 127.')
+        return max_value
+
+    def clean_pin(self):
+        pin = self.cleaned_data.get('pin')
+        if pin is None:
+            raise forms.ValidationError('Pin number is required.')
+        if not (0 <= pin <= 99):
+            raise forms.ValidationError('Pin number must be between 0 and 99.')
+        return pin
+
+    def clean(self):
+        cleaned_data = super().clean()
+        mode = cleaned_data.get('mode')
+        velocityMin = cleaned_data.get('velocityMin')
+        max_value = cleaned_data.get('max')
+
+        if mode == 'note' and max_value != 127:
+            cleaned_data['max'] = 127  # Force max to 127 for note mode
+        
+        return cleaned_data
+
+
+class BaseButtonFormSet(BaseModelFormSet):
+    """Custom formset for Buttons.
+
+    Similar to BaseKnobFormSet:
+    1. Allows duplicates for Note/CC and Pin numbers.
+    2. Permits submitting zero buttons.
+    3. Hides the automatically-added ORDER field for drag-and-drop re-ordering.
+    """
+
+    ordering_widget = forms.HiddenInput
+
+    def clean(self):
+        """Ensure each non-deleted form is fully filled out (all required fields present)."""
+        super().clean()
+
+        for form in self.forms:
+            if not hasattr(form, 'cleaned_data') or not form.cleaned_data:
+                continue
+
+            # Skip rows flagged for deletion
+            if form.cleaned_data.get('DELETE', False):
+                continue
+
+            # Verify required fields are provided (duplicates allowed)
+            required_fields = ['channel', 'mode', 'noteCC', 'velocityMin', 'max', 'pin']
+            for field in required_fields:
+                if form.cleaned_data.get(field) is None:
+                    raise ValidationError('All fields are required for each button.')
+
+
+ButtonFormSet = modelformset_factory(
+    Button,
+    form=ButtonForm,
+    formset=BaseButtonFormSet,
+    extra=0,
+    can_delete=True,
+    can_order=True,
+    validate_min=False,  # Allow zero buttons
+    min_num=0,
+    max_num=24
+)
