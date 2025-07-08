@@ -56,14 +56,25 @@ class Button(models.Model):
 
 
 class Joystick(models.Model):
+    MODE_CHOICES = [
+        ('pitch', 'Pitch Bend'),
+        ('cc', 'Control Change'),
+    ]
+
     preset = models.ForeignKey(Preset, on_delete=models.CASCADE, null=True)
-    # x = 
-    # y = 
-    pass
 
-class PitchWheel(models.Model):
-    pass
+    # X-axis configuration
+    x_mode = models.CharField(max_length=5, choices=MODE_CHOICES, default='pitch')
+    x_channel = models.PositiveSmallIntegerField(default=1)
+    x_cc = models.PositiveSmallIntegerField(null=True, blank=True, help_text='CC number for X-axis (only used in CC mode)')
+    x_pin = models.IntegerField(default=0)
 
-class ModWheel(models.Model):
-    # CC = 1
-    pass
+    # Y-axis configuration
+    y_channel = models.PositiveSmallIntegerField(default=1)
+    y_cc = models.PositiveSmallIntegerField(default=2, help_text='CC number for Y-axis')
+    y_pin = models.IntegerField(default=1)
+
+    objects = models.Manager()
+
+    def __str__(self):
+        return f"Joystick ({self.x_mode} X, CC Y) on Pins {self.x_pin},{self.y_pin}"
