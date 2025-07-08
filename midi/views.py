@@ -5,7 +5,7 @@
 # Core Django utilities
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, FileResponse
-from .forms import UserForm, KnobFormSet, ButtonFormSet, JoystickForm
+from .forms import UserForm, KnobFormSet, ButtonFormSet, JoystickForm, JoystickFormSet
 from .models import Preset, Knob, Button
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -90,7 +90,6 @@ def portal(request):
                     if form.instance.pk:
                         form.instance.delete()
                     continue
-
                 knob = form.save(commit=False)
                 knob.preset = preset
                 knob.save()
@@ -103,7 +102,6 @@ def portal(request):
                     if form.instance.pk:
                         form.instance.delete()
                     continue
-
                 button = form.save(commit=False)
                 button.preset = preset
                 button.save()
@@ -119,6 +117,42 @@ def portal(request):
             # Handle has_joystick toggle
             preset.has_joystick = 'has_joystick' in request.POST
             preset.save()
+
+            # --- Joystick Save Logic ---
+            from .models import Joystick
+            joystick_instance = getattr(preset, 'joystick', None)
+            if preset.has_joystick:
+                joystick_form = JoystickForm(request.POST, instance=joystick_instance)
+                if joystick_form.is_valid():
+                    joystick = joystick_form.save(commit=False)
+                    joystick.preset = preset
+                    joystick.save()
+                else:
+                    messages.error(request, 'Please correct the errors in the Joystick form.')
+                    context = {
+                        'knob_formset': knob_formset,
+                        'button_formset': button_formset,
+                        'preset': preset,
+                        'presets': presets,
+                        'download_url': None,
+                        'hide_portal_link': True,
+                        'midi_form': midi_form,
+                        'preset_name_value': preset_name_value,
+                        'joystick_form': joystick_form,
+                        'form_errors': (
+                            knob_formset.non_form_errors() + 
+                            button_formset.non_form_errors() + 
+                            (midi_form.errors.get('__all__', []) if midi_form.errors else [])
+                        ),
+                        'num_knobs_db': knobs.count() if preset else 0,
+                        'num_buttons_db': buttons.count() if preset else 0,
+                    }
+                    return render(request, 'midi/portal.html', context)
+            else:
+                # If joystick is disabled, delete any existing joystick for this preset
+                if joystick_instance:
+                    joystick_instance.delete()
+
             messages.success(request, f'Preset "{preset.name}" saved successfully!')
             return redirect(f"{reverse('portal')}?preset={preset.id}")
         else:

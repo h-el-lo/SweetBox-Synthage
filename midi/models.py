@@ -66,15 +66,17 @@ class Joystick(models.Model):
     preset = models.ForeignKey(Preset, on_delete=models.CASCADE, null=True)
 
     # X-axis configuration
-    x_mode = models.CharField(max_length=5, choices=MODE_CHOICES, default='pitch')
     x_channel = models.PositiveSmallIntegerField(default=1)
-    x_cc = models.PositiveSmallIntegerField(null=True, blank=True, help_text='CC number for X-axis (only used in CC mode)')
     x_pin = models.IntegerField(default=0)
+    x_mode = models.CharField(max_length=5, choices=MODE_CHOICES, default='pitch')
+    x_cc = models.PositiveSmallIntegerField(null=True, blank=True, help_text='CC number for X-axis (only used in CC mode)')
+    
 
     # Y-axis configuration
     y_channel = models.PositiveSmallIntegerField(default=1)
-    y_cc = models.PositiveSmallIntegerField(default=2, help_text='CC number for Y-axis')
     y_pin = models.IntegerField(default=1)
+    y_cc = models.PositiveSmallIntegerField(default=2, help_text='CC number for Y-axis')
+    
 
     objects = models.Manager()
 

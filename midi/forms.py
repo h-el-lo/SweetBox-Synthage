@@ -547,3 +547,11 @@ class JoystickForm(ModelForm):
         if not (1 <= y_channel <= 16):
             raise forms.ValidationError('Channel must be between 1 and 16.')
         return y_channel
+
+
+JoystickFormSet = modelformset_factory(
+    Joystick,
+    form=JoystickForm,
+    extra=0,
+    can_delete=True
+)

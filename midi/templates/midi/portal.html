@@ -304,53 +304,52 @@
                 </div>
 <!-- Joysticks Tab Content -->
                 <div class="tab-pane fade" id="joysticks" role="tabpanel" aria-labelledby="joysticks-tab">
-                                <div class="card-header">
-                                    <h5 class="card-title mb-0">
-                                        <i class="bi bi-joystick me-2"></i>Joystick Configuration
-                                    </h5>
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="bi bi-joystick me-2"></i>Joystick Configuration
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- X-Axis Configuration -->
+                            <div class="col-md-6">
+                                <h6 class="mb-3">X-Axis Configuration</h6>
+                                <div class="mb-3">
+                                    <label for="x_channel" class="form-label">Channel</label>
+                                    {{ joystick_form.x_channel }}
                                 </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <!-- X-Axis Configuration -->
-                                        <div class="col-md-6">
-                                            <h6 class="mb-3">X-Axis Configuration</h6>
-                                            <div class="mb-3">
-                                                <label for="x_channel" class="form-label">Channel</label>
-                                                {{ joystick_form.x_channel }}
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="x_pin" class="form-label">Pin Number</label>
-                                                {{ joystick_form.x_pin }}
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="x_mode" class="form-label">Mode</label>
-                                                {{ joystick_form.x_mode }}
-                                            </div>
-                                            <div class="mb-3" id="x-cc-field">
-                                                <label for="x_cc" class="form-label">CC Number</label>
-                                                {{ joystick_form.x_cc }}
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Y-Axis Configuration -->
-                                        <div class="col-md-6">
-                                            <h6 class="mb-3">Y-Axis Configuration (CC Mode)</h6>
-                                            <div class="mb-3">
-                                                <label for="y_channel" class="form-label">Channel</label>
-                                                {{ joystick_form.y_channel }}
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="y_pin" class="form-label">Pin Number</label>
-                                                {{ joystick_form.y_pin }}
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="y_cc" class="form-label">CC Number</label>
-                                                {{ joystick_form.y_cc }}
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="x_pin" class="form-label">Pin Number</label>
+                                    {{ joystick_form.x_pin }}
                                 </div>
-            </div>
+                                <div class="mb-3">
+                                    <label for="x_mode" class="form-label">Mode</label>
+                                    {{ joystick_form.x_mode }}
+                                </div>
+                                <div class="mb-3" id="x-cc-field">
+                                    <label for="x_cc" class="form-label">CC Number</label>
+                                    {{ joystick_form.x_cc }}
+                                </div>
+                            </div>
+                            <!-- Y-Axis Configuration -->
+                            <div class="col-md-6">
+                                <h6 class="mb-3">Y-Axis Configuration (CC Mode)</h6>
+                                <div class="mb-3">
+                                    <label for="y_channel" class="form-label">Channel</label>
+                                    {{ joystick_form.y_channel }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="y_pin" class="form-label">Pin Number</label>
+                                    {{ joystick_form.y_pin }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="y_cc" class="form-label">CC Number</label>
+                                    {{ joystick_form.y_cc }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
         </div>
 
         <!-- Action Buttons -->
@@ -579,15 +578,29 @@ input[type="checkbox"][name$="-DELETE"] {
 /* Tab styles */
 .nav-tabs .nav-link {
     border: none;
-    color: #64748b;
+    color: #6b7280; /* Deeper grey for inactive */
     padding: 1rem 1.5rem;
     font-weight: 500;
     transition: all 0.2s ease;
+    opacity: 1;
+    background: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.nav-tabs .nav-link i {
+    color: #6b7280 !important;
+    transition: color 0.2s;
 }
 
 .nav-tabs .nav-link:hover {
-    color: #3b82f6;
+    color: #374151;
     border: none;
+}
+
+.nav-tabs .nav-link:hover i {
+    color: #374151 !important;
 }
 
 .nav-tabs .nav-link.active {
@@ -595,6 +608,10 @@ input[type="checkbox"][name$="-DELETE"] {
     border: none;
     border-bottom: 2px solid #3b82f6;
     background: none;
+}
+
+.nav-tabs .nav-link.active i {
+    color: #fff !important;
 }
 
 /* Mode select styles */
