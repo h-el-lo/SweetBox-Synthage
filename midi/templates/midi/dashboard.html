@@ -4,8 +4,8 @@
     <!-- Search & Filter Bar -->
     <form method="get" class="mb-4">
         <div class="card border-0 shadow-sm p-3 mb-3" style="background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%); border-radius: 16px;">
-            <div class="row g-2 align-items-center flex-wrap">
-                <div class="col-md-5 mb-2 mb-md-0">
+            <div class="row g-3 align-items-center flex-wrap">
+                <div class="col-lg-4 col-md-6 mb-2 mb-md-0">
                     <div class="input-group rounded shadow-sm">
                         <span class="input-group-text bg-white border-0" style="border-radius: 8px 0 0 8px;">
                             <i class="bi bi-search" style="color:#3b82f6;"></i>
@@ -13,7 +13,7 @@
                         <input type="text" name="search" class="form-control border-0" placeholder="Search presets by name..." value="{{ request.GET.search|default:'' }}" style="border-radius: 0 8px 8px 0; background: #fff;">
                     </div>
                 </div>
-                <div class="col-md-2 mb-2 mb-md-0">
+                <div class="col-lg-2 col-md-3 mb-2 mb-md-0">
                     <select name="knobs" class="form-select shadow-sm" style="border-radius:8px;">
                         <option value="">Knobs</option>
                         {% for n in range_1_17 %}
@@ -21,7 +21,7 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-2 mb-2 mb-md-0">
+                <div class="col-lg-2 col-md-3 mb-2 mb-md-0">
                     <select name="buttons" class="form-select shadow-sm" style="border-radius:8px;">
                         <option value="">Buttons</option>
                         {% for n in range_0_33 %}
@@ -29,20 +29,20 @@
                         {% endfor %}
                     </select>
                 </div>
-                <div class="col-md-2 mb-2 mb-md-0">
+                <div class="col-lg-2 col-md-3 mb-2 mb-md-0">
                     <select name="joystick" class="form-select shadow-sm" style="border-radius:8px;">
                         <option value="">Joystick</option>
                         <option value="1" {% if request.GET.joystick == '1' %}selected{% endif %}>Enabled</option>
                         <option value="0" {% if request.GET.joystick == '0' %}selected{% endif %}>Disabled</option>
                     </select>
                 </div>
-                <div class="col-md-1 d-grid">
+                <div class="col-lg-2 col-md-3 d-grid">
                     {% if request.GET.search or request.GET.knobs or request.GET.buttons or request.GET.joystick %}
-                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary shadow-sm" style="border-radius:8px; height:48px; min-width:120px; font-size:1.1rem; display:flex; align-items:center; justify-content:center;">
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary shadow-sm" style="border-radius:8px; height:48px; font-size:0.95rem; display:flex; align-items:center; justify-content:center;">
                             <i class="bi bi-x-circle me-1"></i>Clear Filter
                         </a>
                     {% else %}
-                        <button type="submit" class="btn btn-primary shadow-sm" style="border-radius:8px; height:48px; min-width:120px; font-size:1.1rem; display:flex; align-items:center; justify-content:center;">
+                        <button type="submit" class="btn btn-primary shadow-sm" style="border-radius:8px; height:48px; font-size:0.95rem; display:flex; align-items:center; justify-content:center;">
                             <i class="bi bi-funnel me-1"></i>Filter
                         </button>
                     {% endif %}
@@ -261,11 +261,78 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
+/* --- Responsive Filter Bar --- */
+.card .row.g-3.align-items-center.flex-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.card .row.g-3.align-items-center.flex-wrap > [class^='col-'],
+.card .row.g-3.align-items-center.flex-wrap > [class*=' col-'] {
+    min-width: 160px;
+    flex: 1 1 160px;
+    margin-bottom: 0 !important;
+}
+.card .row.g-3.align-items-center.flex-wrap > .col-lg-4 {
+    flex: 2 1 280px;
+    min-width: 200px;
+}
+.card .row.g-3.align-items-center.flex-wrap > .col-lg-2 {
+    flex: 1 1 140px;
+    min-width: 140px;
+}
+@media (max-width: 992px) {
+    .card .row.g-3.align-items-center.flex-wrap {
+        gap: 0.75rem;
+    }
+    .card .row.g-3.align-items-center.flex-wrap > [class^='col-'],
+    .card .row.g-3.align-items-center.flex-wrap > [class*=' col-'] {
+        min-width: 140px;
+        flex: 1 1 140px;
+    }
+    .card .row.g-3.align-items-center.flex-wrap > .col-lg-4 {
+        min-width: 180px;
+        flex: 2 1 180px;
+    }
+}
+@media (max-width: 768px) {
+    .card .row.g-3.align-items-center.flex-wrap {
+        gap: 0.5rem;
+    }
+    .card .row.g-3.align-items-center.flex-wrap > [class^='col-'],
+    .card .row.g-3.align-items-center.flex-wrap > [class*=' col-'] {
+        min-width: 120px;
+        flex: 1 1 120px;
+    }
+    .card .row.g-3.align-items-center.flex-wrap > .col-lg-4 {
+        min-width: 160px;
+        flex: 2 1 160px;
+    }
+}
+@media (max-width: 576px) {
+    .card .row.g-3.align-items-center.flex-wrap {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+    .card .row.g-3.align-items-center.flex-wrap > [class^='col-'],
+    .card .row.g-3.align-items-center.flex-wrap > [class*=' col-'] {
+        min-width: 0;
+        width: 100%;
+        flex: 1 1 100%;
+    }
+    .card .row.g-3.align-items-center.flex-wrap > .col-lg-4,
+    .card .row.g-3.align-items-center.flex-wrap > .col-lg-2 {
+        min-width: 0;
+        width: 100%;
+        flex: 1 1 100%;
+    }
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 0 16px;
     }
-    
     .card-body {
         padding: 1.5rem !important;
     }
