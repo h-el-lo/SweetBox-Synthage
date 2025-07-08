@@ -5,7 +5,7 @@
 # Core Django utilities
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, FileResponse
-from .forms import UserForm, KnobFormSet, ButtonFormSet
+from .forms import UserForm, KnobFormSet, ButtonFormSet, JoystickForm
 from .models import Preset, Knob, Button
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -68,6 +68,19 @@ def portal(request):
         button_formset = ButtonFormSet(request.POST, queryset=button_queryset)
         midi_form = KeypressChannelForm(request.POST)
         preset_name_value = request.POST.get('preset_name', preset.name if preset else '')
+        joystick_instance = getattr(preset, 'joystick', None)
+        if joystick_instance:
+            joystick_form = JoystickForm(instance=joystick_instance)
+        else:
+            joystick_form = JoystickForm(initial={
+                'x_channel': 1,
+                'x_mode': 'pitch',
+                'x_cc': 0,
+                'x_pin': 0,
+                'y_channel': 1,
+                'y_cc': 2,
+                'y_pin': 1,
+            })
 
         if knob_formset.is_valid() and button_formset.is_valid() and midi_form.is_valid():
             # Persist each knob form
@@ -120,6 +133,7 @@ def portal(request):
                 'hide_portal_link': True,
                 'midi_form': midi_form,
                 'preset_name_value': preset_name_value,
+                'joystick_form': joystick_form,
                 'form_errors': (
                     knob_formset.non_form_errors() + 
                     button_formset.non_form_errors() + 
@@ -132,6 +146,19 @@ def portal(request):
         button_formset = ButtonFormSet(queryset=button_queryset, initial=[{'channel': 1, 'mode': 'note', 'noteCC': 0, 'velocityMin': 100, 'max': 127, 'pin': 0}])
         midi_form = KeypressChannelForm(initial={'midi_channel': preset.keys_channel if preset else 1})
         preset_name_value = preset.name if preset else ''
+        joystick_instance = getattr(preset, 'joystick', None)
+        if joystick_instance:
+            joystick_form = JoystickForm(instance=joystick_instance)
+        else:
+            joystick_form = JoystickForm(initial={
+                'x_channel': 1,
+                'x_mode': 'pitch',
+                'x_cc': 0,
+                'x_pin': 0,
+                'y_channel': 1,
+                'y_cc': 2,
+                'y_pin': 1,
+            })
 
     download_url = None
     if firmware_path:
@@ -145,6 +172,7 @@ def portal(request):
         'download_url': download_url,
         'hide_portal_link': True,
         'midi_form': midi_form,
+        'joystick_form': joystick_form,
     }
 
     return render(request, 'midi/portal.html', context)
