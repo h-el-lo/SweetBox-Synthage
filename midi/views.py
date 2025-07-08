@@ -424,7 +424,7 @@ def logout_view(request):
 @login_required(login_url='login')
 def dashboard(request):
     user = request.user
-    presets = Preset.objects.filter(owner=user)
+    presets = Preset.objects.filter(owner=user).order_by('-updated')
     preset_count = presets.count()
 
     context = {
