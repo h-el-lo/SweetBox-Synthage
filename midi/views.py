@@ -287,6 +287,7 @@ def create_preset(request):
         name = request.POST.get('name')
         keys_channel = int(request.POST.get('keys_channel', 1))
         number_of_knobs = int(request.POST.get('number_of_knobs', 4))
+        number_of_buttons = int(request.POST.get('number_of_buttons', 0))
         user = request.user
 
         preset = Preset.objects.create(
@@ -294,7 +295,7 @@ def create_preset(request):
             name=name,
             keys_channel=keys_channel,
             number_of_knobs=number_of_knobs,
-            number_of_buttons=0,  # Start with no buttons
+            number_of_buttons=number_of_buttons,
         )
         # Create the corresponding number of knob objects
         for i in range(preset.number_of_knobs):
@@ -303,6 +304,17 @@ def create_preset(request):
                 channel=1,
                 CC=i,
                 min=0,
+                max=127,
+                pin=i
+            )
+        # Create the corresponding number of button objects
+        for i in range(preset.number_of_buttons):
+            button = Button.objects.create(
+                preset=preset,
+                channel=1,
+                mode='note',
+                noteCC=i,
+                velocityMin=100,
                 max=127,
                 pin=i
             )

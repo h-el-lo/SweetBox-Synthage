@@ -322,7 +322,7 @@
                                                 <label for="x_channel" class="form-label">Channel</label>
                                                 {{ joystick_form.x_channel }}
                                             </div>
-                                            <div class="mb-3 x-cc-field" style="display: none;">
+                                            <div class="mb-3">
                                                 <label for="x_cc" class="form-label">CC Number</label>
                                                 {{ joystick_form.x_cc }}
                                             </div>
@@ -456,6 +456,11 @@
                         <label class="form-label fw-semibold">Number of Knobs</label>
                         <input type="number" name="number_of_knobs" class="form-control" min="1" max="16" value="4" required>
                         <div class="form-text">Choose between 1 and 16 knobs for your controller.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Number of Buttons</label>
+                        <input type="number" name="number_of_buttons" class="form-control" min="0" max="32" value="0" required>
+                        <div class="form-text">Choose between 0 and 32 buttons for your controller.</div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Keys Channel</label>
@@ -624,6 +629,17 @@ function addKnobRow() {
             input.value = '';
         }
     });
+    // Set default values for visible fields
+    var channel = row.querySelector('input[name$="-channel"]');
+    var cc = row.querySelector('input[name$="-CC"]');
+    var min = row.querySelector('input[name$="-min"]');
+    var max = row.querySelector('input[name$="-max"]');
+    var pin = row.querySelector('input[name$="-pin"]');
+    if (channel) channel.value = 1;
+    if (cc) cc.value = 0;
+    if (min) min.value = 0;
+    if (max) max.value = 127;
+    if (pin) pin.value = 0;
     tableBody.appendChild(row);
     totalForms.value = newIndex + 1;
     updateSerialNumbers();
@@ -706,6 +722,19 @@ function addButtonRow() {
             input.value = '';
         }
     });
+    // Set default values for visible fields
+    var channel = row.querySelector('input[name$="-channel"]');
+    var mode = row.querySelector('select[name$="-mode"]');
+    var noteCC = row.querySelector('input[name$="-noteCC"]');
+    var velocityMin = row.querySelector('input[name$="-velocityMin"]');
+    var max = row.querySelector('input[name$="-max"]');
+    var pin = row.querySelector('input[name$="-pin"]');
+    if (channel) channel.value = 1;
+    if (mode) mode.value = 'note';
+    if (noteCC) noteCC.value = 0;
+    if (velocityMin) velocityMin.value = 100;
+    if (max) max.value = 127;
+    if (pin) pin.value = 0;
     tableBody.appendChild(row);
     totalForms.value = newIndex + 1;
     updateButtonSerialNumbers();
