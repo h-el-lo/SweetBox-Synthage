@@ -138,7 +138,9 @@ def portal(request):
                     knob_formset.non_form_errors() + 
                     button_formset.non_form_errors() + 
                     (midi_form.errors.get('__all__', []) if midi_form.errors else [])
-                )
+                ),
+                'num_knobs_db': knobs.count() if preset else 0,
+                'num_buttons_db': buttons.count() if preset else 0,
             }
             return render(request, 'midi/portal.html', context)
     else:
@@ -175,6 +177,8 @@ def portal(request):
         'hide_portal_link': True,
         'midi_form': midi_form,
         'joystick_form': joystick_form,
+        'num_knobs_db': knobs.count() if preset else 0,
+        'num_buttons_db': buttons.count() if preset else 0,
     }
 
     return render(request, 'midi/portal.html', context)
@@ -427,11 +431,31 @@ def logout_view(request):
 def dashboard(request):
     user = request.user
     presets = Preset.objects.filter(owner=user).order_by('-updated')
+
+    # Filtering logic
+    search = request.GET.get('search', '').strip()
+    knobs = request.GET.get('knobs', '').strip()
+    buttons = request.GET.get('buttons', '').strip()
+    joystick = request.GET.get('joystick', '').strip()
+
+    if search:
+        presets = presets.filter(name__icontains=search)
+    if knobs:
+        presets = presets.filter(number_of_knobs=int(knobs))
+    if buttons:
+        presets = presets.filter(number_of_buttons=int(buttons))
+    if joystick == '1':
+        presets = presets.filter(has_joystick=True)
+    elif joystick == '0':
+        presets = presets.filter(has_joystick=False)
+
     preset_count = presets.count()
 
     context = {
         'hide_dashboard_link':True,
         'presets':presets,
         'preset_count':preset_count,
+        'range_1_17': range(1, 17),
+        'range_0_33': range(0, 33),
     }   
     return render(request, 'midi/dashboard.html', context)
