@@ -26,7 +26,6 @@ class Knob(models.Model):
     min = models.IntegerField(default=0)
     max = models.IntegerField(default=127)
     pin = models.IntegerField(default=0)
-    # knob_index =
 
     objects = models.Manager()
 
