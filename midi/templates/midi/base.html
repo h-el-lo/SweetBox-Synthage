@@ -165,6 +165,61 @@
         body.dark-mode footer {
             color: #94a3b8;
         }
+        .custom-burger {
+            border: none;
+            background: none;
+            padding: 0.5rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            z-index: 1051;
+            transition: background 0.2s;
+        }
+        .custom-burger:focus {
+            outline: none;
+            background: #e0e7ff;
+            border-radius: 50%;
+        }
+        .burger-bar {
+            display: block;
+            width: 28px;
+            height: 3.5px;
+            margin: 4px 0;
+            background: #3b82f6;
+            border-radius: 2px;
+            transition: all 0.35s cubic-bezier(.4,0,.2,1);
+        }
+        body.dark-mode .burger-bar {
+            background: #e5e7eb;
+        }
+        .custom-burger.open .burger-bar:nth-child(1) {
+            transform: translateY(7.5px) rotate(45deg);
+        }
+        .custom-burger.open .burger-bar:nth-child(2) {
+            opacity: 0;
+        }
+        .custom-burger.open .burger-bar:nth-child(3) {
+            transform: translateY(-7.5px) rotate(-45deg);
+        }
+        @media (max-width: 991.98px) {
+            .navbar-collapse {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100vw;
+                background: #fff;
+                z-index: 1050;
+                box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+                transition: max-height 0.4s cubic-bezier(.4,0,.2,1);
+            }
+            body.dark-mode .navbar-collapse {
+                background: #181e2a !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -179,11 +234,13 @@
                 </svg>
                 <span class="brand">SweetBox Synthage</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+            <button class="navbar-toggler custom-burger" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navbarSupportedContent" onclick="toggleBurger(this)">
+                <span class="burger-bar"></span>
+                <span class="burger-bar"></span>
+                <span class="burger-bar"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav header-nav ms-auto mb-2 mb-lg-0">
                     {% if not hide_home_link %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
                     {% endif %}
@@ -262,6 +319,30 @@
             });
         }
     })();
+    function toggleBurger(btn) {
+        const navCollapse = document.getElementById('navbarSupportedContent');
+        btn.classList.toggle('open');
+        const expanded = btn.classList.contains('open');
+        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        if (navCollapse.classList.contains('show')) {
+            navCollapse.classList.remove('show');
+        } else {
+            navCollapse.classList.add('show');
+        }
+    }
+    // Close nav on link click (mobile)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.navbar-nav .nav-link').forEach(function(link) {
+            link.addEventListener('click', function() {
+                const burger = document.querySelector('.custom-burger');
+                const navCollapse = document.getElementById('navbarSupportedContent');
+                if (window.innerWidth < 992 && burger.classList.contains('open')) {
+                    burger.classList.remove('open');
+                    navCollapse.classList.remove('show');
+                }
+            });
+        });
+    });
     </script>
 </body>
 </html> 
