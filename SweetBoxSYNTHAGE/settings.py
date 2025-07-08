@@ -79,10 +79,10 @@ DATABASES = {
         # 'ENGINE': 'django.db.backends.sqlite3',
 'ENGINE': 'django.db.backends.postgresql',
         'NAME': '',
-'USER': '',
-'HOST': '',
-'PASSWORD': '',
-'PORT': '',
+'USER': 'postgres',
+'HOST': 'postgres.railway.internal',
+'PASSWORD': 'BnllprYwzvCINiKoTQhGNsVfqlFRapAs',
+'PORT': '5432',
 
     }
 }
