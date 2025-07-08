@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <select name="preset_id">
+        {% for preset in presets %}
+            <option value="{{ preset.id }}">{{ preset.name }}</option>
+        {% endfor %}
+    </select>
+    <select name="firmware_type">
+        <option value="1">Firmware</option>
+        <option value="2">Bootloader</option>
+    </select>
+    <select name="microcontroller">
+        <option value="1">ATmega32U4</option>
+        <option value="2">rp2040</option>
+        <option value="3">ESP32</option>
+    </select>
+    <button type="submit">Generate Firmware</button>
+    <button type="submit">Upload</button>
+    <button type="submit">Download Firmware</button>
+</form>
+{% endblock %}

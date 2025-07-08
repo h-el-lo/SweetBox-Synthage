@@ -6,343 +6,500 @@
     <title>SweetBox Synthage</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='8' y='8' width='48' height='48' rx='12' fill='%233b82f6'/%3E%3Crect x='16' y='16' width='32' height='32' rx='8' fill='%23fff'/%3E%3Ccircle cx='32' cy='32' r='10' fill='%233b82f6'/%3E%3C/svg%3E">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary-color: #06b6d4;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --border-color: #e2e8f0;
+            --shadow-light: 0 4px 32px rgba(0,0,0,0.08);
+            --shadow-medium: 0 8px 32px rgba(0,0,0,0.12);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         body {
             background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
             min-height: 100vh;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
         }
-        .main-container {
-            max-width: 700px;
-            margin: 60px auto 0 auto;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 4px 32px rgba(0,0,0,0.08);
-            padding: 48px 32px 40px 32px;
-            text-align: center;
+
+        /* Modern Navbar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transition: var(--transition);
         }
-        .brand {
-            font-size: 2.5rem;
+
+        .navbar-brand {
+            font-size: 1.5rem;
             font-weight: 700;
-            color: #3b82f6;
-            letter-spacing: 1px;
-        }
-        .logo-icon {
-            width: 48px;
-            height: 48px;
-            margin-bottom: 10px;
-            transition: width 0.2s ease, height 0.2s ease;
-        }
-        /* Icon scales down on very small screens and up on very large screens */
-        @media (max-width: 576px) {
-            .logo-icon {
-                width: 32px;
-                height: 32px;
-                margin-bottom: 6px;
-            }
-        }
-        @media (min-width: 1200px) {
-            .logo-icon {
-                width: 56px;
-                height: 56px;
-            }
-        }
-        header {
-            background: #fff;
-            border-bottom: 1px solid #e0e7ff;
-            padding: 18px 0 10px 0;
-            margin-bottom: 0;
-        }
-        .header-nav a {
-            margin: 0 12px;
-            color: #3b82f6;
-            font-weight: 500;
+            color: var(--primary-color) !important;
             text-decoration: none;
-            transition: color 0.25s, border-radius 0.25s;
-            padding: 8px 18px 8px 18px;
-            border-radius: 8px;
-            position: relative;
-            background: none;
-            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
-        .header-nav a::after {
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            transition: var(--transition);
+        }
+
+        .navbar-nav {
+            gap: 0.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-primary) !important;
+            font-weight: 500;
+            padding: 0.75rem 1.25rem !important;
+            border-radius: 12px;
+            transition: var(--transition);
+            position: relative;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-link::before {
             content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 12px;
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
+        }
+
+        .nav-link:hover::before,
+        .nav-link.active::before {
+            opacity: 1;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white !important;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .nav-link i {
+            font-size: 1.1rem;
+        }
+
+        /* Mobile Navigation */
+        .navbar-toggler {
+            border: none;
+            padding: 0.5rem;
+            border-radius: 12px;
+            background: transparent;
+            transition: var(--transition);
+        }
+
+        .navbar-toggler:focus {
+            box-shadow: none;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .hamburger {
+            width: 24px;
+            height: 24px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .hamburger span {
             display: block;
             position: absolute;
-            left: 18px;
-            right: 18px;
-            bottom: 4px;
             height: 3px;
-            border-radius: 2px;
-            background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.35s cubic-bezier(.4,0,.2,1);
-            z-index: 1;
+            width: 100%;
+            background: var(--primary-color);
+            border-radius: 3px;
+            transition: var(--transition);
         }
-        .header-nav a:hover::after, .header-nav a:focus::after, .header-nav a.active::after {
-            transform: scaleX(1);
+
+        .hamburger span:nth-child(1) {
+            top: 0px;
         }
-        .header-nav a:hover, .header-nav a:focus, .header-nav a.active {
-            color: #2563eb;
-            background: none;
+
+        .hamburger span:nth-child(2) {
+            top: 10px;
         }
-        body.dark-mode .header-nav a {
-            color: #e5e7eb;
-            background: none;
+
+        .hamburger span:nth-child(3) {
+            top: 20px;
         }
-        body.dark-mode .header-nav a::after {
-            background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%);
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(45deg);
+            top: 10px;
         }
-        body.dark-mode .header-nav a:hover, body.dark-mode .header-nav a:focus, body.dark-mode .header-nav a.active {
-            color: #38bdf8;
-            background: none;
-        }
-        footer {
-            text-align: center;
-            color: #64748b;
-            font-size: 0.95rem;
-            margin-top: 60px;
-            margin-bottom: 18px;
-        }
-        @media (max-width: 700px) {
-            .main-container { padding: 28px 8px; }
-            .brand { font-size: 2rem; }
-        }
-        /* Dark mode styles */
-        body.dark-mode {
-            background: linear-gradient(135deg, #181e2a 0%, #23272f 100%) !important;
-            color: #e5e7eb;
-        }
-        body.dark-mode .main-container {
-            background: #23272f;
-            color: #e5e7eb;
-            box-shadow: 0 4px 32px rgba(0,0,0,0.32);
-        }
-        body.dark-mode header,
-        body.dark-mode .navbar,
-        body.dark-mode .navbar-brand,
-        body.dark-mode .navbar-nav .nav-link {
-            background: #181e2a !important;
-            color: #e5e7eb !important;
-            border-color: #23272f !important;
-        }
-        body.dark-mode .navbar-nav .nav-link.active,
-        body.dark-mode .navbar-nav .nav-link:focus,
-        body.dark-mode .navbar-nav .nav-link:hover {
-            color: #3b82f6 !important;
-        }
-        body.dark-mode .card,
-        body.dark-mode .modal-content {
-            background: #23272f;
-            color: #e5e7eb;
-            border-color: #23272f;
-        }
-        body.dark-mode .form-control,
-        body.dark-mode .form-select {
-            background: #23272f;
-            color: #e5e7eb;
-            border-color: #3b3b4f;
-        }
-        body.dark-mode .form-control:focus,
-        body.dark-mode .form-select:focus {
-            background: #23272f;
-            color: #fff;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 0.2rem rgba(59,130,246,.25);
-        }
-        body.dark-mode .btn-primary {
-            background: #3b82f6;
-            border-color: #3b82f6;
-        }
-        body.dark-mode .btn-primary:hover {
-            background: #2563eb;
-            border-color: #2563eb;
-        }
-        body.dark-mode .text-muted {
-            color: #94a3b8 !important;
-        }
-        body.dark-mode footer {
-            color: #94a3b8;
-        }
-        .custom-burger {
-            border: none;
-            background: none;
-            padding: 0.5rem 0.75rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            width: 48px;
-            height: 48px;
-            cursor: pointer;
-            z-index: 1051;
-            transition: background 0.2s;
-        }
-        .custom-burger:focus {
-            outline: none;
-            background: #e0e7ff;
-            border-radius: 50%;
-        }
-        .burger-bar {
-            display: block;
-            width: 28px;
-            height: 3.5px;
-            margin: 4px 0;
-            background: #3b82f6;
-            border-radius: 2px;
-            transition: all 0.35s cubic-bezier(.4,0,.2,1);
-        }
-        body.dark-mode .burger-bar {
-            background: #e5e7eb;
-        }
-        .custom-burger.open .burger-bar:nth-child(1) {
-            transform: translateY(7.5px) rotate(45deg);
-        }
-        .custom-burger.open .burger-bar:nth-child(2) {
+
+        .hamburger.active span:nth-child(2) {
             opacity: 0;
         }
-        .custom-burger.open .burger-bar:nth-child(3) {
-            transform: translateY(-7.5px) rotate(-45deg);
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(-45deg);
+            top: 10px;
         }
+
+        /* Mobile Menu */
         @media (max-width: 991.98px) {
             .navbar-collapse {
                 position: absolute;
                 top: 100%;
                 left: 0;
-                width: 100vw;
-                background: #fff;
-                z-index: 1050;
-                box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-                transition: max-height 0.4s cubic-bezier(.4,0,.2,1);
+                right: 0;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border-top: 1px solid var(--border-color);
+                box-shadow: var(--shadow-medium);
+                padding: 1rem 0;
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: var(--transition);
             }
-            body.dark-mode .navbar-collapse {
-                background: #181e2a !important;
+
+            .navbar-collapse.show {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .navbar-nav {
+                flex-direction: column;
+                gap: 0.25rem;
+                padding: 0 1rem;
+            }
+
+            .nav-link {
+                padding: 1rem 1.5rem !important;
+                border-radius: 12px;
+                margin: 0.25rem 0;
+                font-size: 1.1rem;
+            }
+
+            .nav-link:hover {
+                transform: translateX(8px);
+            }
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            padding: 0.75rem;
+            border-radius: 12px;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-color);
+            transform: scale(1.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            --text-primary: #e5e7eb;
+            --text-secondary: #94a3b8;
+            --bg-primary: #1e293b;
+            --bg-secondary: #0f172a;
+            --border-color: #334155;
+        }
+
+        body.dark-mode .navbar {
+            background: rgba(30, 41, 59, 0.95) !important;
+            border-bottom-color: rgba(51, 65, 85, 0.8);
+        }
+
+        body.dark-mode .nav-link {
+            color: var(--text-primary) !important;
+        }
+
+        body.dark-mode .navbar-collapse {
+            background: rgba(30, 41, 59, 0.98);
+            border-top-color: var(--border-color);
+        }
+
+        body.dark-mode .hamburger span {
+            background: var(--text-primary);
+        }
+
+        body.dark-mode .theme-toggle {
+            color: var(--text-primary);
+        }
+
+        body.dark-mode .theme-toggle:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 576px) {
+            .navbar-brand {
+                font-size: 1.25rem;
+            }
+
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+            }
+
+            .nav-link {
+                font-size: 1rem;
+                padding: 0.875rem 1.25rem !important;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+            }
+            to {
+                transform: translateX(0);
             }
         }
     </style>
 </head>
 <body>
-    <!-- Responsive Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+    <!-- Modern Navbar -->
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <svg class="logo-icon me-2" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Brand -->
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <svg class="logo-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="8" y="8" width="48" height="48" rx="12" fill="#3b82f6"/>
                     <rect x="16" y="16" width="32" height="32" rx="8" fill="#fff"/>
                     <circle cx="32" cy="32" r="10" fill="#3b82f6"/>
                 </svg>
-                <span class="brand">SweetBox Synthage</span>
+                <span>SweetBox Synthage</span>
             </a>
-            <button class="navbar-toggler custom-burger" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="navbarSupportedContent" onclick="toggleBurger(this)">
-                <span class="burger-bar"></span>
-                <span class="burger-bar"></span>
-                <span class="burger-bar"></span>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <div class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
             </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav header-nav ms-auto mb-2 mb-lg-0">
+
+            <!-- Navigation Menu -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
                     {% if not hide_home_link %}
-                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
+                            <i class="bi bi-house"></i>
+                            <span>Home</span>
+                        </a>
+                    </li>
                     {% endif %}
+                    
                     {% if not page == 'login' or page == 'signup' %}
                         {% if not hide_dashboard_link %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                                <i class="bi bi-grid"></i>
+                                <span>Dashboard</span>
+                            </a>
+                        </li>
                         {% endif %}
+                        
                         {% if not hide_portal_link %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'portal' %}">Portal</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'portal' %}active{% endif %}" href="{% url 'portal' %}">
+                                <i class="bi bi-gear"></i>
+                                <span>Portal</span>
+                            </a>
+                        </li>
                         {% endif %}
+                        
                         {% if not hide_login_link %}
                             {% if request.user.is_authenticated %}
-                            <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'logout' %}">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    <span>Logout</span>
+                                </a>
+                            </li>
                             {% else %}
-                            <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Sign&nbsp;Up</a></li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    <span>Login</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {% if request.resolver_match.url_name == 'signup' %}active{% endif %}" href="{% url 'signup' %}">
+                                    <i class="bi bi-person-plus"></i>
+                                    <span>Sign Up</span>
+                                </a>
+                            </li>
                             {% endif %}
                         {% endif %}
                     {% endif %}
                 </ul>
-                <button id="theme-toggle" class="btn btn-link nav-link p-0 ms-3" style="font-size:1.5em;" title="Toggle light/dark mode" aria-label="Toggle light/dark mode">
-                    <span id="theme-icon">
-                        <!-- Sun icon (default) -->
-                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
-                          <path d="M8 4.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 8 4.5zm0 5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1a.5.5 0 0 1 .5-.5zm3.5-2.5a.5.5 0 0 1 .5.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm-7 0a.5.5 0 0 1 .5.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm5.657-2.657a.5.5 0 0 1 .707 0l.707.707a.5.5 0 1 1-.707.707l-.707-.707a.5.5 0 0 1 0-.707zm-5.657 5.657a.5.5 0 0 1 .707 0l.707.707a.5.5 0 1 1-.707.707l-.707-.707a.5.5 0 0 1 0-.707zm8.485 0a.5.5 0 0 1 0 .707l-.707.707a.5.5 0 1 1-.707-.707l.707-.707a.5.5 0 0 1 .707 0zm-5.657-5.657a.5.5 0 0 1 0 .707l-.707.707a.5.5 0 1 1-.707-.707l.707-.707a.5.5 0 0 1 .707 0zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
-                        </svg>
-                    </span>
+
+                <!-- Theme Toggle -->
+                <button class="theme-toggle ms-3" id="theme-toggle" title="Toggle light/dark mode">
+                    <i class="bi bi-sun-fill" id="theme-icon"></i>
                 </button>
             </div>
         </div>
     </nav>
-    {% block content %}
-    
-    {% endblock %}
-    <footer class="text-center text-muted mt-5 mb-3" style="font-size:0.95rem;">
-        &copy; 2025 SweetBox Synthage. All rights reserved.
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center text-muted py-4" style="background: rgba(255,255,255,0.8); backdrop-filter: blur(10px);">
+        <div class="container">
+            <p class="mb-0">&copy; 2025 SweetBox Synthage. All rights reserved.</p>
+        </div>
     </footer>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
+    
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
+        // Hamburger Animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const hamburger = document.getElementById('hamburger');
+            const navbarToggler = document.querySelector('.navbar-toggler');
+            
+            navbarToggler.addEventListener('click', function() {
+                hamburger.classList.toggle('active');
+            });
+
+            // Close mobile menu when clicking on links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('click', function() {
+                    if (window.innerWidth < 992) {
+                        const navbarCollapse = document.getElementById('navbarNav');
+                        const bsCollapse = new bootstrap.Collapse(navbarCollapse, {toggle: false});
+                        bsCollapse.hide();
+                        hamburger.classList.remove('active');
+                    }
+                });
+            });
+
+            // Auto-hide mobile menu on window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth >= 992) {
+                    hamburger.classList.remove('active');
+                }
+            });
+        });
+
+        // Theme Toggle
+        (function() {
+            const body = document.body;
+            const toggleBtn = document.getElementById('theme-toggle');
+            const icon = document.getElementById('theme-icon');
+            
+            function setTheme(dark) {
+                if (dark) {
+                    body.classList.add('dark-mode');
+                    icon.className = 'bi bi-moon-fill';
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    body.classList.remove('dark-mode');
+                    icon.className = 'bi bi-sun-fill';
+                    localStorage.setItem('theme', 'light');
+                }
+            }
+
+            // Initialize theme
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            setTheme(savedTheme === 'dark' || (!savedTheme && prefersDark));
+
+            // Theme toggle handler
+            toggleBtn.addEventListener('click', function() {
+                setTheme(!body.classList.contains('dark-mode'));
+            });
+        })();
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Auto-hide alerts
         setTimeout(function() {
             document.querySelectorAll('.alert-success').forEach(function(alert) {
                 alert.classList.add('fade');
                 setTimeout(function() {
                     alert.remove();
-                }, 500); // Wait for fade transition
+                }, 500);
             });
-        }, 5000); // 5 seconds
-    });
-    // Theme toggle logic
-    (function() {
-        const body = document.body;
-        const toggleBtn = document.getElementById('theme-toggle');
-        const iconSpan = document.getElementById('theme-icon');
-        const sunIcon = `<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" fill=\"currentColor\" viewBox=\"0 0 16 16\"><path d=\"M8 4.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 8 4.5zm0 5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1a.5.5 0 0 1 .5-.5zm3.5-2.5a.5.5 0 0 1 .5.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm-7 0a.5.5 0 0 1 .5.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm5.657-2.657a.5.5 0 0 1 .707 0l.707.707a.5.5 0 1 1-.707.707l-.707-.707a.5.5 0 0 1 0-.707zm-5.657 5.657a.5.5 0 0 1 .707 0l.707.707a.5.5 0 1 1-.707.707l-.707-.707a.5.5 0 0 1 0-.707zm8.485 0a.5.5 0 0 1 0 .707l-.707.707a.5.5 0 1 1-.707-.707l.707-.707a.5.5 0 0 1 .707 0zm-5.657-5.657a.5.5 0 0 1 0 .707l-.707.707a.5.5 0 1 1-.707-.707l.707-.707a.5.5 0 0 1 .707 0zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z\"/></svg>`;
-        const moonIcon = `<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" fill=\"currentColor\" viewBox=\"0 0 16 16\"><path d=\"M6 0a7 7 0 0 0 0 14c3.866 0 7-3.134 7-7 0-.256-.012-.51-.035-.762A6.978 6.978 0 0 1 8 13a6.978 6.978 0 0 1-6.965-6.238A7.001 7.001 0 0 0 6 0z\"/></svg>`;
-        function setTheme(dark) {
-            if (dark) {
-                body.classList.add('dark-mode');
-                iconSpan.innerHTML = moonIcon;
-                localStorage.setItem('theme', 'dark');
-            } else {
-                body.classList.remove('dark-mode');
-                iconSpan.innerHTML = sunIcon;
-                localStorage.setItem('theme', 'light');
-            }
-        }
-        // Initial theme
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const savedTheme = localStorage.getItem('theme');
-        setTheme(savedTheme === 'dark' || (!savedTheme && prefersDark));
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', function() {
-                setTheme(!body.classList.contains('dark-mode'));
-            });
-        }
-    })();
-    function toggleBurger(btn) {
-        const navCollapse = document.getElementById('navbarSupportedContent');
-        btn.classList.toggle('open');
-        const expanded = btn.classList.contains('open');
-        btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        if (navCollapse.classList.contains('show')) {
-            navCollapse.classList.remove('show');
-        } else {
-            navCollapse.classList.add('show');
-        }
-    }
-    // Close nav on link click (mobile)
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.navbar-nav .nav-link').forEach(function(link) {
-            link.addEventListener('click', function() {
-                const burger = document.querySelector('.custom-burger');
-                const navCollapse = document.getElementById('navbarSupportedContent');
-                if (window.innerWidth < 992 && burger.classList.contains('open')) {
-                    burger.classList.remove('open');
-                    navCollapse.classList.remove('show');
-                }
-            });
-        });
-    });
+        }, 5000);
     </script>
 </body>
 </html> 

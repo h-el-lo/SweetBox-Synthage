@@ -459,3 +459,9 @@ def dashboard(request):
         'range_0_33': range(0, 33),
     }   
     return render(request, 'midi/dashboard.html', context)
+
+def upload(request):
+    context = {
+        'hide_upload_link':True,
+    }
+    return render(request, 'midi/upload.html', context)
