@@ -460,8 +460,10 @@ def dashboard(request):
     }   
     return render(request, 'midi/dashboard.html', context)
 
+@login_required(login_url='login')
 def upload(request):
     context = {
+        'presets': Preset.objects.filter(owner=request.user),
         'hide_upload_link':True,
     }
     return render(request, 'midi/upload.html', context)

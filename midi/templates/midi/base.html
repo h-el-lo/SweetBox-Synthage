@@ -368,6 +368,15 @@
                         </li>
                         {% endif %}
                         
+                        {% if not hide_upload_link %}
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.resolver_match.url_name == 'upload' %}active{% endif %}" href="{% url 'upload' %}">
+                                <i class="bi bi-upload"></i>
+                                <span>Upload</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
                         {% if not hide_login_link %}
                             {% if request.user.is_authenticated %}
                             <li class="nav-item">

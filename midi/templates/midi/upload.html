@@ -1,0 +1,131 @@
+{% extends "midi/base.html" %}
+
+{% block content %}
+<div class="container" style="max-width: 800px; margin-top: 40px;">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h2 mb-1" style="color: #3b82f6; font-weight: 600;">Firmware Upload</h1>
+                    <p class="text-muted mb-0">Upload and manage your MIDI controller firmware</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Form -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Preset Selection -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Select Preset</label>
+                    <select name="preset_id" class="form-select" required>
+                        <option value="">Choose a preset...</option>
+                        {% for preset in presets %}
+                            <option value="{{ preset.id }}">{{ preset.name }} ({{ preset.number_of_knobs }} knobs, {{ preset.number_of_buttons }} buttons)</option>
+                        {% endfor %}
+                    </select>
+                    <div class="form-text">Select the preset you want to upload firmware for.</div>
+                </div>
+
+                <!-- Firmware Type -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Firmware Type</label>
+                    <select name="firmware_type" class="form-select" required>
+                        <option value="1">Firmware</option>
+                        <option value="2">Bootloader</option>
+                    </select>
+                    <div class="form-text">Choose the type of firmware to upload.</div>
+                </div>
+
+                <!-- Microcontroller Selection -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Microcontroller</label>
+                    <select name="microcontroller" class="form-select" required>
+                        <option value="1">ATmega32U4</option>
+                        <option value="2">RP2040</option>
+                        <option value="3">ESP32</option>
+                    </select>
+                    <div class="form-text">Select your target microcontroller.</div>
+                </div>
+
+                <!-- File Upload -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Firmware File</label>
+                    <input type="file" name="firmware_file" class="form-control" accept=".hex,.bin,.ino" required>
+                    <div class="form-text">Upload your firmware file (.hex, .bin, or .ino format).</div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex gap-3 flex-wrap">
+                    <button type="submit" name="action" value="generate" class="btn btn-primary">
+                        <i class="bi bi-gear me-2"></i>Generate Firmware
+                    </button>
+                    <button type="submit" name="action" value="upload" class="btn btn-success">
+                        <i class="bi bi-upload me-2"></i>Upload Firmware
+                    </button>
+                    <button type="submit" name="action" value="download" class="btn btn-outline-primary">
+                        <i class="bi bi-download me-2"></i>Download Firmware
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="card border-0 shadow-sm mt-4">
+        <div class="card-header bg-light border-0">
+            <h5 class="mb-0">
+                <i class="bi bi-info-circle me-2"></i>Upload Instructions
+            </h5>
+        </div>
+        <div class="card-body">
+            <ol class="mb-0">
+                <li>Select the preset you want to upload firmware for</li>
+                <li>Choose the appropriate firmware type and microcontroller</li>
+                <li>Upload your firmware file</li>
+                <li>Click the appropriate action button based on your needs</li>
+                <li>Follow any additional instructions that appear</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+}
+
+@media (max-width: 576px) {
+    .d-flex.gap-3.flex-wrap {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+{% endblock %}
