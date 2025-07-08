@@ -83,6 +83,11 @@ def portal(request):
             })
 
         if knob_formset.is_valid() and button_formset.is_valid() and midi_form.is_valid():
+            # Delete all existing knobs, buttons and joystick
+            preset.knob_set.all().delete()
+            preset.button_set.all().delete()
+            preset.joystick_set.all().delete()
+
             # Persist each knob form
             knobs_saved = 0
             for form in knob_formset:
