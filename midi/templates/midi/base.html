@@ -73,6 +73,62 @@
             .main-container { padding: 28px 8px; }
             .brand { font-size: 2rem; }
         }
+        /* Dark mode styles */
+        body.dark-mode {
+            background: linear-gradient(135deg, #181e2a 0%, #23272f 100%) !important;
+            color: #e5e7eb;
+        }
+        body.dark-mode .main-container {
+            background: #23272f;
+            color: #e5e7eb;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.32);
+        }
+        body.dark-mode header,
+        body.dark-mode .navbar,
+        body.dark-mode .navbar-brand,
+        body.dark-mode .navbar-nav .nav-link {
+            background: #181e2a !important;
+            color: #e5e7eb !important;
+            border-color: #23272f !important;
+        }
+        body.dark-mode .navbar-nav .nav-link.active,
+        body.dark-mode .navbar-nav .nav-link:focus,
+        body.dark-mode .navbar-nav .nav-link:hover {
+            color: #3b82f6 !important;
+        }
+        body.dark-mode .card,
+        body.dark-mode .modal-content {
+            background: #23272f;
+            color: #e5e7eb;
+            border-color: #23272f;
+        }
+        body.dark-mode .form-control,
+        body.dark-mode .form-select {
+            background: #23272f;
+            color: #e5e7eb;
+            border-color: #3b3b4f;
+        }
+        body.dark-mode .form-control:focus,
+        body.dark-mode .form-select:focus {
+            background: #23272f;
+            color: #fff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.2rem rgba(59,130,246,.25);
+        }
+        body.dark-mode .btn-primary {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+        body.dark-mode .btn-primary:hover {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+        body.dark-mode .text-muted {
+            color: #94a3b8 !important;
+        }
+        body.dark-mode footer {
+            color: #94a3b8;
+        }
     </style>
 </head>
 <body>
@@ -112,6 +168,14 @@
                         {% endif %}
                     {% endif %}
                 </ul>
+                <button id="theme-toggle" class="btn btn-link nav-link p-0 ms-3" style="font-size:1.5em;" title="Toggle light/dark mode" aria-label="Toggle light/dark mode">
+                    <span id="theme-icon">
+                        <!-- Sun icon (default) -->
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16">
+                          <path d="M8 4.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 8 4.5zm0 5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1a.5.5 0 0 1 .5-.5zm3.5-2.5a.5.5 0 0 1 .5.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm-7 0a.5.5 0 0 1 .5.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm5.657-2.657a.5.5 0 0 1 .707 0l.707.707a.5.5 0 1 1-.707.707l-.707-.707a.5.5 0 0 1 0-.707zm-5.657 5.657a.5.5 0 0 1 .707 0l.707.707a.5.5 0 1 1-.707.707l-.707-.707a.5.5 0 0 1 0-.707zm8.485 0a.5.5 0 0 1 0 .707l-.707.707a.5.5 0 1 1-.707-.707l.707-.707a.5.5 0 0 1 .707 0zm-5.657-5.657a.5.5 0 0 1 0 .707l-.707.707a.5.5 0 1 1-.707-.707l.707-.707a.5.5 0 0 1 .707 0zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/>
+                        </svg>
+                    </span>
+                </button>
             </div>
         </div>
     </nav>
@@ -134,6 +198,34 @@
             });
         }, 5000); // 5 seconds
     });
+    // Theme toggle logic
+    (function() {
+        const body = document.body;
+        const toggleBtn = document.getElementById('theme-toggle');
+        const iconSpan = document.getElementById('theme-icon');
+        const sunIcon = `<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" fill=\"currentColor\" viewBox=\"0 0 16 16\"><path d=\"M8 4.5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1A.5.5 0 0 1 8 4.5zm0 5a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-1 0v-1a.5.5 0 0 1 .5-.5zm3.5-2.5a.5.5 0 0 1 .5.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm-7 0a.5.5 0 0 1 .5.5h1a.5.5 0 0 1 0 1h-1a.5.5 0 0 1-.5-.5zm5.657-2.657a.5.5 0 0 1 .707 0l.707.707a.5.5 0 1 1-.707.707l-.707-.707a.5.5 0 0 1 0-.707zm-5.657 5.657a.5.5 0 0 1 .707 0l.707.707a.5.5 0 1 1-.707.707l-.707-.707a.5.5 0 0 1 0-.707zm8.485 0a.5.5 0 0 1 0 .707l-.707.707a.5.5 0 1 1-.707-.707l.707-.707a.5.5 0 0 1 .707 0zm-5.657-5.657a.5.5 0 0 1 0 .707l-.707.707a.5.5 0 1 1-.707-.707l.707-.707a.5.5 0 0 1 .707 0zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z\"/></svg>`;
+        const moonIcon = `<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1em\" height=\"1em\" fill=\"currentColor\" viewBox=\"0 0 16 16\"><path d=\"M6 0a7 7 0 0 0 0 14c3.866 0 7-3.134 7-7 0-.256-.012-.51-.035-.762A6.978 6.978 0 0 1 8 13a6.978 6.978 0 0 1-6.965-6.238A7.001 7.001 0 0 0 6 0z\"/></svg>`;
+        function setTheme(dark) {
+            if (dark) {
+                body.classList.add('dark-mode');
+                iconSpan.innerHTML = moonIcon;
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                iconSpan.innerHTML = sunIcon;
+                localStorage.setItem('theme', 'light');
+            }
+        }
+        // Initial theme
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const savedTheme = localStorage.getItem('theme');
+        setTheme(savedTheme === 'dark' || (!savedTheme && prefersDark));
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', function() {
+                setTheme(!body.classList.contains('dark-mode'));
+            });
+        }
+    })();
     </script>
 </body>
 </html> 
