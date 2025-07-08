@@ -252,8 +252,8 @@
                                     </tr>
                                 </thead>
                                 <tbody id="button-table-body">
-                                    {% if button_formset.total_form_count > 0 %}
-                                        {% for form in button_formset %}
+                                    {% for form in button_formset.forms %}
+                                        {% if not form.empty_permitted %}
                                             {% if form.non_field_errors %}
                                                 <tr>
                                                     <td colspan="9">
@@ -295,8 +295,8 @@
                                                     <i class="bi bi-grip-vertical"></i>
                                                 </td>
                                             </tr>
-                                        {% endfor %}
-                                    {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
@@ -798,12 +798,13 @@ document.addEventListener('DOMContentLoaded', function() {
     updateButtonSerialNumbers();
     initSortable();
     initButtonSortable();
-    // Set TOTAL_FORMS to the number of visible rows (existing forms)
+    // Set TOTAL_FORMS to the number of visible rows (existing forms) for knobs
     var knobRows = document.querySelectorAll('#knob-table-body tr');
     var knobTotalForms = document.querySelector('input[name="knob_set-TOTAL_FORMS"]');
     if (knobTotalForms) {
         knobTotalForms.value = knobRows.length;
     }
+    // Set TOTAL_FORMS to the number of visible rows (existing forms) for buttons
     var buttonRows = document.querySelectorAll('#button-table-body tr');
     var buttonTotalForms = document.querySelector('input[name="button_set-TOTAL_FORMS"]');
     if (buttonTotalForms) {
