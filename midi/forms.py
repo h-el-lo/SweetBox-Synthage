@@ -209,14 +209,23 @@ class PresetForm(forms.ModelForm):
             'placeholder': '0-24'
         })
     )
+    number_of_buttons = forms.IntegerField(
+        min_value=0,
+        max_value=32,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': '0-32'
+        })
+    )
     
     class Meta:
         model = Preset
-        fields = ['name', 'keys_channel', 'number_of_knobs']
+        fields = ['name', 'keys_channel', 'number_of_knobs', 'number_of_buttons']
         labels = {
             'name': 'Preset Name',
             'keys_channel': 'Keys Channel',
             'number_of_knobs': 'Number of Knobs',
+            'number_of_buttons': 'Number of Buttons',
         }
     
     def clean_name(self):
@@ -240,6 +249,14 @@ class PresetForm(forms.ModelForm):
         if not (0 <= knobs <= 24):
             raise forms.ValidationError('Number of knobs must be between 0 and 24.')
         return knobs
+
+    def clean_number_of_buttons(self):
+        buttons = self.cleaned_data.get('number_of_buttons')
+        if buttons is None:
+            raise forms.ValidationError('Number of buttons is required.')
+        if not (0 <= buttons <= 32):
+            raise forms.ValidationError('Number of buttons must be between 0 and 32.')
+        return buttons
 
 
 class ButtonForm(ModelForm):

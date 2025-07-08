@@ -103,6 +103,8 @@ def portal(request):
             new_name = preset_name_value.strip()
             if new_name and new_name != preset.name:
                 preset.name = new_name
+            # Handle has_joystick toggle
+            preset.has_joystick = 'has_joystick' in request.POST
             preset.save()
             messages.success(request, f'Preset "{preset.name}" saved successfully!')
             return redirect(f"{reverse('portal')}?preset={preset.id}")

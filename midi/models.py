@@ -10,6 +10,7 @@ class Preset(models.Model):
     number_of_buttons = models.PositiveSmallIntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    has_joystick = models.BooleanField(default=False)
 
     objects = models.Manager()
 

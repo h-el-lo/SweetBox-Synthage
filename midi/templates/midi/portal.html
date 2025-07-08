@@ -93,7 +93,7 @@
                         <label class="form-label fw-semibold">Preset Name</label>
                         <input type="text" name="preset_name" class="form-control" 
                                value="{{ preset_name_value|default:preset.name }}" required>
-            </div>
+                    </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Keys Channel</label>
         {{ midi_form.midi_channel }}
@@ -102,6 +102,17 @@
                         <label class="form-label fw-semibold">Number of Knobs</label>
         <input type="text" id="number-of-knobs" class="form-control" value="{{ knob_formset.total_form_count }}" readonly>
     </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Number of Buttons</label>
+                        <input type="text" id="number-of-buttons" class="form-control" value="{{ button_formset.total_form_count }}" readonly>
+                    </div>
+                    <div class="col-md-6 d-flex align-items-center mt-3">
+                        <label class="form-label fw-semibold me-3 mb-0">Enable Joystick</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="has-joystick-toggle" name="has_joystick" value="true" {% if preset.has_joystick %}checked{% endif %}>
+                            <label class="form-check-label" for="has-joystick-toggle">Joystick</label>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,20 +120,20 @@
         <!-- Configuration Tabs -->
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-light border-0">
-                <ul class="nav nav-tabs card-header-tabs">
+                <ul class="nav nav-tabs card-header-tabs justify-content-center">
                     <li class="nav-item">
-                        <a class="nav-link active" id="knobs-tab" data-bs-toggle="tab" href="#knobs-content">
-                            <i class="bi bi-sliders me-2"></i>Knobs
+                        <a class="nav-link active d-flex align-items-center gap-2" id="knobs-tab" data-bs-toggle="tab" href="#knobs-content">
+                            <i class="bi bi-sliders"></i><span>Knobs</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" id="buttons-tab" data-bs-toggle="tab" href="#buttons-content">
-                            <i class="bi bi-circle me-2"></i>Buttons
+                        <a class="nav-link d-flex align-items-center gap-2" id="buttons-tab" data-bs-toggle="tab" href="#buttons-content">
+                            <i class="bi bi-circle"></i><span>Buttons</span>
                         </a>
                     </li>
-<li class="nav-item">
-                        <a class="nav-link" id="joysticks-tab" data-bs-toggle="tab" href="#joysticks" role="tab" aria-controls="joysticks" aria-selected="false">
-                            <i class="bi bi-joystick me-2"></i>Joysticks
+                    <li class="nav-item">
+                        <a class="nav-link d-flex align-items-center gap-2" id="joysticks-tab" data-bs-toggle="tab" href="#joysticks" role="tab" aria-controls="joysticks" aria-selected="false">
+                            <i class="bi bi-joystick"></i><span>Joystick</span>
                         </a>
                     </li>
                 </ul>
@@ -352,9 +363,6 @@
                     <i class="bi bi-download me-2"></i>Download Firmware
                 </a>
             {% endif %}
-            <button type="button" class="btn btn-outline-primary btn-sm ms-auto" onclick="addKnobRow()">
-                <i class="bi bi-plus-circle me-1"></i>Add Knob
-            </button>
         </div>
     </form>
 
@@ -593,7 +601,7 @@ function updateNumberOfKnobs() {
 }
 
 function addKnobRow() {
-    var totalForms = document.querySelector('input[name$="-TOTAL_FORMS"]');
+    var totalForms = document.querySelector('input[name="knob_set-TOTAL_FORMS"]');
     var tableBody = document.getElementById('knob-table-body');
     var newIndex = parseInt(totalForms.value);
     var template = document.getElementById('empty-form-row').outerHTML;
@@ -603,38 +611,21 @@ function addKnobRow() {
     var tempDiv = document.createElement('tbody');
     tempDiv.innerHTML = newRow;
     var row = tempDiv.firstElementChild;
-
     // Update all hidden fields' name/id and clear their value
     var hiddenFields = row.querySelectorAll('input[type="hidden"]');
     hiddenFields.forEach(function(input) {
-        // Update name and id attributes to use the new index
         if (input.name) {
             input.name = input.name.replace('__prefix__', newIndex);
         }
         if (input.id) {
             input.id = input.id.replace('__prefix__', newIndex);
         }
-        // If this is the id field, clear its value for a new object
         if (input.name.endsWith('-id')) {
             input.value = '';
         }
     });
-
     tableBody.appendChild(row);
     totalForms.value = newIndex + 1;
-
-    // Set default values for the new row
-    var channel = row.querySelector('input[name$="-channel"]');
-    var cc = row.querySelector('input[name$="-CC"]');
-    var min = row.querySelector('input[name$="-min"]');
-    var max = row.querySelector('input[name$="-max"]');
-    var pin = row.querySelector('input[name$="-pin"]');
-    if (channel) channel.value = 1;
-    if (cc) cc.value = newIndex;
-    if (min) min.value = 0;
-    if (max) max.value = 127;
-    if (pin) pin.value = newIndex;
-
     updateSerialNumbers();
     updateNumberOfKnobs();
 }
@@ -693,7 +684,7 @@ function updateFormOrder() {
 }
 
 function addButtonRow() {
-    var totalForms = document.querySelector('input[name$="-TOTAL_FORMS"]');
+    var totalForms = document.querySelector('input[name="button_set-TOTAL_FORMS"]');
     var tableBody = document.getElementById('button-table-body');
     var newIndex = parseInt(totalForms.value);
     var template = document.getElementById('empty-button-form-row').outerHTML;
@@ -703,8 +694,6 @@ function addButtonRow() {
     var tempDiv = document.createElement('tbody');
     tempDiv.innerHTML = newRow;
     var row = tempDiv.firstElementChild;
-
-    // Update hidden fields
     var hiddenFields = row.querySelectorAll('input[type="hidden"]');
     hiddenFields.forEach(function(input) {
         if (input.name) {
@@ -717,25 +706,8 @@ function addButtonRow() {
             input.value = '';
         }
     });
-
     tableBody.appendChild(row);
     totalForms.value = newIndex + 1;
-
-    // Set default values
-    var channel = row.querySelector('input[name$="-channel"]');
-    var mode = row.querySelector('select[name$="-mode"]');
-    var noteCC = row.querySelector('input[name$="-noteCC"]');
-    var velocityMin = row.querySelector('input[name$="-velocityMin"]');
-    var max = row.querySelector('input[name$="-max"]');
-    var pin = row.querySelector('input[name$="-pin"]');
-    
-    if (channel) channel.value = 1;
-    if (mode) mode.value = 'note';
-    if (noteCC) noteCC.value = newIndex;
-    if (velocityMin) velocityMin.value = 100;
-    if (max) max.value = 127;
-    if (pin) pin.value = newIndex;
-
     updateButtonSerialNumbers();
 }
 
@@ -807,6 +779,30 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // Joystick toggle logic
+    function updateJoystickTabVisibility() {
+        var toggle = document.getElementById('has-joystick-toggle');
+        var joystickTab = document.getElementById('joysticks-tab').closest('li');
+        var joystickContent = document.getElementById('joysticks');
+        if (toggle && joystickTab && joystickContent) {
+            if (toggle.checked) {
+                joystickTab.style.display = '';
+                // Optionally, activate the tab if it was hidden and is now shown
+            } else {
+                joystickTab.style.display = 'none';
+                // If currently on joystick tab, switch to knobs
+                if (joystickContent.classList.contains('active')) {
+                    document.getElementById('knobs-tab').click();
+                }
+            }
+        }
+    }
+    var joystickToggle = document.getElementById('has-joystick-toggle');
+    if (joystickToggle) {
+        joystickToggle.addEventListener('change', updateJoystickTabVisibility);
+        updateJoystickTabVisibility();
+    }
 });
 </script>
 {% endblock %}
