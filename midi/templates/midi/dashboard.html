@@ -65,11 +65,11 @@
                                     <p class="text-muted small mb-0 d-flex align-items-center flex-wrap" style="gap: 0.25em;">
                                         <span class="d-inline-flex align-items-center">
                                             <span class="bullet-point" style="font-size:1.3em;vertical-align:middle;line-height:1;display:inline-block;transform:translateY(1px);color:#6c757d;">&bull;</span>
-                                            <span>{{ preset.number_of_knobs }} knobs</span>
+                                            <span>{{ preset.number_of_knobs }} knob{{ preset.number_of_knobs|pluralize }}</span>
                                         </span>
                                         <span class="d-inline-flex align-items-center">
                                             <span class="bullet-point" style="font-size:1.3em;vertical-align:middle;line-height:1;display:inline-block;transform:translateY(1px);color:#6c757d;">&bull;</span>
-                                            <span>{{ preset.number_of_buttons }} buttons</span>
+                                            <span>{{ preset.number_of_buttons }} button{{ preset.number_of_buttons|pluralize }}</span>
                                         </span>
                                         <span class="d-inline-flex align-items-center w-100 mt-1">
                                             <span class="bullet-point" style="font-size:1.3em;vertical-align:middle;line-height:1;display:inline-block;transform:translateY(1px);color:#6c757d;">&bull;</span>

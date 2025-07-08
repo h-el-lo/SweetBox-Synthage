@@ -64,8 +64,8 @@ def portal(request):
     button_queryset = Button.objects.filter(preset=preset)
 
     if request.method == 'POST':
-        knob_formset = KnobFormSet(request.POST, queryset=knob_queryset)
-        button_formset = ButtonFormSet(request.POST, queryset=button_queryset)
+        knob_formset = KnobFormSet(request.POST, instance=preset)
+        button_formset = ButtonFormSet(request.POST, instance=preset)
         midi_form = KeypressChannelForm(request.POST)
         preset_name_value = request.POST.get('preset_name', preset.name if preset else '')
         joystick_instance = getattr(preset, 'joystick', None)
@@ -83,11 +83,6 @@ def portal(request):
             })
 
         if knob_formset.is_valid() and button_formset.is_valid() and midi_form.is_valid():
-            # Delete all existing knobs, buttons and joystick
-            preset.knob_set.all().delete()
-            preset.button_set.all().delete()
-            preset.joystick_set.all().delete()
-
             # Persist each knob form
             knobs_saved = 0
             for form in knob_formset:
@@ -147,8 +142,10 @@ def portal(request):
             }
             return render(request, 'midi/portal.html', context)
     else:
-        knob_formset = KnobFormSet(queryset=knob_queryset, initial=[{'channel': 1, 'CC': 0, 'min': 0, 'max': 127, 'pin': 0}])
-        button_formset = ButtonFormSet(queryset=button_queryset, initial=[{'channel': 1, 'mode': 'note', 'noteCC': 0, 'velocityMin': 100, 'max': 127, 'pin': 0}])
+        default_knob_initial = {'channel': 1, 'CC': 0, 'min': 0, 'max': 127, 'pin': 0}
+        default_button_initial = {'channel': 1, 'mode': 'note', 'noteCC': 0, 'velocityMin': 100, 'max': 127, 'pin': 0}
+        knob_formset = KnobFormSet(instance=preset, initial=[default_knob_initial])
+        button_formset = ButtonFormSet(instance=preset, initial=[default_button_initial])
         midi_form = KeypressChannelForm(initial={'midi_channel': preset.keys_channel if preset else 1})
         preset_name_value = preset.name if preset else ''
         joystick_instance = getattr(preset, 'joystick', None)
