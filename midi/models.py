@@ -27,12 +27,14 @@ class Knob(models.Model):
     max = models.IntegerField(default=127)
     pin = models.IntegerField(default=0)
     # knob_index =
-    # pin = 
 
     objects = models.Manager()
 
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
+
+    def __str__(self):
+        return f"Preset ({self.preset}): knob {self.pin}"
 
 
 # Class for buttons
@@ -53,7 +55,7 @@ class Button(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return f"{self.mode.title()} Button on Pin {self.pin}"
+        return f"Preset ({self.preset}): Button {self.pin}"
 
 
 class Joystick(models.Model):

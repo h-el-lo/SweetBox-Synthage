@@ -466,6 +466,7 @@ class JoystickForm(ModelForm):
         label='Y CC Number', 
         min_value=0, 
         max_value=127,
+        required=False,
         widget=forms.NumberInput(attrs={
             'class': 'form-control',
             'placeholder': '0-127'
@@ -498,20 +499,21 @@ class JoystickForm(ModelForm):
         x_mode = self.cleaned_data.get('x_mode')
         x_cc = self.cleaned_data.get('x_cc')
         
-        if x_mode == 'cc' and x_cc is None:
-            raise forms.ValidationError('CC number is required when X axis is in CC mode.')
-        
-        if x_cc is not None and not (0 <= x_cc <= 127):
-            raise forms.ValidationError('CC number must be between 0 and 127.')
-        
+        if x_mode == 'cc':
+            if x_cc is None:
+                raise forms.ValidationError('X axis CC number is required when X axis mode is Control Change.')
+            if not (0 <= x_cc <= 127):
+                raise forms.ValidationError('CC number must be between 0 and 127.')
         return x_cc
 
     def clean_y_cc(self):
         y_cc = self.cleaned_data.get('y_cc')
-        if y_cc is None:
-            raise forms.ValidationError('Y axis CC number is required.')
-        if not (0 <= y_cc <= 127):
-            raise forms.ValidationError('CC number must be between 0 and 127.')
+        x_mode = self.cleaned_data.get('x_mode')
+        if x_mode == 'cc':
+            if y_cc is None:
+                raise forms.ValidationError('Y axis CC number is required when X axis mode is Control Change.')
+            if not (0 <= y_cc <= 127):
+                raise forms.ValidationError('CC number must be between 0 and 127.')
         return y_cc
 
     def clean_x_pin(self):

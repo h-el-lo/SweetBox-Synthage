@@ -128,7 +128,7 @@
                     </li>
                     <li class="nav-item">
                         <a class="nav-link d-flex align-items-center gap-2" id="buttons-tab" data-bs-toggle="tab" href="#buttons-content">
-                            <i class="bi bi-circle"></i><span>Buttons</span>
+                            <i class="bi bi-circle-fill" style="color: #6c757d;"></i><span>Buttons</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -319,16 +319,16 @@
                                                 {{ joystick_form.x_channel }}
                                             </div>
                                             <div class="mb-3">
+                                                <label for="x_pin" class="form-label">Pin Number</label>
+                                                {{ joystick_form.x_pin }}
+                                            </div>
+                                            <div class="mb-3">
                                                 <label for="x_mode" class="form-label">Mode</label>
                                                 {{ joystick_form.x_mode }}
                                             </div>
-                                            <div class="mb-3">
+                                            <div class="mb-3" id="x-cc-field">
                                                 <label for="x_cc" class="form-label">CC Number</label>
                                                 {{ joystick_form.x_cc }}
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="x_pin" class="form-label">Pin Number</label>
-                                                {{ joystick_form.x_pin }}
                                             </div>
                                         </div>
                                         
@@ -340,12 +340,12 @@
                                                 {{ joystick_form.y_channel }}
                                             </div>
                                             <div class="mb-3">
-                                                <label for="y_cc" class="form-label">CC Number</label>
-                                                {{ joystick_form.y_cc }}
-                                            </div>
-                                            <div class="mb-3">
                                                 <label for="y_pin" class="form-label">Pin Number</label>
                                                 {{ joystick_form.y_pin }}
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="y_cc" class="form-label">CC Number</label>
+                                                {{ joystick_form.y_cc }}
                                             </div>
                                         </div>
                                     </div>
@@ -831,6 +831,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (joystickToggle) {
         joystickToggle.addEventListener('change', updateJoystickTabVisibility);
         updateJoystickTabVisibility();
+    }
+
+    function toggleXCCField() {
+        var mode = document.getElementById('id_x_mode');
+        var ccField = document.getElementById('x-cc-field');
+        if (mode && ccField) {
+            if (mode.value === 'cc') {
+                ccField.style.display = '';
+            } else {
+                ccField.style.display = 'none';
+            }
+        }
+    }
+    var mode = document.getElementById('id_x_mode');
+    if (mode) {
+        mode.addEventListener('change', toggleXCCField);
+        toggleXCCField();
     }
 });
 </script>
