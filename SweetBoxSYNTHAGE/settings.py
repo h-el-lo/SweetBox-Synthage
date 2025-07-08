@@ -78,7 +78,7 @@ DATABASES = {
     'default': {
         # 'ENGINE': 'django.db.backends.sqlite3',
 'ENGINE': 'django.db.backends.postgresql',
-        'NAME': '',
+        'NAME': 'railway',
 'USER': 'postgres',
 'HOST': 'postgres.railway.internal',
 'PASSWORD': 'BnllprYwzvCINiKoTQhGNsVfqlFRapAs',
