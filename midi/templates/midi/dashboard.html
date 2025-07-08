@@ -63,7 +63,16 @@
                                         {{ preset.name }}
                                     </h5>
                                     <p class="text-muted small mb-0">
-                                        {{ preset.number_of_knobs }} knobs • Channel {{ preset.keys_channel }}
+                                        {{ preset.number_of_knobs }} knobs
+                                        <span class="mx-1" style="font-size:1.1em;vertical-align:middle;">&bull;</span>
+                                        {{ preset.number_of_buttons }} buttons
+                                        <br/>
+                                        <span>
+                                            <span>Channel {{ preset.keys_channel }}</span>
+                                            {% if preset.has_joystick %}
+                                                <i class="bi bi-joystick" title="Joystick enabled" style="color:#3b82f6; margin-left: 8px;"></i>
+                                            {% endif %}
+                                        </span>
                                     </p>
                                 </div>
                                 <div class="dropdown">
@@ -127,6 +136,18 @@
                         <label class="form-label">Number of Knobs</label>
                         <input type="number" name="number_of_knobs" class="form-control" min="1" max="16" value="4" required>
                         <div class="form-text">Choose between 1 and 16 knobs for your controller.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Number of Buttons</label>
+                        <input type="number" name="number_of_buttons" class="form-control" min="0" max="32" value="0" required>
+                        <div class="form-text">Choose between 0 and 32 buttons for your controller.</div>
+                    </div>
+                    <div class="mb-3 d-flex align-items-center">
+                        <label class="form-label me-3 mb-0">Enable Joystick</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="has-joystick-toggle-modal" name="has_joystick" value="true">
+                            <label class="form-check-label" for="has-joystick-toggle-modal">Joystick</label>
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Keys Channel</label>
