@@ -2,7 +2,174 @@
 {% load static %}
 
 {% block content %}
-{% if not request.user.is_authenticated %}
+{% if request.user.is_authenticated %}
+<div class="github-dashboard-bg">
+  <div class="container-fluid px-0">
+    <div class="row g-0">
+      <!-- Sidebar -->
+      <nav class="col-md-3 col-lg-2 d-none d-md-block github-sidebar px-0">
+        <div class="sidebar-sticky pt-4 px-3">
+          <div class="d-flex align-items-center mb-4">
+            <div class="rounded-circle bg-dark d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+              <i class="bi bi-person-circle" style="font-size: 2rem; color: #3b82f6;"></i>
+            </div>
+            <span class="ms-3 fw-semibold" style="color:#c9d1d9;">{{ user.username }}</span>
+          </div>
+          <div class="mb-3">
+            <input type="text" class="form-control form-control-sm github-search" placeholder="Find a preset...">
+          </div>
+          <div class="mb-3">
+            <span class="text-muted small">Top presets</span>
+            <ul class="list-unstyled mt-2">
+              {% for preset in presets|slice:":5" %}
+              <li class="mb-2 d-flex align-items-center">
+                <i class="bi bi-sliders me-2" style="color:#8b949e;"></i>
+                <span style="color:#c9d1d9;">{{ preset.name }}</span>
+              </li>
+              {% empty %}
+              <li class="text-muted small">No presets yet</li>
+              {% endfor %}
+            </ul>
+            <a href="{% url 'dashboard' %}" class="btn btn-success btn-sm w-100 mt-2" style="background:#238636; border:none;">New</a>
+          </div>
+        </div>
+      </nav>
+      <!-- Main Content -->
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-5 py-4">
+        <h1 class="fw-bold mb-4" style="color:#c9d1d9;">Home</h1>
+        <div class="mb-4">
+          <input type="text" class="form-control github-search" placeholder="Ask SweetBox AI or search...">
+        </div>
+        <div class="d-flex flex-wrap gap-3 mb-4">
+          <button class="btn btn-outline-light github-pill">Get started with SweetBox</button>
+          <button class="btn btn-outline-light github-pill">Learn to code</button>
+          <button class="btn btn-outline-light github-pill">Create a MIDI app</button>
+        </div>
+        <div class="row g-4 mb-4">
+          <div class="col-lg-7">
+            <div class="github-card p-4 mb-4">
+              <div class="d-flex align-items-center mb-2">
+                <span class="badge bg-secondary me-2">Playlist</span>
+                <span class="text-muted small">SweetBox for beginners on YouTube</span>
+              </div>
+              <div class="d-flex align-items-center">
+                <img src="{% static 'midi/images/keyboard.jpg' %}" alt="SweetBox Video" class="rounded shadow me-3" style="width:120px; height:80px; object-fit:cover;">
+                <div>
+                  <h5 class="fw-bold mb-1" style="color:#c9d1d9;">What is SweetBox?</h5>
+                  <p class="text-muted mb-2 small">Designed to help you master the basics of SweetBox, whether you're new to MIDI or looking to enhance your controller skills.</p>
+                  <a href="#" class="btn btn-outline-light btn-sm github-pill"><i class="bi bi-play-circle me-1"></i>Start playlist</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <div class="github-card p-4 mb-4">
+              <h6 class="fw-bold mb-3" style="color:#c9d1d9;">Getting started</h6>
+              <ul class="list-unstyled mb-0">
+                <li class="mb-3">
+                  <span class="github-check github-check-green me-2"><i class="bi bi-check-circle-fill"></i></span>
+                  <span class="fw-semibold" style="color:#c9d1d9;">Create your first preset</span>
+                </li>
+                <li class="mb-3">
+                  <span class="github-check github-check-gray me-2"><i class="bi bi-circle"></i></span>
+                  <span class="fw-semibold" style="color:#8b949e;">Edit your profile</span>
+                </li>
+                <li>
+                  <span class="github-check github-check-gray me-2"><i class="bi bi-circle"></i></span>
+                  <span class="fw-semibold" style="color:#8b949e;">Connect a device</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</div>
+    <style>
+/* GitHub dark dashboard styles (as before) */
+.github-dashboard-bg {
+  background: #22272e;
+  min-height: 100vh;
+}
+.github-sidebar {
+  background: #161b22;
+            min-height: 100vh;
+  border-right: 1px solid #30363d;
+}
+.github-card {
+  background: #23272e;
+  border-radius: 12px;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  box-shadow: 0 2px 8px rgba(20,23,28,0.08);
+}
+.github-search {
+  background: #161b22;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+}
+.github-search:focus {
+  background: #23272e;
+  border-color: #3b82f6;
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(59,130,246,0.10);
+}
+.github-pill {
+  border-radius: 999px;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+  background: #23272e;
+  font-weight: 500;
+  padding: 0.5rem 1.5rem;
+  transition: background 0.2s, color 0.2s;
+}
+.github-pill:hover, .github-pill:focus {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+}
+.github-check-green {
+  color: #238636;
+}
+.github-check-gray {
+  color: #8b949e;
+}
+body.dark-mode .github-dashboard-bg {
+  background: #0d1117;
+}
+body.dark-mode .github-sidebar {
+  background: #161b22;
+  border-right: 1px solid #30363d;
+}
+body.dark-mode .github-card {
+  background: #161b22;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+}
+body.dark-mode .github-search {
+  background: #0d1117;
+  border: 1px solid #30363d;
+  color: #c9d1d9;
+}
+body.dark-mode .github-search:focus {
+  background: #23272e;
+  border-color: #3b82f6;
+  color: #fff;
+  box-shadow: 0 0 0 0.2rem rgba(59,130,246,0.10);
+}
+body.dark-mode .github-pill {
+  background: #161b22;
+  color: #c9d1d9;
+  border: 1px solid #30363d;
+}
+body.dark-mode .github-pill:hover, body.dark-mode .github-pill:focus {
+  background: #3b82f6;
+  color: #fff;
+  border-color: #3b82f6;
+        }
+    </style>
+{% else %}
 <div class="container py-5">
     <!-- Hero Section -->
     <div class="row align-items-center mb-5">
@@ -74,17 +241,12 @@
             <div class="p-4 rounded shadow-sm bg-light">
                 <h4 class="fw-bold mb-3">Ready to get started?</h4>
                 <p class="text-muted mb-4">Join the SweetBox Synthage community and unlock the full potential of your MIDI controller.</p>
-                {% if not request.user.is_authenticated %}
-                    <a href="{% url 'signup' %}" class="btn btn-primary btn-lg me-2 mb-2"><i class="bi bi-person-plus me-2"></i>Sign Up</a>
-                    <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg mb-2"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a>
-            {% else %}
-                    <a href="{% url 'dashboard' %}" class="btn btn-primary btn-lg mb-2"><i class="bi bi-grid me-2"></i>Go to Dashboard</a>
-                {% endif %}
+                <a href="{% url 'signup' %}" class="btn btn-primary btn-lg me-2 mb-2"><i class="bi bi-person-plus me-2"></i>Sign Up</a>
+                <a href="{% url 'login' %}" class="btn btn-outline-primary btn-lg mb-2"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a>
             </div>
         </div>
     </div>
 </div>
-
 <style>
 .logo-icon {
     width: 60px;
