@@ -23,6 +23,7 @@ class Preset(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     has_joystick = models.BooleanField(default=False)
+    is_private = models.BooleanField(default=False, help_text='Mark this preset as private')
 
     objects = models.Manager() 
 
