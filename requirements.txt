@@ -3,7 +3,3 @@ Django==4.2.18
 gunicorn==23.0.0
 psycopg==3.2.9
 psycopg-binary==3.2.9
-Pygments==2.18.0
-pypiwin32==223
-pyserial==3.5
-
