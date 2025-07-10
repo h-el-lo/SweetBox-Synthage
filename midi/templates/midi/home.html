@@ -45,6 +45,39 @@
           <button class="btn btn-outline-light github-pill">Learn to code</button>
           <button class="btn btn-outline-light github-pill">Create a MIDI app</button>
         </div>
+        {% if presets is not None %}
+          <div class="mb-4">
+            <h2 class="fw-bold mb-3" style="color:#c9d1d9;">Search Results{% if search_query %} for "{{ search_query }}"{% endif %}</h2>
+            <div class="row g-3">
+              {% if presets and presets|length > 0 %}
+                {% for preset in presets %}
+                  <div class="col-md-6 col-lg-4">
+                    <div class="github-card p-3 mb-3">
+                      <div class="d-flex align-items-center mb-2">
+                        <i class="bi bi-sliders me-2" style="color:#3b82f6; font-size:1.5rem;"></i>
+                        <span class="fw-semibold" style="color:#c9d1d9; font-size:1.1rem;">{{ preset.name }}</span>
+                      </div>
+                      <div class="text-muted small mb-1">Owner: {{ preset.owner.username }}</div>
+                      <div class="text-muted small mb-1">@{{ preset.owner.username }}</div>
+                      <div class="d-flex gap-2 flex-wrap">
+                        <span class="badge bg-secondary">{{ preset.number_of_knobs }} knobs</span>
+                        <span class="badge bg-secondary">{{ preset.number_of_buttons }} buttons</span>
+                        <span class="badge bg-secondary">Channel {{ preset.keys_channel }}</span>
+                        {% if preset.has_joystick %}<span class="badge bg-info">Joystick</span>{% endif %}
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% else %}
+                <div class="col-12">
+                  <div class="github-card p-4 text-center">
+                    <span class="text-muted">No presets found matching your search.</span>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
         <div class="row g-4 mb-4">
           <div class="col-lg-7">
             <div class="github-card p-4 mb-4">

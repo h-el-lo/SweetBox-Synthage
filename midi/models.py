@@ -4,7 +4,7 @@ from django.utils.timezone import now
 
 class Profile(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE)
-    keys_channel = models.PositiveSmallIntegerField(default=1)
+    keys_channel = models.PositiveSmallIntegerField()
     number_of_knobs = models.PositiveSmallIntegerField(default=4)
     number_of_buttons = models.PositiveSmallIntegerField(default=0)
     has_joystick = models.BooleanField(default=False)
@@ -17,13 +17,13 @@ class Profile(models.Model):
 class Preset(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=200)
-    keys_channel = models.PositiveSmallIntegerField(default=1)
-    number_of_knobs = models.PositiveSmallIntegerField(default=4)
-    number_of_buttons = models.PositiveSmallIntegerField(default=0)
+    keys_channel = models.PositiveSmallIntegerField()
+    number_of_knobs = models.PositiveSmallIntegerField()
+    number_of_buttons = models.PositiveSmallIntegerField()
+    has_joystick = models.BooleanField()
+    is_private = models.BooleanField(default=False, help_text='Mark this preset as private')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    has_joystick = models.BooleanField(default=False)
-    is_private = models.BooleanField(default=False, help_text='Mark this preset as private')
 
     objects = models.Manager() 
 
@@ -34,7 +34,7 @@ class Preset(models.Model):
 # Class for knobs and sliders
 class Knob(models.Model):
     preset = models.ForeignKey(Preset, on_delete=models.CASCADE, null=True)
-    channel = models.PositiveSmallIntegerField(null=True, default=1)
+    channel = models.PositiveSmallIntegerField(default=1)
     CC = models.PositiveSmallIntegerField(default=24)
     min = models.IntegerField(default=0)
     max = models.IntegerField(default=127)
@@ -57,7 +57,7 @@ class Button(models.Model):
     ]
 
     preset = models.ForeignKey(Preset, on_delete=models.CASCADE, null=True)
-    channel = models.PositiveSmallIntegerField(null=True, default=1)
+    channel = models.PositiveSmallIntegerField(default=1)
     mode = models.CharField(max_length=4, choices=MODE_CHOICES, default='note')
     noteCC = models.PositiveSmallIntegerField(default=0, help_text='Note number or CC number depending on mode')
     velocityMin = models.IntegerField(default=100, help_text='Velocity for notes or minimum CC value')

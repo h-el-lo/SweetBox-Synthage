@@ -38,11 +38,21 @@ def create_default_preset(user):
 
 def home(request):
     user = request.user
+    search_query = request.GET.get('search', '').strip()
+    presets = None
+    if search_query:
+        from django.db.models import Q
+        presets = Preset.objects.filter(
+            Q(name__icontains=search_query) |
+            Q(owner__username__icontains=search_query)
+        ).select_related('owner')
     if user.is_authenticated:
         create_default_preset(user)
     context = {
         'hide_home_link': True,
-    }   
+        'presets': presets,
+        'search_query': search_query,
+    }
     return render(request, 'midi/home.html', context)
 
 

@@ -268,19 +268,71 @@
         }
 
         /* Responsive Adjustments */
-        @media (max-width: 576px) {
-            .navbar-brand {
-                font-size: 1.25rem;
+        @media (max-width: 1200px) {
+            .container {
+                max-width: 98vw;
+                padding-left: 1rem;
+                padding-right: 1rem;
             }
-
-            .logo-icon {
-                width: 32px;
-                height: 32px;
+        }
+        @media (max-width: 991.98px) {
+            .navbar .searchbar-wrapper {
+                margin-right: 0.5rem;
+                min-width: 120px;
             }
-
-            .nav-link {
+            .navbar-brand span {
                 font-size: 1rem;
-                padding: 0.875rem 1.25rem !important;
+            }
+            .navbar .form-control[type="search"] {
+                font-size: 1rem;
+                height: 36px;
+            }
+            .profile-sidebar {
+                width: 90vw !important;
+                min-width: 0 !important;
+                border-radius: 0 !important;
+            }
+        }
+        @media (max-width: 768px) {
+            .navbar .searchbar-wrapper {
+                margin-right: 0.2rem;
+            }
+            .navbar {
+                padding: 0.5rem 0;
+            }
+            .main-content {
+                margin-top: 56px;
+                padding: 0.5rem 0.2rem;
+            }
+            .site-footer {
+                font-size: 0.95rem;
+                padding: 1rem 0.2rem;
+            }
+        }
+        @media (max-width: 600px) {
+            .navbar-brand span {
+                font-size: 0.95rem;
+            }
+            .logo-icon {
+                width: 28px;
+                height: 28px;
+            }
+            .main-content {
+                margin-top: 48px;
+                padding: 0.2rem 0.1rem;
+            }
+            .site-footer {
+                font-size: 0.9rem;
+                padding: 0.7rem 0.1rem;
+            }
+        }
+        @media (max-width: 400px) {
+            .navbar-brand span {
+                display: none;
+            }
+            .logo-icon {
+                width: 22px;
+                height: 22px;
             }
         }
 
@@ -380,8 +432,8 @@
             </a>
             <!-- Right icons (mobile only) -->
             <div class="d-flex align-items-center d-lg-none ms-auto" style="gap:0.5rem;">
-                <button class="navbar-toggler p-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+                <button class="btn btn-link nav-link p-2" id="mobileSearchToggle" title="Search" style="font-size: 1.7rem;">
+                    <i class="bi bi-search"></i>
                 </button>
                 <button class="btn btn-link nav-link p-2" id="mobileProfileSidebarToggle" title="Profile menu" style="font-size: 1.7rem;">
                     <i class="bi bi-person-circle"></i>
@@ -390,7 +442,7 @@
             <!-- Navlinks and Searchbar -->
             <div class="collapse navbar-collapse" id="navbarNav" style="background: #24292f;">
                 <div class="searchbar-wrapper" style="flex:1; max-width:400px; min-width:200px;">
-                    <form class="w-100 position-relative" method="get" action="{% url 'dashboard' %}" style="margin-bottom:0;">
+                    <form class="w-100 position-relative" method="get" action="{% url 'home' %}" style="margin-bottom:0;">
                         <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#b6beca; font-size:1.2rem; pointer-events:none;">
                             <i class="bi bi-search"></i>
                         </span>
@@ -423,7 +475,7 @@
     <!-- Sidebar overlay -->
     {% if request.user.is_authenticated %}
     <div id="profileSidebar" class="profile-sidebar styled-profile-sidebar">
-      <div class="sidebar-header d-flex flex-row align-items-center justify-content-between px-3 pt-3 pb-2">
+      <div class="sidebar-header d-flex flex-row align-items-center justify-content-between px-3 pt-3 pb-2 position-relative">
         <div class="d-flex align-items-center">
           <div class="profile-avatar me-3">
             <span class="avatar-circle">{{ user.username|first|upper }}</span>
@@ -432,16 +484,20 @@
             <span class="fw-bold d-block" style="color:#e5e7eb;">{{ user.username }}</span>
           </div>
         </div>
-        <button class="btn btn-link p-0 close-btn" id="closeSidebarBtn" title="Close sidebar" style="font-size:1.5rem; color:#8b949e;">
+        <button class="btn btn-link p-0 close-btn position-absolute" id="closeSidebarBtn" title="Close sidebar" style="font-size:0.8rem; color:#8b949e; top:2px; right:8px; z-index:10;">
           <i class="bi bi-x-lg"></i>
+        </button>
+        <button class="btn btn-link p-0 close-btn position-absolute" id="theme-toggle-sidebar" title="Toggle light/dark mode" style="font-size:0.8rem; color:#8b949e; top:2px; right:40px; z-index:10;">
+          <i class="bi bi-sun-fill" id="theme-icon-sidebar"></i>
         </button>
       </div>
       <div class="sidebar-menu px-2">
         <ul class="list-unstyled mb-2">
-          <li class="sidebar-item"><i class="bi bi-person me-2"></i>Profile</li>
-          <li class="sidebar-item"><i class="bi bi-sliders me-2"></i>Your Presets</li>
-          <li class="sidebar-item"><i class="bi bi-upload me-2"></i>Upload</li>
-          <li class="sidebar-item"><i class="bi bi-gear me-2"></i>Settings</li>
+          <li class="sidebar-item"><a href="{% url 'home' %}"><i class="bi bi-house me-2"></i>Home</a></li>
+          <li class="sidebar-item"><a href="{% url 'dashboard' %}"><i class="bi bi-sliders me-2"></i>Your Presets</a></li>
+          <li class="sidebar-item"><a href="{% url 'upload' %}"><i class="bi bi-upload me-2"></i>Upload</a></li>
+          <li class="sidebar-item"><a href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>Profile</a></li>
+          <li class="sidebar-item"><a href="{% url 'change_password' %}"><i class="bi bi-gear me-2"></i>Settings</a></li>
         </ul>
         <hr class="sidebar-divider">
         <ul class="list-unstyled mb-2">
@@ -450,7 +506,7 @@
         </ul>
         <hr class="sidebar-divider">
         <ul class="list-unstyled mb-0">
-          <li class="sidebar-item"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</li>
+          <li class="sidebar-item"><a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
       </ul>
       </div>
     </div>
@@ -461,7 +517,7 @@
       position: fixed;
       top: 0;
       right: -320px;
-      width: 320px;
+      width: 240px;
       height: 100vh;
       background: #23272e;
       color: #fff;
@@ -518,7 +574,7 @@
     .styled-profile-sidebar {
       background: #161b22 !important;
       color: #e5e7eb;
-      width: 320px;
+      width: 240px !important;
       max-width: 90vw;
       border-radius: 16px 0 0 16px;
       box-shadow: -2px 0 24px rgba(0,0,0,0.35);
@@ -558,6 +614,18 @@
       background: #21262d;
       color: #fff;
     }
+    .styled-profile-sidebar .sidebar-item a {
+      color: inherit;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+    .styled-profile-sidebar .sidebar-item a:hover {
+      color: inherit;
+      text-decoration: none;
+    }
     .styled-profile-sidebar .sidebar-divider {
       border: none;
       border-top: 1px solid #23272e;
@@ -591,6 +659,12 @@
     #profileSidebarToggle:active, #profileSidebarToggle:focus {
       background: none !important;
       box-shadow: none !important;
+    }
+    .profile-sidebar {
+      right: -320px !important;
+    }
+    .profile-sidebar.open {
+      right: 0 !important;
     }
     </style>
     <script>
@@ -688,20 +762,24 @@
             });
         });
 
-        // Theme Toggle
+        // Theme Toggle (main navbar)
         (function() {
             const body = document.body;
             const toggleBtn = document.getElementById('theme-toggle');
             const icon = document.getElementById('theme-icon');
-            
+            const sidebarToggleBtn = document.getElementById('theme-toggle-sidebar');
+            const sidebarIcon = document.getElementById('theme-icon-sidebar');
+
             function setTheme(dark) {
                 if (dark) {
                     body.classList.add('dark-mode');
                     icon.className = 'bi bi-moon-fill';
+                    if (sidebarIcon) sidebarIcon.className = 'bi bi-moon-fill';
                     localStorage.setItem('theme', 'dark');
                 } else {
                     body.classList.remove('dark-mode');
                     icon.className = 'bi bi-sun-fill';
+                    if (sidebarIcon) sidebarIcon.className = 'bi bi-sun-fill';
                     localStorage.setItem('theme', 'light');
                 }
             }
@@ -711,10 +789,18 @@
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             setTheme(savedTheme === 'dark' || (!savedTheme && prefersDark));
 
-            // Theme toggle handler
-            toggleBtn.addEventListener('click', function() {
-                setTheme(!body.classList.contains('dark-mode'));
-            });
+            // Theme toggle handler (main navbar)
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    setTheme(!body.classList.contains('dark-mode'));
+                });
+            }
+            // Theme toggle handler (sidebar)
+            if (sidebarToggleBtn) {
+                sidebarToggleBtn.addEventListener('click', function() {
+                    setTheme(!body.classList.contains('dark-mode'));
+                });
+            }
         })();
 
         // Smooth scroll for anchor links
