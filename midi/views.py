@@ -9,6 +9,9 @@ from .forms import UserForm, KnobFormSet, ButtonFormSet, JoystickForm, JoystickF
 from .models import Preset, Knob, Button
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
+from .models import Profile
 from django.views.decorators.csrf import csrf_exempt
 import os
 from django.conf import settings
@@ -416,10 +419,10 @@ def signUp(request):
     page = 'signup'
     if request.method == 'POST':
         form = UserForm(request.POST)
-        if form.is_valid:
-            form.save()
+        if form.is_valid():
+            user = form.save()
             # Create a default preset for new user
-            create_default_preset(request.user)
+            create_default_preset(user)
             return redirect('login')
 
 
@@ -501,3 +504,37 @@ def upload(request):
         'hide_upload_link':True,
     }
     return render(request, 'midi/upload.html', context)
+
+@login_required(login_url='login')
+def profile(request):
+    user = request.user
+    # Get or create the user's profile
+    profile, created = Profile.objects.get_or_create(owner=user)
+    if request.method == 'POST':
+        # Update default preset settings
+        profile.keys_channel = int(request.POST.get('keys_channel', 1))
+        profile.number_of_knobs = int(request.POST.get('number_of_knobs', 4))
+        profile.number_of_buttons = int(request.POST.get('number_of_buttons', 0))
+        profile.has_joystick = 'has_joystick' in request.POST
+        profile.save()
+        messages.success(request, 'Profile updated successfully!')
+    context = {
+        'user': user,
+        'profile': profile,
+    }
+    return render(request, 'midi/profile.html', context)
+
+@login_required(login_url='login')
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect('profile')
+        else:
+            messages.error(request, 'Please correct the error below.')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'midi/change_password.html', {'form': form})

@@ -76,7 +76,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
-    {% endif %}
+{% endif %}
 
     <!-- Empty State -->
     {% if preset_count < 1 %}
@@ -201,7 +201,6 @@
                         <label class="form-label me-3 mb-0">Enable Joystick</label>
                         <div class="form-check form-switch">
                             <input class="form-check-input" type="checkbox" id="has-joystick-toggle-modal" name="has_joystick" value="true">
-                            <label class="form-check-label" for="has-joystick-toggle-modal">Joystick</label>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -231,7 +230,7 @@
 }
 
 .card {
-    border-radius: 12px;
+    border-radius: 12px; 
     overflow: hidden;
 }
 

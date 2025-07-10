@@ -45,12 +45,37 @@
                 <!-- Microcontroller Selection -->
                 <div class="mb-4">
                     <label class="form-label fw-semibold">Microcontroller</label>
-                    <select name="microcontroller" class="form-select" required>
+                    <select name="microcontroller" id="microcontroller-select" class="form-select" required>
                         <option value="1">ATmega32U4</option>
                         <option value="2">RP2040</option>
                         <option value="3">ESP32</option>
                     </select>
                     <div class="form-text">Select your target microcontroller.</div>
+                </div>
+
+                <!-- select esp32 options -->
+                <div class="mb-4" id="esp32-options" style="display: none;">
+                    <label class="form-label fw-semibold">ESP32</label>
+                    <select name="esp32" class="form-select">
+                        <option value="1">ESP32-WROOM-32D DevKit</option>
+                        <option value="2">ESP32-WROOM-32U DevKit</option>
+                        <option value="3">ESP32-S2</option>
+                        <option value="4">ESP32-S3-OTG</option>
+                        <option value="5">ESP8266</option>
+                    </select>
+                    <div class="form-text">Select your target ESP32.</div>
+                </div>
+
+                <!-- midi transfer mode options -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Midi Transfer Mode</label>
+                    <select name="midi_transfer_mode" class="form-select" required>
+                        <option value="1">USB MIDI (OTG)</option>
+                        <option value="2">BLE MIDI (Bluetooth Low Energy)</option>
+                        <option value="3">RTP MIDI</option>
+                        <option value="4">USB + BLE</option>
+                        <option value="5">USB + BLE + RTP</option>
+                    </select>
                 </div>
 
                 <!-- File Upload -->
@@ -77,7 +102,7 @@
     </div>
 
     <!-- Instructions -->
-    <div class="card border-0 shadow-sm mt-4">
+    <div class="card border-0 shadow-sm mt-4 mb-5">
         <div class="card-header bg-light border-0">
             <h5 class="mb-0">
                 <i class="bi bi-info-circle me-2"></i>Upload Instructions
@@ -128,4 +153,43 @@
     }
 }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, looking for elements...');
+    
+    const microcontrollerSelect = document.getElementById('microcontroller-select');
+    const esp32Options = document.getElementById('esp32-options');
+    
+    console.log('Microcontroller select found:', !!microcontrollerSelect);
+    console.log('ESP32 options found:', !!esp32Options);
+    
+    if (!microcontrollerSelect || !esp32Options) {
+        console.error('Required elements not found!');
+        return;
+    }
+    
+    function toggleEsp32Options() {
+        console.log('Toggle called, microcontroller value:', microcontrollerSelect.value);
+        if (microcontrollerSelect.value === '3') {
+            esp32Options.style.display = 'block';
+            esp32Options.querySelector('select').setAttribute('required', 'required');
+            console.log('ESP32 options shown');
+        } else {
+            esp32Options.style.display = 'none';
+            esp32Options.querySelector('select').removeAttribute('required');
+            console.log('ESP32 options hidden');
+        }
+    }
+    
+    microcontrollerSelect.addEventListener('change', toggleEsp32Options);
+    console.log('Event listener added');
+    
+    // Initial state
+    toggleEsp32Options();
+    console.log('Initial state set');
+});
+</script>
 {% endblock %}

@@ -316,99 +316,46 @@
 </head>
 <body>
     <!-- Modern Navbar -->
-    <nav class="navbar navbar-expand-lg">
-        <div class="container">
-            <!-- Brand -->
-            <a class="navbar-brand" href="{% url 'home' %}">
-                <svg class="logo-icon" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="8" y="8" width="48" height="48" rx="12" fill="#3b82f6"/>
-                    <rect x="16" y="16" width="32" height="32" rx="8" fill="#fff"/>
-                    <circle cx="32" cy="32" r="10" fill="#3b82f6"/>
-                </svg>
-                <span>SweetBox Synthage</span>
-            </a>
-
-            <!-- Mobile Toggle -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <div class="hamburger" id="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </button>
-
-            <!-- Navigation Menu -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    {% if not hide_home_link %}
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">
-                            <i class="bi bi-house"></i>
-                            <span>Home</span>
-                        </a>
-                    </li>
-                    {% endif %}
-                    
-                    {% if not page == 'login' or page == 'signup' %}
-                        {% if not hide_dashboard_link %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
-                                <i class="bi bi-grid"></i>
-                                <span>Dashboard</span>
-                            </a>
-                        </li>
-                        {% endif %}
-                        
-                        {% if not hide_portal_link %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'portal' %}active{% endif %}" href="{% url 'portal' %}">
-                                <i class="bi bi-gear"></i>
-                                <span>Portal</span>
-                            </a>
-                        </li>
-                        {% endif %}
-                        
-                        {% if not hide_upload_link %}
-                        <li class="nav-item">
-                            <a class="nav-link {% if request.resolver_match.url_name == 'upload' %}active{% endif %}" href="{% url 'upload' %}">
-                                <i class="bi bi-upload"></i>
-                                <span>Upload</span>
-                            </a>
-                        </li>
-                        {% endif %}
-                        
-                        {% if not hide_login_link %}
-                            {% if request.user.is_authenticated %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'logout' %}">
-                                    <i class="bi bi-box-arrow-right"></i>
-                                    <span>Logout</span>
-                                </a>
-                            </li>
-                            {% else %}
-                            <li class="nav-item">
-                                <a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">
-                                    <i class="bi bi-box-arrow-in-right"></i>
-                                    <span>Login</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link {% if request.resolver_match.url_name == 'signup' %}active{% endif %}" href="{% url 'signup' %}">
-                                    <i class="bi bi-person-plus"></i>
-                                    <span>Sign Up</span>
-                                </a>
-                            </li>
-                            {% endif %}
-                        {% endif %}
-                    {% endif %}
-                </ul>
-
-                <!-- Theme Toggle -->
-                <button class="theme-toggle ms-3" id="theme-toggle" title="Toggle light/dark mode">
-                    <i class="bi bi-sun-fill" id="theme-icon"></i>
-                </button>
-            </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2" style="background: #24292f !important;">
+      <div class="container">
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+          <svg width="32" height="32" fill="none" viewBox="0 0 64 64">
+            <rect x="8" y="8" width="48" height="48" rx="12" fill="#3b82f6"/>
+            <rect x="16" y="16" width="32" height="32" rx="8" fill="#fff"/>
+            <circle cx="32" cy="32" r="10" fill="#3b82f6"/>
+          </svg>
+          <span class="ms-2 fw-bold" style="font-size: 1.3rem;">SweetBox Synthage</span>
+        </a>
+        <!-- Hamburger -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- Navlinks -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-3">
+            <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}" href="{% url 'home' %}">Home</a></li>
+            <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'portal' %}active{% endif %}" href="{% url 'portal' %}">Portal</a></li>
+            <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'upload' %}active{% endif %}" href="{% url 'upload' %}">Upload</a></li>
+            {% if request.user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}" href="{% url 'profile' %}"><i class="bi bi-person-circle"></i> Profile</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+            {% else %}
+            <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Login</a></li>
+            <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'signup' %}active{% endif %}" href="{% url 'signup' %}">Sign Up</a></li>
+            {% endif %}
+          </ul>
+          <!-- Right side: Theme toggle or other icons -->
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <button class="btn btn-link nav-link" id="theme-toggle" title="Toggle light/dark mode">
+                <i class="bi bi-sun-fill" id="theme-icon"></i>
+              </button>
+            </li>
+          </ul>
         </div>
+      </div>
     </nav>
 
     <!-- Main Content -->
