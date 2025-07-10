@@ -43,8 +43,13 @@ def home(request):
     if search_query:
         from django.db.models import Q
         presets = Preset.objects.filter(
-            Q(name__icontains=search_query) |
-            Q(owner__username__icontains=search_query)
+            (
+                Q(name__icontains=search_query) |
+                Q(owner__username__icontains=search_query)
+            ) & (
+                Q(is_private=False) |
+                Q(owner=user)
+            )
         ).select_related('owner')
     if user.is_authenticated:
         create_default_preset(user)

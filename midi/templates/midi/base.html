@@ -423,12 +423,12 @@
         <div class="container d-flex align-items-center justify-content-between">
             <!-- Logo (left) -->
             <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <svg width="32" height="32" fill="none" viewBox="0 0 64 64">
+          <svg width="32" height="32" fill="none" viewBox="0 0 64 64">
                     <rect x="8" y="8" width="48" height="48" rx="12" fill="#3b82f6"/>
                     <rect x="16" y="16" width="32" height="32" rx="8" fill="#fff"/>
                     <circle cx="32" cy="32" r="10" fill="#3b82f6"/>
                 </svg>
-                <span class="ms-2 fw-bold" style="font-size: 1.3rem;">SweetBox Synthage</span>
+          <span class="ms-2 fw-bold" style="font-size: 1.3rem;">SweetBox Synthage</span>
             </a>
             <!-- Right icons (mobile only) -->
             <div class="d-flex align-items-center d-lg-none ms-auto" style="gap:0.5rem;">
@@ -436,7 +436,7 @@
                     <i class="bi bi-search"></i>
                 </button>
                 <button class="btn btn-link nav-link p-2" id="mobileProfileSidebarToggle" title="Profile menu" style="font-size: 1.7rem;">
-                    <i class="bi bi-person-circle"></i>
+                    <i class="bi bi-list"></i>
                 </button>
             </div>
             <!-- Navlinks and Searchbar -->
@@ -448,24 +448,24 @@
                         </span>
                         <input type="text" name="search" class="form-control" style="background:#23272e; color:#b6beca; border:1.5px solid #444; border-radius:8px; padding-left:2.2rem; height:40px;" placeholder="Type / to search" value="{{ request.GET.search|default:'' }}" autocomplete="off">
                     </form>
-                </div>
+        </div>
                 <!-- Nav items -->
                 <ul class="navbar-nav ms-auto align-items-center" style="margin-left: 1rem;">
-                    {% if not request.user.is_authenticated %}
-                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Sign In</a></li>
-                    <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'signup' %}active{% endif %}" href="{% url 'signup' %}">Sign Up</a></li>
+            {% if not request.user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Sign In</a></li>
+            <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'signup' %}active{% endif %}" href="{% url 'signup' %}">Sign Up</a></li>
                     {% endif %}
-                    <li class="nav-item">
-                        <button class="btn btn-link nav-link" id="theme-toggle" title="Toggle light/dark mode">
-                            <i class="bi bi-sun-fill" id="theme-icon"></i>
-                        </button>
-                    </li>
-                    {% if request.user.is_authenticated %}
-                    <li class="nav-item">
-                        <button class="btn btn-link nav-link p-0 ms-2" id="profileSidebarToggle" title="Profile menu" style="font-size: 1.7rem;">
-                            <i class="bi bi-person-circle"></i>
-                        </button>
-                    </li>
+            <li class="nav-item">
+              <button class="btn btn-link nav-link" id="theme-toggle" title="Toggle light/dark mode">
+                <i class="bi bi-sun-fill" id="theme-icon"></i>
+              </button>
+            </li>
+                            {% if request.user.is_authenticated %}
+            <li class="nav-item">
+              <button class="btn btn-link nav-link p-0 ms-2" id="profileSidebarToggle" title="Profile menu" style="font-size: 2.2rem;">
+                <i class="bi bi-list"></i>
+              </button>
+            </li>
                     {% endif %}
                 </ul>
             </div>
@@ -484,10 +484,10 @@
             <span class="fw-bold d-block" style="color:#e5e7eb;">{{ user.username }}</span>
           </div>
         </div>
-        <button class="btn btn-link p-0 close-btn position-absolute" id="closeSidebarBtn" title="Close sidebar" style="font-size:0.8rem; color:#8b949e; top:2px; right:8px; z-index:10;">
+        <button class="btn btn-link p-0 close-btn position-absolute" id="closeSidebarBtn" title="Close sidebar" style="font-size:0.8rem; color:#8b949e; top:18px; right:8px; z-index:10;">
           <i class="bi bi-x-lg"></i>
         </button>
-        <button class="btn btn-link p-0 close-btn position-absolute" id="theme-toggle-sidebar" title="Toggle light/dark mode" style="font-size:0.8rem; color:#8b949e; top:2px; right:40px; z-index:10;">
+        <button class="btn btn-link p-0 close-btn position-absolute" id="theme-toggle-sidebar" title="Toggle light/dark mode" style="font-size:0.8rem; color:#8b949e; top:18px; right:40px; z-index:10;">
           <i class="bi bi-sun-fill" id="theme-icon-sidebar"></i>
         </button>
       </div>
@@ -576,7 +576,7 @@
       color: #e5e7eb;
       width: 240px !important;
       max-width: 90vw;
-      border-radius: 16px 0 0 16px;
+      border-radius: 10px 0 0 6px;
       box-shadow: -2px 0 24px rgba(0,0,0,0.35);
       padding-bottom: 1rem;
       border-left: 1px solid #23272e;
@@ -637,6 +637,7 @@
       color: #8b949e;
       opacity: 0.7;
       transition: opacity 0.2s;
+      top: 18px !important;
     }
     .styled-profile-sidebar .close-btn:hover {
       opacity: 1;
@@ -769,7 +770,7 @@
             const icon = document.getElementById('theme-icon');
             const sidebarToggleBtn = document.getElementById('theme-toggle-sidebar');
             const sidebarIcon = document.getElementById('theme-icon-sidebar');
-
+            
             function setTheme(dark) {
                 if (dark) {
                     body.classList.add('dark-mode');
@@ -791,9 +792,9 @@
 
             // Theme toggle handler (main navbar)
             if (toggleBtn) {
-                toggleBtn.addEventListener('click', function() {
-                    setTheme(!body.classList.contains('dark-mode'));
-                });
+            toggleBtn.addEventListener('click', function() {
+                setTheme(!body.classList.contains('dark-mode'));
+            });
             }
             // Theme toggle handler (sidebar)
             if (sidebarToggleBtn) {
