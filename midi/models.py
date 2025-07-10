@@ -24,7 +24,7 @@ class Preset(models.Model):
     updated = models.DateTimeField(auto_now=True)
     has_joystick = models.BooleanField(default=False)
 
-    objects = models.Manager()
+    objects = models.Manager() 
 
     def __str__(self):
         return self.name
