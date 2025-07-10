@@ -15,7 +15,9 @@ class UserForm(ModelForm):
             'password', 
         ]
         widgets = {
-            'password': forms.PasswordInput(),
+            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Enter email'}),
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter username'}),
+            'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Enter password'}),
         }
 
     def save(self, commit=True):
