@@ -14,4 +14,5 @@ urlpatterns = [
     path('logout/', views.logout_view, name="logout"),
     path('profile/', views.profile, name="profile"),
     path('change_password/', views.change_password, name="change_password"),
+    path('toggle_is_private/', views.toggle_is_private, name='toggle_is_private'),
 ]

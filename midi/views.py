@@ -4,7 +4,7 @@
 
 # Core Django utilities
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, FileResponse, JsonResponse
 from .forms import UserForm, KnobFormSet, ButtonFormSet, JoystickForm, JoystickFormSet
 from .models import Preset, Knob, Button
 from django.contrib.auth.decorators import login_required
@@ -19,6 +19,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from .forms import KeypressChannelForm
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 # Create your views here.
 
 def create_default_preset(user):
@@ -554,3 +555,15 @@ def change_password(request):
     else:
         form = PasswordChangeForm(request.user)
     return render(request, 'midi/change_password.html', {'form': form})
+
+@require_POST
+@login_required(login_url='login')
+def toggle_is_private(request):
+    preset_id = request.POST.get('preset_id')
+    try:
+        preset = Preset.objects.get(id=preset_id, owner=request.user)
+        preset.is_private = not preset.is_private
+        preset.save()
+        return JsonResponse({'success': True, 'is_private': preset.is_private})
+    except Preset.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Preset not found or not owned by user.'}, status=404)

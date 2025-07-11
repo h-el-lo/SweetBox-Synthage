@@ -319,5 +319,82 @@
         padding: 1.5rem !important;
     }
 }
+
+/* Dark theme for Create Preset Modal */
+#createPresetModal .modal-content {
+    background: #23272e;
+    color: #c9d1d9;
+    border-radius: 16px;
+    border: 1px solid #30363d;
+}
+#createPresetModal .modal-header {
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    color: #c9d1d9;
+}
+#createPresetModal .modal-title,
+#createPresetModal label.form-label,
+#createPresetModal .form-label {
+    color: #c9d1d9 !important;
+}
+#createPresetModal .modal-body {
+    background: #23272e;
+    color: #c9d1d9;
+}
+#createPresetModal .modal-footer {
+    background: #161b22;
+    border-top: 1px solid #30363d;
+}
+#createPresetModal .form-control,
+#createPresetModal .form-select {
+    background: #161b22;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+}
+#createPresetModal .form-control:focus,
+#createPresetModal .form-select:focus {
+    background: #23272e;
+    color: #c9d1d9;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.2rem rgba(59,130,246,0.15);
+}
+#createPresetModal .form-text {
+    color: #8b949e;
+}
+#createPresetModal .btn-close {
+    filter: invert(1) grayscale(1);
+    opacity: 0.7;
+}
+#createPresetModal .btn-close:focus {
+    box-shadow: none;
+}
+#createPresetModal .btn-primary {
+    background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+    border: none;
+    color: #fff;
+}
+#createPresetModal .btn-primary:hover {
+    background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%);
+}
+#createPresetModal .btn-secondary {
+    background: #30363d;
+    color: #c9d1d9;
+    border: none;
+}
+#createPresetModal .btn-secondary:hover {
+    background: #23272e;
+    color: #fff;
+}
+#has-joystick-toggle-modal.form-check-input {
+    background-color: #23272e;
+    border-color: #30363d;
+}
+#has-joystick-toggle-modal.form-check-input:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+#has-joystick-toggle-modal.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(59,130,246,0.15);
+}
 </style>
 {% endblock %}

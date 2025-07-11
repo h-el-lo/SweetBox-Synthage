@@ -88,28 +88,41 @@
                 </h3>
             </div>
             <div class="card-body p-4">
-                <div class="row g-3">
+                <div class="row g-3 align-items-center">
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Preset Name</label>
-                        <input type="text" name="preset_name" class="form-control" 
-                               value="{{ preset_name_value|default:preset.name }}" required>
-            </div>
-                    <div class="col-md-6">
+                        <input type="text" name="preset_name" class="form-control" value="{{ preset_name_value|default:preset.name }}" required>
+                    </div>
+                    <div class="col-md-6 position-relative">
                         <label class="form-label fw-semibold">Keys Channel</label>
-        {{ midi_form.midi_channel }}
-    </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div style="flex:1;">
+                                {{ midi_form.midi_channel }}
+                            </div>
+                            <div id="is-private-icon-wrap" class="d-flex align-items-end ms-2" style="cursor:pointer; min-width:60px; justify-content: flex-end;">
+                                <span style="font-size: 1.1rem; color: #3b82f6; line-height: 1;">
+                                    <i id="is-private-icon" class="bi {% if preset.is_private %}bi-lock-fill{% else %}bi-unlock{% endif %}" style="font-size: 1.1rem;"></i>
+                                </span>
+                                <span id="is-private-label" style="font-size: 0.7rem; color: #8b949e; margin-left: 6px; margin-bottom: 1px; letter-spacing: 0.5px; text-transform: lowercase; align-self: flex-end;">
+                                    {% if preset.is_private %}private{% else %}public{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Number of Knobs</label>
-        <input type="text" id="number-of-knobs" class="form-control" value="{{ num_knobs_db }}" readonly>
-    </div>
+                        <input type="text" id="number-of-knobs" class="form-control" value="{{ num_knobs_db }}" readonly>
+                    </div>
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">Number of Buttons</label>
                         <input type="text" id="number-of-buttons" class="form-control" value="{{ num_buttons_db }}" readonly>
                     </div>
-                    <div class="col-md-6 d-flex align-items-center mt-3">
-                        <label class="form-label fw-semibold me-3 mb-0">Enable Joystick</label>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="has-joystick-toggle" name="has_joystick" value="true" {% if preset.has_joystick %}checked{% endif %}>
+                    <div class="col-md-6 d-flex align-items-center mt-3 gap-4 position-relative">
+                        <div class="d-flex align-items-center">
+                            <label class="form-label fw-semibold me-3 mb-0">Enable Joystick</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="has-joystick-toggle" name="has_joystick" value="true" {% if preset.has_joystick %}checked{% endif %}>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -616,6 +629,83 @@ input[type="checkbox"][name$="-DELETE"] {
 select[name$="-mode"] {
     min-width: 120px;
 }
+
+/* Dark theme for Create Preset Modal */
+#createPresetModal .modal-content {
+    background: #23272e;
+    color: #c9d1d9;
+    border-radius: 16px;
+    border: 1px solid #30363d;
+}
+#createPresetModal .modal-header {
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    color: #c9d1d9;
+}
+#createPresetModal .modal-title,
+#createPresetModal label.form-label,
+#createPresetModal .form-label {
+    color: #c9d1d9 !important;
+}
+#createPresetModal .modal-body {
+    background: #23272e;
+    color: #c9d1d9;
+}
+#createPresetModal .modal-footer {
+    background: #161b22;
+    border-top: 1px solid #30363d;
+}
+#createPresetModal .form-control,
+#createPresetModal .form-select {
+    background: #161b22;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+}
+#createPresetModal .form-control:focus,
+#createPresetModal .form-select:focus {
+    background: #23272e;
+    color: #c9d1d9;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 0.2rem rgba(59,130,246,0.15);
+}
+#createPresetModal .form-text {
+    color: #8b949e;
+}
+#createPresetModal .btn-close {
+    filter: invert(1) grayscale(1);
+    opacity: 0.7;
+}
+#createPresetModal .btn-close:focus {
+    box-shadow: none;
+}
+#createPresetModal .btn-primary {
+    background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%);
+    border: none;
+    color: #fff;
+}
+#createPresetModal .btn-primary:hover {
+    background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%);
+}
+#createPresetModal .btn-secondary {
+    background: #30363d;
+    color: #c9d1d9;
+    border: none;
+}
+#createPresetModal .btn-secondary:hover {
+    background: #23272e;
+    color: #fff;
+}
+#has-joystick-toggle-modal.form-check-input {
+    background-color: #23272e;
+    border-color: #30363d;
+}
+#has-joystick-toggle-modal.form-check-input:checked {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+#has-joystick-toggle-modal.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(59,130,246,0.15);
+}
 </style>
 
 <script>
@@ -883,6 +973,49 @@ document.addEventListener('DOMContentLoaded', function() {
         mode.addEventListener('change', toggleXCCField);
         toggleXCCField();
     }
+
+    var iconWrap = document.getElementById('is-private-icon-wrap');
+    var icon = document.getElementById('is-private-icon');
+    var label = document.getElementById('is-private-label');
+    if (iconWrap && icon && label) {
+        iconWrap.addEventListener('click', function() {
+            iconWrap.style.pointerEvents = 'none';
+            fetch('{% url "toggle_is_private" %}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'preset_id={{ preset.id }}'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.is_private) {
+                        icon.classList.remove('bi-unlock');
+                        icon.classList.add('bi-lock-fill');
+                        label.textContent = 'private';
+                    } else {
+                        icon.classList.remove('bi-lock-fill');
+                        icon.classList.add('bi-unlock');
+                        label.textContent = 'public';
+                    }
+                } else {
+                    alert('Failed to toggle privacy: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(() => alert('AJAX error'))
+            .finally(() => { iconWrap.style.pointerEvents = 'auto'; });
+        });
+    }
 });
+</script>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+// Remove AJAX for lock icon, so no JS needed for toggling is_private
 </script>
 {% endblock %}
