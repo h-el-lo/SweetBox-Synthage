@@ -32,7 +32,7 @@
 
         /* Modern Navbar Styles */
         .navbar {
-            background: rgba(255, 255, 255, 0.95) !important;
+            background: #f6f8fa !important;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: none;
@@ -132,10 +132,10 @@
         .hamburger span {
             display: block;
             position: absolute;
-            height: 3px;
+            height: 5px;
             width: 100%;
             background: var(--primary-color);
-            border-radius: 3px;
+            border-radius: 8px;
             transition: var(--transition);
         }
 
@@ -242,7 +242,7 @@
         }
 
         body.dark-mode .navbar {
-            background: rgba(30, 41, 59, 0.95) !important;
+            background: #23272e !important;
             border-bottom-color: rgba(51, 65, 85, 0.8);
         }
 
@@ -251,7 +251,7 @@
         }
 
         body.dark-mode .navbar-collapse {
-            background: rgba(30, 41, 59, 0.98);
+            /* background: rgba(30, 41, 59, 0.98); */
             border-top-color: var(--border-color);
         }
 
@@ -265,6 +265,10 @@
 
         body.dark-mode .theme-toggle:hover {
             background: rgba(59, 130, 246, 0.2);
+        }
+
+        body.dark-mode footer {
+            color: #c9d1d9 !important;
         }
 
         /* Responsive Adjustments */
@@ -415,20 +419,140 @@
                 margin-right: 0.5rem;
             }
         }
+        /* --- GitHub-like Light Theme --- */
+        body:not(.dark-mode) {
+            background: #f6f8fa;
+            color: #24292f;
+        }
+        body:not(.dark-mode) .navbar {
+            background: #f6f8fa !important;
+            border-bottom: 1px solid #d0d7de;
+            box-shadow: 0 1px 0 #d8dee4;
+        }
+        body:not(.dark-mode) .navbar-brand span {
+            color: var(--primary-color) !important;
+        }
+        body:not(.dark-mode) .hamburger span {
+            background: #24292f !important;
+        }
+        body:not(.dark-mode) .nav-link {
+            color: #24292f !important;
+        }
+        body:not(.dark-mode) .nav-link.active,
+        body:not(.dark-mode) .nav-link:hover {
+            background: #f6f8fa !important;
+            color: #0969da !important;
+            box-shadow: none;
+        }
+        body:not(.dark-mode) .main-content {
+            background: #f6f8fa;
+        }
+        body:not(.dark-mode) .github-card,
+        body:not(.dark-mode) .list-group-item.bg-dark,
+        body:not(.dark-mode) .card,
+        body:not(.dark-mode) .github-dashboard-bg {
+            background: #ffffff !important;
+            border: 1px solid #d0d7de !important;
+            color: #24292f !important;
+            box-shadow: 0 1.5px 4px rgba(27,31,35,0.04);
+        }
+        body:not(.dark-mode) .list-group-item {
+            background: #fff !important;
+            border: 1px solid #d0d7de !important;
+            color: #24292f !important;
+        }
+        body:not(.dark-mode) .badge.bg-secondary {
+            background: #eaeef2 !important;
+            color: #57606a !important;
+        }
+        body:not(.dark-mode) .badge.bg-info {
+            background: #ddf4ff !important;
+            color: #0969da !important;
+        }
+        body:not(.dark-mode) .fw-bold,
+        body:not(.dark-mode) .fw-semibold {
+            color: #24292f !important;
+        }
+        body:not(.dark-mode) .text-muted,
+        body:not(.dark-mode) .small {
+            color: #57606a !important;
+        }
+        body:not(.dark-mode) .btn-outline-light {
+            background: #f6f8fa !important;
+            color: #24292f !important;
+            border: 1px solid #d0d7de !important;
+        }
+        body:not(.dark-mode) .btn-outline-light.active,
+        body:not(.dark-mode) .btn-outline-light:active {
+            background: #0969da !important;
+            color: #fff !important;
+            border-color: #0969da !important;
+        }
+        body:not(.dark-mode) .form-control,
+        body:not(.dark-mode) .github-search {
+            background: #f6f8fa !important;
+            color: #24292f !important;
+            border: 1px solid #d0d7de !important;
+        }
+        body:not(.dark-mode) .form-control:focus,
+        body:not(.dark-mode) .github-search:focus {
+            border-color: #0969da !important;
+            box-shadow: 0 0 0 0.2rem rgba(9,105,218,0.08) !important;
+        }
+        body:not(.dark-mode) .site-footer {
+            background: #f6f8fa !important;
+            color: #57606a !important;
+            border-top: 1px solid #d0d7de;
+        }
+        body:not(.dark-mode) .profile-sidebar,
+        body:not(.dark-mode) .styled-profile-sidebar {
+            background: #fff !important;
+            color: #24292f !important;
+            border-left: 1px solid #d0d7de !important;
+        }
+        body:not(.dark-mode) .sidebar-item,
+        body:not(.dark-mode) .sidebar-link {
+            color: #24292f !important;
+        }
+        body:not(.dark-mode) .sidebar-item:hover,
+        body:not(.dark-mode) .sidebar-link:hover {
+            background: #eaeef2 !important;
+            color: #0969da !important;
+        }
+        body:not(.dark-mode) .avatar-circle {
+            background: #0969da !important;
+            color: #fff !important;
+        }
+        body:not(.dark-mode) .github-pill {
+            background: #f6f8fa !important;
+            color: #24292f !important;
+            border: 1px solid #d0d7de !important;
+        }
+        body:not(.dark-mode) .github-pill:hover,
+        body:not(.dark-mode) .github-pill:focus {
+            background: #0969da !important;
+            color: #fff !important;
+            border-color: #0969da !important;
+        }
+        body:not(.dark-mode) .alert-success {
+            background: #dafbe1 !important;
+            color: #1a7f37 !important;
+            border: 1px solid #d0d7de !important;
+        }
     </style>
 </head>
 <body>
     <!-- Modern Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2" style="background: #24292f !important;">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2">
         <div class="container d-flex align-items-center justify-content-between">
             <!-- Logo (left) -->
             <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-          <svg width="32" height="32" fill="none" viewBox="0 0 64 64">
+                <svg width="32" height="32" fill="none" viewBox="0 0 64 64">
                     <rect x="8" y="8" width="48" height="48" rx="12" fill="#3b82f6"/>
                     <rect x="16" y="16" width="32" height="32" rx="8" fill="#fff"/>
                     <circle cx="32" cy="32" r="10" fill="#3b82f6"/>
                 </svg>
-          <span class="ms-2 fw-bold" style="font-size: 1.3rem;">SweetBox Synthage</span>
+                <span class="ms-2 fw-bold" style="font-size: 1.3rem;">SweetBox Synthage</span>
             </a>
             <!-- Right icons (mobile only) -->
             <div class="d-flex align-items-center d-lg-none ms-auto" style="gap:0.5rem;">
@@ -440,7 +564,7 @@
                 </button>
             </div>
             <!-- Navlinks and Searchbar -->
-            <div class="collapse navbar-collapse" id="navbarNav" style="background: #24292f;">
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="searchbar-wrapper" style="flex:1; max-width:400px; min-width:200px;">
                     <form class="w-100 position-relative" method="get" action="{% url 'home' %}" style="margin-bottom:0;">
                         <span style="position:absolute; left:14px; top:50%; transform:translateY(-50%); color:#b6beca; font-size:1.2rem; pointer-events:none;">
@@ -455,13 +579,8 @@
             <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Sign In</a></li>
             <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'signup' %}active{% endif %}" href="{% url 'signup' %}">Sign Up</a></li>
                     {% endif %}
-            <li class="nav-item">
-              <button class="btn btn-link nav-link" id="theme-toggle" title="Toggle light/dark mode">
-                <i class="bi bi-sun-fill" id="theme-icon"></i>
-              </button>
-            </li>
+            <!-- Theme toggle removed from navbar -->
                             {% if request.user.is_authenticated %}
-            <li class="nav-item">
               <button class="btn btn-link nav-link p-0 ms-2" id="profileSidebarToggle" title="Profile menu" style="font-size: 2.2rem;">
                 <i class="bi bi-list"></i>
               </button>
@@ -495,6 +614,7 @@
         <ul class="list-unstyled mb-2">
           <li class="sidebar-item"><a href="{% url 'home' %}"><i class="bi bi-house me-2"></i>Home</a></li>
           <li class="sidebar-item"><a href="{% url 'dashboard' %}"><i class="bi bi-sliders me-2"></i>Your Presets</a></li>
+          <li class="sidebar-item"><a href="{% url 'portal' %}"><i class="bi bi-globe me-2"></i>Portal</a></li>
           <li class="sidebar-item"><a href="{% url 'upload' %}"><i class="bi bi-upload me-2"></i>Upload</a></li>
           <li class="sidebar-item"><a href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>Profile</a></li>
           <li class="sidebar-item"><a href="{% url 'change_password' %}"><i class="bi bi-gear me-2"></i>Settings</a></li>
@@ -763,39 +883,26 @@
             });
         });
 
-        // Theme Toggle (main navbar)
+        // Theme Toggle (sidebar only)
         (function() {
             const body = document.body;
-            const toggleBtn = document.getElementById('theme-toggle');
-            const icon = document.getElementById('theme-icon');
             const sidebarToggleBtn = document.getElementById('theme-toggle-sidebar');
             const sidebarIcon = document.getElementById('theme-icon-sidebar');
-            
             function setTheme(dark) {
                 if (dark) {
                     body.classList.add('dark-mode');
-                    icon.className = 'bi bi-moon-fill';
                     if (sidebarIcon) sidebarIcon.className = 'bi bi-moon-fill';
                     localStorage.setItem('theme', 'dark');
                 } else {
                     body.classList.remove('dark-mode');
-                    icon.className = 'bi bi-sun-fill';
                     if (sidebarIcon) sidebarIcon.className = 'bi bi-sun-fill';
                     localStorage.setItem('theme', 'light');
                 }
             }
-
             // Initialize theme
             const savedTheme = localStorage.getItem('theme');
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             setTheme(savedTheme === 'dark' || (!savedTheme && prefersDark));
-
-            // Theme toggle handler (main navbar)
-            if (toggleBtn) {
-            toggleBtn.addEventListener('click', function() {
-                setTheme(!body.classList.contains('dark-mode'));
-            });
-            }
             // Theme toggle handler (sidebar)
             if (sidebarToggleBtn) {
                 sidebarToggleBtn.addEventListener('click', function() {

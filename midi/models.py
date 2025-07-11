@@ -4,7 +4,7 @@ from django.utils.timezone import now
 
 class Profile(models.Model):
     owner = models.OneToOneField(User, on_delete=models.CASCADE)
-    keys_channel = models.PositiveSmallIntegerField()
+    keys_channel = models.PositiveSmallIntegerField(default=1)
     number_of_knobs = models.PositiveSmallIntegerField(default=4)
     number_of_buttons = models.PositiveSmallIntegerField(default=0)
     has_joystick = models.BooleanField(default=False)
