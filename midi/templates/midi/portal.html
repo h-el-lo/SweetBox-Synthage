@@ -99,14 +99,6 @@
                             <div style="flex:1;">
                                 {{ midi_form.midi_channel }}
                             </div>
-                            <div id="is-private-icon-wrap" class="d-flex align-items-end ms-2" style="cursor:pointer; min-width:60px; justify-content: flex-end;">
-                                <span style="font-size: 1.1rem; color: #3b82f6; line-height: 1;">
-                                    <i id="is-private-icon" class="bi {% if preset.is_private %}bi-lock-fill{% else %}bi-unlock{% endif %}" style="font-size: 1.1rem;"></i>
-                                </span>
-                                <span id="is-private-label" style="font-size: 0.7rem; color: #8b949e; margin-left: 6px; margin-bottom: 1px; letter-spacing: 0.5px; text-transform: lowercase; align-self: flex-end;">
-                                    {% if preset.is_private %}private{% else %}public{% endif %}
-                                </span>
-                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -117,12 +109,20 @@
                         <label class="form-label fw-semibold">Number of Buttons</label>
                         <input type="text" id="number-of-buttons" class="form-control" value="{{ num_buttons_db }}" readonly>
                     </div>
-                    <div class="col-md-6 d-flex align-items-center mt-3 gap-4 position-relative">
+                    <div class="col-12 d-flex align-items-center mt-3 justify-content-between" style="min-height: 32px;">
                         <div class="d-flex align-items-center">
                             <label class="form-label fw-semibold me-3 mb-0">Enable Joystick</label>
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="has-joystick-toggle" name="has_joystick" value="true" {% if preset.has_joystick %}checked{% endif %}>
                             </div>
+                        </div>
+                        <div id="is-private-icon-wrap" class="d-flex align-items-end" style="cursor:pointer; min-width:60px; justify-content: flex-end;">
+                            <span style="font-size: 1.1rem; color: #3b82f6; line-height: 1;">
+                                <i id="is-private-icon" class="bi {% if preset.is_private %}bi-lock-fill{% else %}bi-unlock{% endif %}" style="font-size: 1.1rem;"></i>
+                            </span>
+                            <span id="is-private-label" style="font-size: 0.7rem; color: #8b949e; margin-left: 6px; margin-bottom: 1px; letter-spacing: 0.5px; text-transform: lowercase; align-self: flex-end;">
+                                {% if preset.is_private %}private{% else %}public{% endif %}
+                            </span>
                         </div>
                     </div>
                 </div>
