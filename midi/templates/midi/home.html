@@ -40,8 +40,23 @@
           <button class="btn btn-outline-light github-pill">Create a MIDI app</button>
         </div>
         {% if presets is not None %}
-        <div class="row">
-          <div class="col-lg-9">
+        <div class="d-flex" style="gap:2rem;">
+          <!-- Left Sticky Filter Sidebar -->
+          <aside class="search-filter-sidebar d-none d-md-block" style="width:240px; min-width:200px;">
+            <div class="github-card p-3 mb-3 sticky-top" style="background:#161b22; border:1px solid #30363d; top:90px; z-index:2;">
+              <div class="fw-bold mb-3" style="color:#c9d1d9; font-size:1.1rem;">Filter by</div>
+              <ul class="list-unstyled mb-0">
+                <li class="mb-2">
+                  <button class="btn btn-outline-light w-100 active" id="filter-presets">Presets</button>
+                </li>
+                <li>
+                  <button class="btn btn-outline-light w-100" id="filter-users">Users</button>
+                </li>
+              </ul>
+            </div>
+          </aside>
+          <!-- Main Results -->
+          <main class="flex-grow-1">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h2 class="fw-bold mb-0" style="color:#c9d1d9; font-size:1.3rem;">Search Results{% if search_query %} for "{{ search_query }}"{% endif %}</h2>
               <div class="d-flex align-items-center gap-2">
@@ -56,13 +71,13 @@
             <div class="list-group list-group-flush">
               {% if presets and presets|length > 0 %}
                 {% for preset in presets %}
-                  <div class="list-group-item bg-dark border-secondary mb-3 rounded-3 px-4 py-3" style="border:1px solid #30363d;">
+                  <div class="list-group-item search-result-card mb-3 px-4 py-3" style="background:#161b22; border:1px solid #30363d; border-radius:12px;">
                     <div class="d-flex align-items-center mb-1">
                       <i class="bi bi-sliders me-2" style="color:#3b82f6; font-size:1.5rem;"></i>
-                      <span class="fw-semibold" style="color:#c9d1d9; font-size:1.1rem;">{{ preset.name }}</span>
+                      <span class="fw-semibold" style="color:#58a6ff; font-size:1.1rem;">{{ preset.name }}</span>
                     </div>
                     <div class="mb-2">
-                      <span class="fw-bold" style="color:#58a6ff; font-size:0.98rem;">@{{ preset.owner.username }}</span>
+                      <span class="fw-bold" style="color:#c9d1d9; font-size:0.98rem;">@{{ preset.owner.username }}</span>
                     </div>
                     <div class="d-flex gap-2 flex-wrap mb-2">
                       <span class="badge bg-secondary">{{ preset.number_of_knobs }} knobs</span>
@@ -78,24 +93,13 @@
                 </div>
               {% endif %}
             </div>
-          </div>
-          <div class="col-lg-3">
-            <div class="card bg-dark border-secondary mb-3">
-              <div class="card-body p-3">
-                <div class="d-flex flex-column gap-2">
-                  <button class="btn btn-outline-light w-100 active" id="filter-presets">Presets</button>
-                  <button class="btn btn-outline-light w-100" id="filter-users">Users</button>
-                </div>
-              </div>
-            </div>
+            <!-- User results placeholder (hidden for now) -->
             <div id="user-results" style="display:none;">
-              <div class="card bg-dark border-secondary mb-3">
-                <div class="card-body p-3">
-                  <span class="text-muted">User search coming soon...</span>
-                </div>
+              <div class="github-card p-3 mb-3" style="background:#161b22; border:1px solid #30363d;">
+                <span class="text-muted">User search coming soon...</span>
               </div>
             </div>
-          </div>
+          </main>
         </div>
         <script>
         // Simple JS to toggle between Presets and Users (placeholder)
@@ -121,9 +125,35 @@
         });
         </script>
         <style>
-        .list-group-item.bg-dark { background: #161b22 !important; }
-        .list-group-item { border-radius: 10px !important; border: 1px solid #30363d !important; margin-bottom: 1rem; }
-        .btn-outline-light.active, .btn-outline-light:active { background: #3b82f6 !important; color: #fff !important; border-color: #3b82f6 !important; }
+        .search-filter-sidebar {
+          background: #161b22;
+          border-right: 1px solid #30363d;
+          min-height: 100%;
+        }
+        .search-filter-sidebar .sticky-top {
+          position: sticky !important;
+          top: 90px !important;
+          z-index: 2;
+        }
+        .search-result-card {
+          background: #161b22 !important;
+          border: 1px solid #30363d !important;
+          color: #c9d1d9 !important;
+        }
+        .search-result-card .badge.bg-secondary {
+          background: #21262d !important;
+          color: #8b949e !important;
+        }
+        .search-result-card .badge.bg-info {
+          background: #238636 !important;
+          color: #fff !important;
+        }
+        .search-result-card .fw-semibold {
+          color: #58a6ff !important;
+        }
+        .search-result-card .fw-bold {
+          color: #c9d1d9 !important;
+        }
         </style>
         {% endif %}
         <div class="row g-4 mb-4">
@@ -306,13 +336,13 @@ body.dark-mode .github-pill:hover, body.dark-mode .github-pill:focus {
         </div>
         <div class="col-md-6 order-md-1">
             <h3 class="fw-bold mb-3" style="color:#3b82f6;">How It Works</h3>
-            <ol class="text-muted fs-5 mb-0 ps-3">
-                <li>Sign up and log in to your account</li>
-                <li>Create or select a preset for your controller</li>
-                <li>Customize knobs, buttons, and joystick mappings</li>
-                <li>Generate and download your custom firmware</li>
-                <li>Flash the firmware to your device and play!</li>
-            </ol>
+            <div class="how-it-works-desc" style="color:#b6beca; font-size:1.15rem; font-weight:400;">
+                1. Sign up and log in to your account<br>
+                2. Create or select a preset for your controller<br>
+                3. Customize knobs, buttons, and joystick mappings<br>
+                4. Generate and download your custom firmware<br>
+                5. Flash the firmware to your device and play!
+            </div>
         </div>
     </div>
 

@@ -596,6 +596,75 @@
             color: #fff !important;
             border-color: #3b82f6 !important;
         }
+        /* Dark theme for knobs/buttons table section */
+        body.dark-mode .main-content:not(.home-main-content) table,
+        body.dark-mode .main-content:not(.home-main-content) .formset-table,
+        body.dark-mode .main-content:not(.home-main-content) thead,
+        body.dark-mode .main-content:not(.home-main-content) tbody,
+        body.dark-mode .main-content:not(.home-main-content) tr,
+        body.dark-mode .main-content:not(.home-main-content) th,
+        body.dark-mode .main-content:not(.home-main-content) td {
+            background: #23272e !important;
+            color: #c9d1d9 !important;
+            border-color: #30363d !important;
+        }
+        body.dark-mode .main-content:not(.home-main-content) th {
+            font-weight: 600;
+        }
+        body.dark-mode .main-content:not(.home-main-content) .table-bordered {
+            border: 1px solid #30363d !important;
+        }
+        /* Dark theme for card headers */
+        body.dark-mode .main-content:not(.home-main-content) .card-header,
+        body.dark-mode .main-content:not(.home-main-content) .github-card-header,
+        body.dark-mode .main-content:not(.home-main-content) .card-title-bar {
+            background: #23272e !important;
+            color: #c9d1d9 !important;
+            border-bottom: 1px solid #30363d !important;
+            font-weight: 500;
+        }
+        /* Dark theme for .bg-light and .card.bg-light (call-to-action cards) */
+        body.dark-mode .main-content:not(.home-main-content) .bg-light,
+        body.dark-mode .main-content:not(.home-main-content) .card.bg-light {
+            background: #23272e !important;
+            color: #c9d1d9 !important;
+        }
+        body.dark-mode .main-content:not(.home-main-content) .bg-light .btn,
+        body.dark-mode .main-content:not(.home-main-content) .bg-light .btn-outline-primary {
+            color: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+            background: transparent !important;
+        }
+        body.dark-mode .main-content:not(.home-main-content) .bg-light .btn-primary {
+            background: #238636 !important;
+            color: #fff !important;
+            border-color: #238636 !important;
+        }
+        /* Force bluish gradient for all .btn-primary buttons, regardless of Bootstrap or inline styles */
+        .btn.btn-primary,
+        button.btn-primary,
+        input[type="submit"].btn-primary {
+            background: linear-gradient(90deg, #2186eb 0%, #3b82f6 100%) !important;
+            color: #fff !important;
+            border: none !important;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.08) !important;
+            background-color: #3b82f6 !important; /* fallback */
+        }
+        .btn.btn-primary:hover,
+        .btn.btn-primary:focus,
+        .btn.btn-primary:active,
+        button.btn-primary:hover,
+        button.btn-primary:focus,
+        button.btn-primary:active,
+        input[type="submit"].btn-primary:hover,
+        input[type="submit"].btn-primary:focus,
+        input[type="submit"].btn-primary:active {
+            background: linear-gradient(90deg, #2186eb 0%, #3b82f6 100%) !important;
+            color: #fff !important;
+            border: none !important;
+            box-shadow: 0 2px 8px rgba(59,130,246,0.12) !important;
+            background-color: #3b82f6 !important; /* fallback */
+        }
     </style>
 </head>
 <body>
@@ -604,12 +673,12 @@
         <div class="container d-flex align-items-center justify-content-between">
             <!-- Logo (left) -->
             <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
-                <svg width="32" height="32" fill="none" viewBox="0 0 64 64">
+          <svg width="32" height="32" fill="none" viewBox="0 0 64 64">
                     <rect x="8" y="8" width="48" height="48" rx="12" fill="#3b82f6"/>
                     <rect x="16" y="16" width="32" height="32" rx="8" fill="#fff"/>
                     <circle cx="32" cy="32" r="10" fill="#3b82f6"/>
                 </svg>
-                <span class="ms-2 fw-bold" style="font-size: 1.3rem;">SweetBox Synthage</span>
+          <span class="ms-2 fw-bold" style="font-size: 1.3rem;">SweetBox Synthage</span>
             </a>
             <!-- Right icons (mobile only) -->
             <div class="d-flex align-items-center d-lg-none ms-auto" style="gap:0.5rem;">
@@ -618,7 +687,7 @@
                 </button>
                 <button class="btn btn-link nav-link p-2" id="mobileProfileSidebarToggle" title="Profile menu" style="font-size: 1.7rem;">
                     <i class="bi bi-list"></i>
-                </button>
+            </button>
             </div>
             <!-- Navlinks and Searchbar -->
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -875,6 +944,9 @@
           overlay.classList.add('open');
         });
       }
+      document.querySelectorAll('.btn.btn-primary').forEach(function(btn) {
+        btn.removeAttribute('style');
+      });
     });
     </script>
 
@@ -963,8 +1035,8 @@
             // Theme toggle handler (sidebar)
             if (sidebarToggleBtn) {
                 sidebarToggleBtn.addEventListener('click', function() {
-                    setTheme(!body.classList.contains('dark-mode'));
-                });
+                setTheme(!body.classList.contains('dark-mode'));
+            });
             }
         })();
 
