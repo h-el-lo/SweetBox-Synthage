@@ -57,7 +57,7 @@ def home(request):
         'hide_home_link': True,
         'presets': presets,
         'search_query': search_query,
-    }
+    }   
     return render(request, 'midi/home.html', context)
 
 

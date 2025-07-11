@@ -20,7 +20,7 @@ class Preset(models.Model):
     keys_channel = models.PositiveSmallIntegerField()
     number_of_knobs = models.PositiveSmallIntegerField()
     number_of_buttons = models.PositiveSmallIntegerField()
-    has_joystick = models.BooleanField()
+    has_joystick = models.BooleanField(default=False)
     is_private = models.BooleanField(default=False, help_text='Mark this preset as private')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

@@ -40,36 +40,91 @@
           <button class="btn btn-outline-light github-pill">Create a MIDI app</button>
         </div>
         {% if presets is not None %}
-          <div class="mb-4">
-            <h2 class="fw-bold mb-3" style="color:#c9d1d9;">Search Results{% if search_query %} for "{{ search_query }}"{% endif %}</h2>
-            <div class="row g-3">
+        <div class="row">
+          <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h2 class="fw-bold mb-0" style="color:#c9d1d9; font-size:1.3rem;">Search Results{% if search_query %} for "{{ search_query }}"{% endif %}</h2>
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-muted small">Sort by:</span>
+                <select class="form-select form-select-sm bg-dark text-light border-secondary" style="width:auto;">
+                  <option selected>Best match</option>
+                  <option>Most recent</option>
+                  <option>Most knobs</option>
+                </select>
+              </div>
+            </div>
+            <div class="list-group list-group-flush">
               {% if presets and presets|length > 0 %}
                 {% for preset in presets %}
-                  <div class="col-md-6 col-lg-4">
-                    <div class="github-card p-3 mb-3">
-                      <div class="d-flex align-items-center mb-2">
-                        <i class="bi bi-sliders me-2" style="color:#3b82f6; font-size:1.5rem;"></i>
-                        <span class="fw-semibold" style="color:#c9d1d9; font-size:1.1rem;">{{ preset.name }}</span>
-                      </div>
-                      <div class="text-muted small mb-1"><i>@{{ preset.owner.username }}</i></div>
-                      <div class="d-flex gap-2 flex-wrap">
-                        <span class="badge bg-secondary">{{ preset.number_of_knobs }} knobs</span>
-                        <span class="badge bg-secondary">{{ preset.number_of_buttons }} buttons</span>
-                        <span class="badge bg-secondary">Channel {{ preset.keys_channel }}</span>
-                        {% if preset.has_joystick %}<span class="badge bg-info">Joystick</span>{% endif %}
-                      </div>
+                  <div class="list-group-item bg-dark border-secondary mb-3 rounded-3 px-4 py-3" style="border:1px solid #30363d;">
+                    <div class="d-flex align-items-center mb-1">
+                      <i class="bi bi-sliders me-2" style="color:#3b82f6; font-size:1.5rem;"></i>
+                      <span class="fw-semibold" style="color:#c9d1d9; font-size:1.1rem;">{{ preset.name }}</span>
+                    </div>
+                    <div class="mb-2">
+                      <span class="fw-bold" style="color:#58a6ff; font-size:0.98rem;">@{{ preset.owner.username }}</span>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap mb-2">
+                      <span class="badge bg-secondary">{{ preset.number_of_knobs }} knobs</span>
+                      <span class="badge bg-secondary">{{ preset.number_of_buttons }} buttons</span>
+                      <span class="badge bg-secondary">Channel {{ preset.keys_channel }}</span>
+                      {% if preset.has_joystick %}<span class="badge bg-info">Joystick</span>{% endif %}
                     </div>
                   </div>
                 {% endfor %}
               {% else %}
-                <div class="col-12">
-                  <div class="github-card p-4 text-center">
-                    <span class="text-muted">No presets found matching your search.</span>
-                  </div>
+                <div class="list-group-item bg-dark border-secondary text-center py-5 rounded-3">
+                  <span class="text-muted">No presets found matching your search.</span>
                 </div>
               {% endif %}
             </div>
           </div>
+          <div class="col-lg-3">
+            <div class="card bg-dark border-secondary mb-3">
+              <div class="card-body p-3">
+                <div class="d-flex flex-column gap-2">
+                  <button class="btn btn-outline-light w-100 active" id="filter-presets">Presets</button>
+                  <button class="btn btn-outline-light w-100" id="filter-users">Users</button>
+                </div>
+              </div>
+            </div>
+            <div id="user-results" style="display:none;">
+              <div class="card bg-dark border-secondary mb-3">
+                <div class="card-body p-3">
+                  <span class="text-muted">User search coming soon...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script>
+        // Simple JS to toggle between Presets and Users (placeholder)
+        document.addEventListener('DOMContentLoaded', function() {
+          const filterPresets = document.getElementById('filter-presets');
+          const filterUsers = document.getElementById('filter-users');
+          const userResults = document.getElementById('user-results');
+          const presetList = document.querySelector('.list-group');
+          if (filterPresets && filterUsers && userResults && presetList) {
+            filterPresets.addEventListener('click', function() {
+              filterPresets.classList.add('active');
+              filterUsers.classList.remove('active');
+              userResults.style.display = 'none';
+              presetList.style.display = '';
+            });
+            filterUsers.addEventListener('click', function() {
+              filterUsers.classList.add('active');
+              filterPresets.classList.remove('active');
+              userResults.style.display = '';
+              presetList.style.display = 'none';
+            });
+          }
+        });
+        </script>
+        <style>
+        .list-group-item.bg-dark { background: #161b22 !important; }
+        .list-group-item { border-radius: 10px !important; border: 1px solid #30363d !important; margin-bottom: 1rem; }
+        .btn-outline-light.active, .btn-outline-light:active { background: #3b82f6 !important; color: #fff !important; border-color: #3b82f6 !important; }
+        </style>
         {% endif %}
         <div class="row g-4 mb-4">
           <div class="col-lg-7">
@@ -294,58 +349,23 @@ body.dark-mode .github-pill:hover, body.dark-mode .github-pill:focus {
     .display-4 { font-size: 2rem; }
 }
 @media (max-width: 600px) {
-  .github-dashboard-bg {
-    padding: 0 !important;
-  }
-  .github-sidebar {
-    display: none !important;
-  }
-  .col-md-9.ms-sm-auto.col-lg-10.px-md-5.py-4,
-  main.col-md-9.ms-sm-auto.col-lg-10.px-md-5.py-4 {
-    padding: 1rem !important;
-    width: 100% !important;
-    margin: 0 !important;
+  .github-dashboard-bg .container-fluid,
+  .github-dashboard-bg .row,
+  .github-dashboard-bg main.col-md-9 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
   }
   .github-card {
-    padding: 1rem !important;
-    margin-bottom: 1rem !important;
-    border-radius: 10px !important;
-  }
-  .d-flex.flex-wrap.gap-3.mb-4 {
-    flex-direction: column !important;
-    gap: 0.5rem !important;
-  }
-  h1.fw-bold.mb-4 {
-    font-size: 1.5rem !important;
-    margin-bottom: 1rem !important;
-  }
-  .btn, .btn-outline-light.github-pill {
-    width: 100% !important;
-    font-size: 1rem !important;
-    padding: 0.75rem 1rem !important;
-  }
-  .row.g-4.mb-4, .row.g-4 {
-    flex-direction: column !important;
-    gap: 1rem !important;
-  }
-  .col-lg-7, .col-lg-5 {
-    width: 100% !important;
-    max-width: 100% !important;
-    flex: 0 0 100% !important;
-  }
-  .github-card img {
-    width: 100px !important;
-    height: 70px !important;
-  }
-  .mb-4 {
-    margin-bottom: 1rem !important;
-  }
-  .mb-3 {
-    margin-bottom: 0.75rem !important;
-  }
-  .github-search {
-    font-size: 1rem !important;
-    padding: 0.5rem 1rem !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: 100vw !important;
+    left: 0 !important;
+    right: 0 !important;
+    border-radius: 0 !important;
   }
 }
 </style>

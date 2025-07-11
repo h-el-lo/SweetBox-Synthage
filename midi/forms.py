@@ -521,8 +521,8 @@ class JoystickForm(ModelForm):
         if x_mode == 'cc':
             if y_cc is None:
                 raise forms.ValidationError('Y axis CC number is required when X axis mode is Control Change.')
-            if not (0 <= y_cc <= 127):
-                raise forms.ValidationError('CC number must be between 0 and 127.')
+        if not (0 <= y_cc <= 127):
+            raise forms.ValidationError('CC number must be between 0 and 127.')
         return y_cc
 
     def clean_x_pin(self):
