@@ -6,12 +6,11 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, FileResponse, JsonResponse
 from .forms import UserForm, KnobFormSet, ButtonFormSet, JoystickForm, JoystickFormSet
-from .models import Preset, Knob, Button
+from .models import Preset, Knob, Button, Profile
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.forms import PasswordChangeForm
-from .models import Profile
 from django.views.decorators.csrf import csrf_exempt
 import os
 from django.conf import settings
@@ -376,6 +375,7 @@ def create_preset(request):
         keys_channel = int(request.POST.get('keys_channel', 1))
         number_of_knobs = int(request.POST.get('number_of_knobs', 4))
         number_of_buttons = int(request.POST.get('number_of_buttons', 0))
+        has_joystick = bool(request.POST.get('has_joystick', 1))
         user = request.user
 
         preset = Preset.objects.create(
@@ -384,6 +384,7 @@ def create_preset(request):
             keys_channel=keys_channel,
             number_of_knobs=number_of_knobs,
             number_of_buttons=number_of_buttons,
+            has_joystick=has_joystick,
         )
         # Create the corresponding number of knob objects
         for i in range(preset.number_of_knobs):
@@ -454,7 +455,7 @@ def login_view(request):
     page = 'login'
 
     if request.user.is_authenticated:
-        return redirect('dashboard')
+        return redirect('home')
 
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
@@ -462,7 +463,7 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             messages.success(request, 'Logged in successfully!')
-            return redirect('dashboard')
+            return redirect('home')
         else:
             messages.error(request, 'Invalid username or password.')
     else:
@@ -567,3 +568,12 @@ def toggle_is_private(request):
         return JsonResponse({'success': True, 'is_private': preset.is_private})
     except Preset.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Preset not found or not owned by user.'}, status=404)
+
+
+def about(request):
+
+    context = {
+
+    }
+
+    return render(request, 'midi/about.html', context)

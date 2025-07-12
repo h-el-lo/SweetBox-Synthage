@@ -704,14 +704,14 @@
             {% if not request.user.is_authenticated %}
             <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Sign In</a></li>
             <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'signup' %}active{% endif %}" href="{% url 'signup' %}">Sign Up</a></li>
-                    {% endif %}
+            {% endif %}
             <!-- Theme toggle removed from navbar -->
-                            {% if request.user.is_authenticated %}
-              <button class="btn btn-link nav-link p-0 ms-2" id="profileSidebarToggle" title="Profile menu" style="font-size: 2.2rem;">
-                <i class="bi bi-list"></i>
-              </button>
+                {% if request.user.is_authenticated %}
+                <button class="btn btn-link nav-link p-0 ms-2" id="profileSidebarToggle" title="Profile menu" style="font-size: 2.2rem;">
+                    <i class="bi bi-list"></i>
+                </button>
+                {% endif %}
             </li>
-                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -739,7 +739,7 @@
       <div class="sidebar-menu px-2">
         <ul class="list-unstyled mb-2">
           <li class="sidebar-item"><a href="{% url 'home' %}"><i class="bi bi-house me-2"></i>Home</a></li>
-          <li class="sidebar-item"><a href="{% url 'dashboard' %}"><i class="bi bi-sliders me-2"></i>Your Presets</a></li>
+          <li class="sidebar-item"><a href="{% url 'dashboard' %}"><i class="bi bi-sliders me-2"></i>My Presets</a></li>
           <li class="sidebar-item"><a href="{% url 'portal' %}"><i class="bi bi-globe me-2"></i>Portal</a></li>
           <li class="sidebar-item"><a href="{% url 'upload' %}"><i class="bi bi-upload me-2"></i>Upload</a></li>
           <li class="sidebar-item"><a href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>Profile</a></li>
@@ -747,7 +747,7 @@
         </ul>
         <hr class="sidebar-divider">
         <ul class="list-unstyled mb-2">
-          <li class="sidebar-item"><i class="bi bi-book me-2"></i>Docs</li>
+          <li class="sidebar-item"><a href="{% url 'about' %}"><i class="bi bi-book me-2"></i>About</a></li>
           <li class="sidebar-item"><i class="bi bi-question-circle me-2"></i>Support</li>
         </ul>
         <hr class="sidebar-divider">
