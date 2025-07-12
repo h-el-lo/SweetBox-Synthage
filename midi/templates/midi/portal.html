@@ -1149,17 +1149,20 @@ document.addEventListener('DOMContentLoaded', function() {
             var lockToggleArea = document.getElementById('lock-toggle-modal-area');
             var lockToggle = document.getElementById('lock-toggle-modal');
             var isPrivateInput = document.getElementById('is-private-modal');
-            if (lockToggleArea && lockToggle && isPrivateInput) {
+            var privacyText = lockToggleArea ? lockToggleArea.querySelector('span:last-child') : null;
+            if (lockToggleArea && lockToggle && isPrivateInput && privacyText) {
                 lockToggleArea.onclick = function() {
                     var icon = lockToggle.querySelector('i');
                     if (icon.classList.contains('bi-unlock')) {
                         icon.classList.remove('bi-unlock');
                         icon.classList.add('bi-lock-fill');
                         isPrivateInput.value = 'true';
+                        privacyText.textContent = 'private';
                     } else {
                         icon.classList.remove('bi-lock-fill');
                         icon.classList.add('bi-unlock');
                         isPrivateInput.value = 'false';
+                        privacyText.textContent = 'public';
                     }
                 };
             }

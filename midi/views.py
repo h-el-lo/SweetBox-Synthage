@@ -400,7 +400,8 @@ def create_preset(request):
         keys_channel = int(request.POST.get('keys_channel', 1))
         number_of_knobs = int(request.POST.get('number_of_knobs', 4))
         number_of_buttons = int(request.POST.get('number_of_buttons', 0))
-        has_joystick = bool(request.POST.get('has_joystick', 1))
+        has_joystick = 'has_joystick' in request.POST
+        is_private = request.POST.get('is_private', 'false') == 'true'
         user = request.user
 
         preset = Preset.objects.create(
@@ -410,6 +411,7 @@ def create_preset(request):
             number_of_knobs=number_of_knobs,
             number_of_buttons=number_of_buttons,
             has_joystick=has_joystick,
+            is_private=is_private,
         )
         # Create the corresponding number of knob objects
         for i in range(preset.number_of_knobs):

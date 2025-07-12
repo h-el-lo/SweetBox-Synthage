@@ -183,12 +183,12 @@
                                 <input class="form-check-input" type="checkbox" id="has-joystick-toggle-modal" name="has_joystick" value="true" {% if preset_defaults.has_joystick %}checked{% endif %}>
                             </div>
                         </div>
-                        <div class="d-flex align-items-end" id="lock-toggle-modal-area" style="cursor:pointer; min-width:80px; justify-content: flex-end; user-select: none;">
-                            <input type="hidden" id="is-private-modal" name="is_private" value="{% if preset_defaults.is_private %}true{% else %}false{% endif %}">
-                            <span id="lock-toggle-modal" style="font-size: 1.1rem; color: #3b82f6; line-height: 1; transition: color 0.2s;">
+                        <div class="d-flex align-items-end lock-toggle-modal-area" style="cursor:pointer; min-width:80px; justify-content: flex-end; user-select: none;">
+                            <input type="hidden" class="is-private-modal" name="is_private" value="{% if preset_defaults.is_private %}true{% else %}false{% endif %}">
+                            <span class="lock-toggle-modal" style="font-size: 1.1rem; color: #3b82f6; line-height: 1; transition: color 0.2s;">
                                 <i class="bi {% if preset_defaults.is_private %}bi-lock-fill{% else %}bi-unlock{% endif %}" style="font-size: 1.1rem;"></i>
                             </span>
-                            <span style="font-size: 0.7rem; color: #8b949e; margin-left: 6px; margin-bottom: 1px; letter-spacing: 0.5px; text-transform: lowercase; align-self: flex-end;">
+                            <span class="privacy-text" style="font-size: 0.7rem; color: #8b949e; margin-left: 6px; margin-bottom: 1px; letter-spacing: 0.5px; text-transform: lowercase; align-self: flex-end;">
                                 {% if preset_defaults.is_private %}private{% else %}public{% endif %}
                             </span>
                         </div>
@@ -472,32 +472,29 @@ body:not(.dark-mode) #createPresetModal .btn-secondary:hover {
 {% endblock %}
 
 <script>
-(function() {
-    function setupLockToggle() {
-        var lockToggleArea = document.getElementById('lock-toggle-modal-area');
-        var lockToggle = document.getElementById('lock-toggle-modal');
-        var isPrivateInput = document.getElementById('is-private-modal');
-        if (lockToggleArea && lockToggle && isPrivateInput) {
-            lockToggleArea.onclick = function() {
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('click', function(event) {
+        var area = event.target.closest('.lock-toggle-modal-area');
+        if (area) {
+            var lockToggle = area.querySelector('.lock-toggle-modal');
+            var isPrivateInput = area.querySelector('.is-private-modal');
+            var privacyText = area.querySelector('.privacy-text');
+            if (lockToggle && isPrivateInput && privacyText) {
                 var icon = lockToggle.querySelector('i');
                 if (icon.classList.contains('bi-unlock')) {
                     icon.classList.remove('bi-unlock');
                     icon.classList.add('bi-lock-fill');
                     isPrivateInput.value = 'true';
+                    privacyText.textContent = 'private';
                 } else {
                     icon.classList.remove('bi-lock-fill');
                     icon.classList.add('bi-unlock');
                     isPrivateInput.value = 'false';
+                    privacyText.textContent = 'public';
                 }
-            };
+                console.log('Lock icon toggled:', isPrivateInput.value);
+            }
         }
-    }
-    // Run once on page load
-    setupLockToggle();
-    // Also run every time the modal is shown (Bootstrap 5 event)
-    var modal = document.getElementById('createPresetModal');
-    if (modal) {
-        modal.addEventListener('shown.bs.modal', setupLockToggle);
-    }
-})();
+    });
+});
 </script>

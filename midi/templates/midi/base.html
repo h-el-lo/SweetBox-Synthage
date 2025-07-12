@@ -665,6 +665,39 @@
             box-shadow: 0 2px 8px rgba(59,130,246,0.12) !important;
             background-color: #3b82f6 !important; /* fallback */
         }
+
+        /* Fix Bootstrap switch appearance in dark mode */
+        body.dark-mode .form-switch .form-check-input {
+            background-color: #23272e !important;
+            border-color: #3b82f6 !important;
+            box-shadow: none !important;
+        }
+        body.dark-mode .form-switch .form-check-input:checked {
+            background-color: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+        }
+        body.dark-mode .form-switch .form-check-input:focus {
+            box-shadow: 0 0 0 0.2rem rgba(59,130,246,0.25) !important;
+        }
+        body.dark-mode .form-switch .form-check-input::before {
+            background-color: #23272e !important;
+            border-radius: 1rem;
+            border: 1px solid #3b82f6 !important;
+        }
+        body.dark-mode .form-switch .form-check-input:checked::before {
+            background-color: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+        }
+        body.dark-mode .form-switch .form-check-input::after {
+            background-color: #fff !important;
+            border-radius: 50%;
+        }
+        body.dark-mode .form-switch .form-check-input:checked::after {
+            background-color: #fff !important;
+        }
+        body.dark-mode .form-switch .form-check-label {
+            color: #c9d1d9 !important;
+        }
     </style>
 </head>
 <body>
