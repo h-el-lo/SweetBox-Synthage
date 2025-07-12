@@ -8,6 +8,7 @@ class Profile(models.Model):
     number_of_knobs = models.PositiveSmallIntegerField(default=4)
     number_of_buttons = models.PositiveSmallIntegerField(default=0)
     has_joystick = models.BooleanField(default=False)
+    is_private = models.BooleanField(default=False, help_text='Default privacy setting for new presets')
 
     objects = models.Manager()
 

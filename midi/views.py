@@ -36,6 +36,30 @@ def create_default_preset(user):
                 pin=i,
             )
 
+def get_preset_defaults(user):
+    """Get default values for new presets based on user profile or model defaults"""
+    if user.is_authenticated:
+        try:
+            profile = Profile.objects.get(owner=user)
+            return {
+                'keys_channel': profile.keys_channel,
+                'number_of_knobs': profile.number_of_knobs,
+                'number_of_buttons': profile.number_of_buttons,
+                'has_joystick': profile.has_joystick,
+                'is_private': profile.is_private,
+            }
+        except Profile.DoesNotExist:
+            pass
+    
+    # Return model defaults if no user or no profile
+    return {
+        'keys_channel': 1,
+        'number_of_knobs': 4,
+        'number_of_buttons': 0,
+        'has_joystick': False,
+        'is_private': False,
+    }
+
 def home(request):
     user = request.user
     search_query = request.GET.get('search', '').strip()
@@ -232,6 +256,7 @@ def portal(request):
         'joystick_form': joystick_form,
         'num_knobs_db': knobs.count() if preset else 0,
         'num_buttons_db': buttons.count() if preset else 0,
+        'preset_defaults': get_preset_defaults(user),
     }
 
     return render(request, 'midi/portal.html', context)
@@ -512,6 +537,7 @@ def dashboard(request):
         'preset_count':preset_count,
         'range_1_17': range(1, 17),
         'range_0_33': range(0, 33),
+        'preset_defaults': get_preset_defaults(user),
     }   
     return render(request, 'midi/dashboard.html', context)
 
@@ -534,6 +560,7 @@ def profile(request):
         profile.number_of_knobs = int(request.POST.get('number_of_knobs', 4))
         profile.number_of_buttons = int(request.POST.get('number_of_buttons', 0))
         profile.has_joystick = 'has_joystick' in request.POST
+        profile.is_private = request.POST.get('is_private', 'false') == 'true'
         profile.save()
         messages.success(request, 'Profile updated successfully!')
     context = {
