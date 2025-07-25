@@ -423,3 +423,11 @@ def about(request):
     }
 
     return render(request, 'base/about.html', context)
+
+@login_required(login_url='login')
+def monitor(request):
+    """MIDI Monitor page for real-time MIDI data monitoring"""
+    context = {
+        'hide_monitor_link': True,
+    }
+    return render(request, 'base/monitor.html', context)

@@ -1,0 +1,536 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card github-card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-music-note-beamed me-2"></i>
+                        MIDI Monitor
+                    </h4>
+                    <div class="d-flex gap-2">
+                        <button id="connectBtn" class="btn btn-primary">
+                            <i class="bi bi-plug me-2"></i>
+                            Connect MIDI
+                        </button>
+                        <button id="clearBtn" class="btn btn-outline-secondary">
+                            <i class="bi bi-trash me-2"></i>
+                            Clear Log
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- MIDI Status -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="bi bi-info-circle me-2"></i>
+                                        Connection Status
+                                    </h6>
+                                    <div id="connectionStatus" class="text-muted">
+                                        <i class="bi bi-circle me-2"></i>
+                                        Not connected
+                                    </div>
+                                    <div id="deviceInfo" class="mt-2 small text-muted" style="display: none;">
+                                        <div><strong>Device:</strong> <span id="deviceName">-</span></div>
+                                        <div><strong>Manufacturer:</strong> <span id="deviceManufacturer">-</span></div>
+                                        <div><strong>State:</strong> <span id="deviceState">-</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="bi bi-graph-up me-2"></i>
+                                        Statistics
+                                    </h6>
+                                    <div class="row text-center">
+                                        <div class="col-4">
+                                            <div class="h5 mb-0 text-primary" id="messageCount">0</div>
+                                            <small class="text-muted">Messages</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="h5 mb-0 text-success" id="noteCount">0</div>
+                                            <small class="text-muted">Notes</small>
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="h5 mb-0 text-info" id="ccCount">0</div>
+                                            <small class="text-muted">CC</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MIDI Data Display -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-list-ul me-2"></i>
+                                        MIDI Messages
+                                    </h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    <div id="midiLog" class="midi-log-container">
+                                        <div class="text-center text-muted py-4">
+                                            <i class="bi bi-music-note-list" style="font-size: 2rem;"></i>
+                                            <p class="mt-2">No MIDI messages received yet</p>
+                                            <p class="small">Connect a MIDI device to start monitoring</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.midi-log-container {
+    max-height: 500px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    border-radius: 0.375rem;
+}
+
+body.dark-mode .midi-log-container {
+    background: #23272e;
+}
+
+.midi-message {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #dee2e6;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+body.dark-mode .midi-message {
+    border-bottom-color: #30363d;
+}
+
+.midi-message:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+body.dark-mode .midi-message:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.midi-message:last-child {
+    border-bottom: none;
+}
+
+.midi-timestamp {
+    color: #6c757d;
+    font-size: 0.8rem;
+    margin-right: 1rem;
+}
+
+.midi-type {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-right: 0.5rem;
+    min-width: 60px;
+    text-align: center;
+}
+
+.midi-type.note-on {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.midi-type.note-off {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.midi-type.cc {
+    background-color: #cff4fc;
+    color: #055160;
+}
+
+.midi-type.program {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
+.midi-type.pitch {
+    background-color: #e2e3e5;
+    color: #41464b;
+}
+
+.midi-type.aftertouch {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.midi-data {
+    color: #495057;
+    font-weight: 500;
+}
+
+body.dark-mode .midi-data {
+    color: #e5e7eb;
+}
+
+.midi-channel {
+    color: #6c757d;
+    font-weight: 600;
+}
+
+.midi-value {
+    color: #198754;
+    font-weight: 600;
+}
+
+.midi-velocity {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.midi-note {
+    color: #0d6efd;
+    font-weight: 600;
+}
+
+.midi-cc {
+    color: #fd7e14;
+    font-weight: 600;
+}
+
+.connection-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.connection-indicator.connected {
+    background-color: #198754;
+    animation: pulse 2s infinite;
+}
+
+.connection-indicator.disconnected {
+    background-color: #dc3545;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.midi-visualizer {
+    height: 100px;
+    background: linear-gradient(to bottom, #f8f9fa, #e9ecef);
+    border-radius: 0.375rem;
+    position: relative;
+    overflow: hidden;
+}
+
+body.dark-mode .midi-visualizer {
+    background: linear-gradient(to bottom, #23272e, #161b22);
+}
+
+.midi-bar {
+    position: absolute;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(to top, #3b82f6, #06b6d4);
+    border-radius: 2px 2px 0 0;
+    transition: height 0.1s ease;
+}
+
+.midi-bar.note {
+    background: linear-gradient(to top, #10b981, #059669);
+}
+
+.midi-bar.cc {
+    background: linear-gradient(to top, #f59e0b, #d97706);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+class MIDIMonitor {
+    constructor() {
+        this.midiAccess = null;
+        this.midiInput = null;
+        this.messageCount = 0;
+        this.noteCount = 0;
+        this.ccCount = 0;
+        this.isConnected = false;
+        
+        this.initializeElements();
+        this.bindEvents();
+        this.checkMIDISupport();
+    }
+
+    initializeElements() {
+        this.connectBtn = document.getElementById('connectBtn');
+        this.clearBtn = document.getElementById('clearBtn');
+        this.midiLog = document.getElementById('midiLog');
+        this.connectionStatus = document.getElementById('connectionStatus');
+        this.deviceInfo = document.getElementById('deviceInfo');
+        this.deviceName = document.getElementById('deviceName');
+        this.deviceManufacturer = document.getElementById('deviceManufacturer');
+        this.deviceState = document.getElementById('deviceState');
+        this.messageCountEl = document.getElementById('messageCount');
+        this.noteCountEl = document.getElementById('noteCount');
+        this.ccCountEl = document.getElementById('ccCount');
+    }
+
+    bindEvents() {
+        this.connectBtn.addEventListener('click', () => this.connectMIDI());
+        this.clearBtn.addEventListener('click', () => this.clearLog());
+    }
+
+    checkMIDISupport() {
+        if (!navigator.requestMIDIAccess) {
+            this.showError('Web MIDI API is not supported in this browser. Please use Chrome, Edge, or Opera.');
+            this.connectBtn.disabled = true;
+            return false;
+        }
+        return true;
+    }
+
+    async connectMIDI() {
+        if (!this.checkMIDISupport()) return;
+
+        try {
+            this.midiAccess = await navigator.requestMIDIAccess();
+            this.updateConnectionStatus('Connected to MIDI', true);
+            
+            const inputs = Array.from(this.midiAccess.inputs.values());
+            
+            if (inputs.length === 0) {
+                this.showError('No MIDI input devices found. Please connect a MIDI device and try again.');
+                return;
+            }
+
+            // Use the first available input
+            this.midiInput = inputs[0];
+            this.midiInput.onmidimessage = (event) => this.handleMIDIMessage(event);
+            
+            this.updateDeviceInfo();
+            this.connectBtn.innerHTML = '<i class="bi bi-plug-fill me-2"></i>Disconnect';
+            this.connectBtn.classList.remove('btn-primary');
+            this.connectBtn.classList.add('btn-danger');
+            this.isConnected = true;
+
+        } catch (error) {
+            this.showError('Failed to access MIDI devices: ' + error.message);
+        }
+    }
+
+    disconnectMIDI() {
+        if (this.midiInput) {
+            this.midiInput.onmidimessage = null;
+            this.midiInput = null;
+        }
+        this.updateConnectionStatus('Disconnected', false);
+        this.deviceInfo.style.display = 'none';
+        this.connectBtn.innerHTML = '<i class="bi bi-plug me-2"></i>Connect MIDI';
+        this.connectBtn.classList.remove('btn-danger');
+        this.connectBtn.classList.add('btn-primary');
+        this.isConnected = false;
+    }
+
+    updateConnectionStatus(status, connected) {
+        const indicator = connected ? 
+            '<span class="connection-indicator connected"></span>' : 
+            '<span class="connection-indicator disconnected"></span>';
+        this.connectionStatus.innerHTML = indicator + status;
+    }
+
+    updateDeviceInfo() {
+        if (this.midiInput) {
+            this.deviceName.textContent = this.midiInput.name || 'Unknown Device';
+            this.deviceManufacturer.textContent = this.midiInput.manufacturer || 'Unknown';
+            this.deviceState.textContent = this.midiInput.state || 'Unknown';
+            this.deviceInfo.style.display = 'block';
+        }
+    }
+
+    handleMIDIMessage(event) {
+        const data = event.data;
+        const timestamp = Date.now();
+        
+        this.messageCount++;
+        this.updateCounters();
+
+        const message = this.parseMIDIMessage(data, timestamp);
+        this.addMessageToLog(message);
+    }
+
+    parseMIDIMessage(data, timestamp) {
+        const status = data[0];
+        const channel = (status & 0x0F) + 1;
+        const messageType = status & 0xF0;
+        
+        let type, description, values = {};
+
+        switch (messageType) {
+            case 0x80: // Note Off
+                type = 'note-off';
+                values.note = data[1];
+                values.velocity = data[2];
+                description = `Note Off: ${this.getNoteName(data[1])} (${data[1]}) - Velocity: ${data[2]}`;
+                break;
+                
+            case 0x90: // Note On
+                type = 'note-on';
+                values.note = data[1];
+                values.velocity = data[2];
+                description = `Note On: ${this.getNoteName(data[1])} (${data[1]}) - Velocity: ${data[2]}`;
+                this.noteCount++;
+                break;
+                
+            case 0xB0: // Control Change
+                type = 'cc';
+                values.controller = data[1];
+                values.value = data[2];
+                description = `CC: ${data[1]} - Value: ${data[2]}`;
+                this.ccCount++;
+                break;
+                
+            case 0xC0: // Program Change
+                type = 'program';
+                values.program = data[1];
+                description = `Program Change: ${data[1]}`;
+                break;
+                
+            case 0xD0: // Channel Pressure
+                type = 'aftertouch';
+                values.pressure = data[1];
+                description = `Channel Pressure: ${data[1]}`;
+                break;
+                
+            case 0xE0: // Pitch Bend
+                type = 'pitch';
+                const pitchValue = ((data[2] << 7) | data[1]) - 8192;
+                values.pitch = pitchValue;
+                description = `Pitch Bend: ${pitchValue}`;
+                break;
+                
+            default:
+                type = 'unknown';
+                description = `Unknown: ${Array.from(data).map(b => b.toString(16).padStart(2, '0')).join(' ')}`;
+        }
+
+        return {
+            timestamp,
+            type,
+            channel,
+            description,
+            values,
+            raw: Array.from(data)
+        };
+    }
+
+    getNoteName(noteNumber) {
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const octave = Math.floor(noteNumber / 12) - 1;
+        const note = notes[noteNumber % 12];
+        return `${note}${octave}`;
+    }
+
+    addMessageToLog(message) {
+        const messageEl = document.createElement('div');
+        messageEl.className = 'midi-message';
+        
+        const time = new Date(message.timestamp).toLocaleTimeString();
+        
+        messageEl.innerHTML = `
+            <span class="midi-timestamp">${time}</span>
+            <span class="midi-type ${message.type}">${message.type.toUpperCase()}</span>
+            <span class="midi-channel">Ch:${message.channel}</span>
+            <span class="midi-data">${message.description}</span>
+        `;
+        
+        // Remove the "no messages" placeholder if it exists
+        const placeholder = this.midiLog.querySelector('.text-center');
+        if (placeholder) {
+            placeholder.remove();
+        }
+        
+        this.midiLog.insertBefore(messageEl, this.midiLog.firstChild);
+        
+        // Keep only the last 100 messages
+        const messages = this.midiLog.querySelectorAll('.midi-message');
+        if (messages.length > 100) {
+            messages[messages.length - 1].remove();
+        }
+    }
+
+    updateCounters() {
+        this.messageCountEl.textContent = this.messageCount;
+        this.noteCountEl.textContent = this.noteCount;
+        this.ccCountEl.textContent = this.ccCount;
+    }
+
+    clearLog() {
+        this.midiLog.innerHTML = `
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-music-note-list" style="font-size: 2rem;"></i>
+                <p class="mt-2">No MIDI messages received yet</p>
+                <p class="small">Connect a MIDI device to start monitoring</p>
+            </div>
+        `;
+        this.messageCount = 0;
+        this.noteCount = 0;
+        this.ccCount = 0;
+        this.updateCounters();
+    }
+
+    showError(message) {
+        const alertEl = document.createElement('div');
+        alertEl.className = 'alert alert-danger alert-dismissible fade show';
+        alertEl.innerHTML = `
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        const container = document.querySelector('.container-fluid');
+        container.insertBefore(alertEl, container.firstChild);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (alertEl.parentNode) {
+                alertEl.remove();
+            }
+        }, 5000);
+    }
+}
+
+// Initialize MIDI Monitor when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    new MIDIMonitor();
+});
+</script>
+{% endblock %} 
