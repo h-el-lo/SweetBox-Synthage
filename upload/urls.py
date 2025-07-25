@@ -3,6 +3,6 @@ from . import views
 
 urlpatterns = [
     path('create_preset/', views.create_preset, name='create_preset'),
-    path('upload/', views.upload, name='upload'),
+    path('', views.upload, name='upload'),
     path('download_firmware/<int:preset_id>/', views.download_firmware, name='download_firmware'),
 ]

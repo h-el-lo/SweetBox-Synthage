@@ -1,0 +1,114 @@
+[
+  {
+    "board": "Arduino Pro Micro",
+    "mcu": "ATmega32U4",
+    "midi_modes": ["USB"]
+  },
+  {
+    "board": "Arduino Micro",
+    "mcu": "ATmega32U4",
+    "midi_modes": ["USB"]
+  },
+  {
+    "board": "Arduino Leonardo",
+    "mcu": "ATmega32U4",
+    "midi_modes": ["USB"]
+  },
+  {
+    "board": "Raspberry Pi Pico",
+    "mcu": "RP2040",
+    "midi_modes": ["USB"]
+  },
+  {
+    "board": "Raspberry Pi Pico 2",
+    "mcu": "RP2040",
+    "midi_modes": ["USB"]
+  },
+  {
+    "board": "Raspberry Pi Pico W",
+    "mcu": "RP2040",
+    "midi_modes": ["USB"]
+  },
+  {
+    "board": "ESP32-WROOM-32U DevKit",
+    "mcu": "ESP32",
+    "midi_modes": ["BLE", "RTP", "BLE+RTP"]
+  },
+  {
+    "board": "SparkFun ESP32 Thing",
+    "mcu": "ESP32",
+    "midi_modes": ["BLE", "RTP", "BLE+RTP"]
+  },
+  {
+    "board": "TinyPICO ESP32",
+    "mcu": "ESP32",
+    "midi_modes": ["BLE", "RTP", "BLE+RTP"]
+  },
+  {
+    "board": "TTGO T-Call ESP32 (GSM)",
+    "mcu": "ESP32",
+    "midi_modes": ["BLE", "RTP", "BLE+RTP"]
+  },
+  {
+    "board": "M5Stack Core2 (ESP32)",
+    "mcu": "ESP32",
+    "midi_modes": ["BLE", "RTP", "BLE+RTP"]
+  },
+  {
+    "board": "ESP32-S3 DevKitC",
+    "mcu": "ESP32",
+    "midi_modes": [
+      "USB (OTG)",
+      "BLE",
+      "RTP",
+      "USB (OTG)+BLE",
+      "USB (OTG)+RTP",
+      "BLE+RTP",
+      "USB (OTG)+BLE+RTP"
+    ]
+  },
+  {
+    "board": "ESP32-S3 Box / Box Lite",
+    "mcu": "ESP32",
+    "midi_modes": [
+      "USB (OTG)",
+      "BLE",
+      "RTP",
+      "USB (OTG)+BLE",
+      "USB (OTG)+RTP",
+      "BLE+RTP",
+      "USB (OTG)+BLE+RTP"
+    ]
+  },
+  {
+    "board": "Adafruit Feather ESP32-S3",
+    "mcu": "ESP32",
+    "midi_modes": [
+      "USB (OTG)",
+      "BLE",
+      "RTP",
+      "USB (OTG)+BLE",
+      "USB (OTG)+RTP",
+      "BLE+RTP",
+      "USB (OTG)+BLE+RTP"
+    ]
+  },
+  {
+    "board": "LilyGO T-Display S3",
+    "mcu": "ESP32",
+    "midi_modes": [
+      "USB (OTG)",
+      "BLE",
+      "RTP",
+      "USB (OTG)+BLE",
+      "USB (OTG)+RTP",
+      "BLE+RTP",
+      "USB (OTG)+BLE+RTP"
+    ]
+  },
+  {
+    "board": "STM32 Board",
+    "mcu": "STM32",
+    "midi_modes": ["USB (OTG)"]
+  }
+]

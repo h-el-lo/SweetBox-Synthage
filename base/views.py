@@ -369,14 +369,6 @@ def dashboard(request):
     return render(request, 'base/dashboard.html', context)
 
 @login_required(login_url='login')
-def upload(request):
-    context = {
-        'presets': Preset.objects.filter(owner=request.user),
-        'hide_upload_link':True,
-    }
-    return render(request, 'midi/upload.html', context)
-
-@login_required(login_url='login')
 def profile(request):
     user = request.user
     # Get or create the user's profile
@@ -409,7 +401,7 @@ def change_password(request):
             messages.error(request, 'Please correct the error below.')
     else:
         form = PasswordChangeForm(request.user)
-    return render(request, 'midi/change_password.html', {'form': form})
+    return render(request, 'base/profile.html', {'form': form})
 
 @require_POST
 @login_required(login_url='login')

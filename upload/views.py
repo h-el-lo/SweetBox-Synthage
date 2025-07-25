@@ -13,6 +13,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.urls import reverse
 from base.models import Profile
+import json
 # Create your views here.
 
 def create_default_preset(user):
@@ -256,10 +257,25 @@ def create_preset(request):
     return redirect('dashboard')
 
 
+def get_boards():
+    try:
+        with open(os.path.join(settings.BASE_DIR, 'upload', 'boards.json'), 'r') as f:
+            boards = json.load(f)
+    except FileNotFoundError:
+        boards = []
+    return boards
+
+
 @login_required(login_url='login')
 def upload(request):
+    boards = get_boards()
+    mcus = {board['mcu'] for board in boards}
+    midi_modes = [board['midi_modes'] for board in boards]
     context = {
+        'mcus': sorted(mcus),
+        'midi_modes': midi_modes,
+        'boards': boards,
         'presets': Preset.objects.filter(owner=request.user),
         'hide_upload_link':True,
     }
-    return render(request, 'midi/upload.html', context)
+    return render(request, 'upload/upload.html', context)
