@@ -15,10 +15,6 @@
                             <i class="bi bi-plug me-2"></i>
                             Connect
                         </button>
-                        <button id="clearBtn" class="btn btn-outline-secondary">
-                            <i class="bi bi-trash me-2"></i>
-                            Clear Log
-                        </button>
                     </div>
                 </div>
                 <div class="card-body">
@@ -57,11 +53,15 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="card">
-                                <div class="card-header">
+                                <div class="card-header d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0">
                                         <i class="bi bi-list-ul me-2"></i>
                                         MIDI Messages
                                     </h6>
+                                    <button id="clearBtn" class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-trash me-2"></i>
+                                        Clear Log
+                                    </button>
                                 </div>
                                 <div class="card-body p-0">
                                     <div id="midiLog" class="midi-log-container">
@@ -136,20 +136,42 @@ body.dark-mode .midi-message:hover {
 
 .midi-type.cc {
     background: none;
-    color: rgb(13, 202, 240) !important;
+    color: #0d6efd !important;
+    font-weight: 600;
 }
 .midi-type.program {
     background: none;
-    color: rgb(25, 135, 84) !important;
+    color: #198754 !important;
+    font-weight: 600;
 }
 .midi-type.note-on,
 .midi-type.note-off {
     background: none;
-    color: rgb(98, 119, 253) !important;
+    color: #6f42c1 !important;
+    font-weight: 600;
 }
 .midi-type.pitch {
     background: none;
-    color: #f50662 !important;
+    color: #dc3545 !important;
+    font-weight: 600;
+}
+
+/* Dark theme overrides for better contrast */
+body.dark-mode .midi-type.cc {
+    color: #3d8bfd !important;
+}
+
+body.dark-mode .midi-type.program {
+    color: #20c997 !important;
+}
+
+body.dark-mode .midi-type.note-on,
+body.dark-mode .midi-type.note-off {
+    color: #a78bfa !important;
+}
+
+body.dark-mode .midi-type.pitch {
+    color: #f87171 !important;
 }
 
 .midi-data {
