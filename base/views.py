@@ -424,7 +424,7 @@ def about(request):
 
     return render(request, 'base/about.html', context)
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def monitor(request):
     """MIDI Monitor page for real-time MIDI data monitoring"""
     context = {

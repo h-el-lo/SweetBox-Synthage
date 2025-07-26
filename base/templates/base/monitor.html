@@ -13,7 +13,7 @@
                     <div class="d-flex gap-2">
                         <button id="connectBtn" class="btn btn-primary">
                             <i class="bi bi-plug me-2"></i>
-                            Connect MIDI
+                            Connect
                         </button>
                         <button id="clearBtn" class="btn btn-outline-secondary">
                             <i class="bi bi-trash me-2"></i>
@@ -31,6 +31,13 @@
                                         <i class="bi bi-info-circle me-2"></i>
                                         Connection Status
                                     </h6>
+                                    <!-- MIDI Device Dropdown -->
+                                    <div class="mb-2">
+                                        <label for="midiDeviceSelect" class="form-label">Select MIDI Device</label>
+                                        <select id="midiDeviceSelect" class="form-select">
+                                            <option value="">-- No devices found --</option>
+                                        </select>
+                                    </div>
                                     <div id="connectionStatus" class="text-muted">
                                         <i class="bi bi-circle me-2"></i>
                                         Not connected
@@ -43,30 +50,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="card bg-light">
-                                <div class="card-body">
-                                    <h6 class="card-title">
-                                        <i class="bi bi-graph-up me-2"></i>
-                                        Statistics
-                                    </h6>
-                                    <div class="row text-center">
-                                        <div class="col-4">
-                                            <div class="h5 mb-0 text-primary" id="messageCount">0</div>
-                                            <small class="text-muted">Messages</small>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="h5 mb-0 text-success" id="noteCount">0</div>
-                                            <small class="text-muted">Notes</small>
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="h5 mb-0 text-info" id="ccCount">0</div>
-                                            <small class="text-muted">CC</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Removed Statistics section -->
                     </div>
 
                     <!-- MIDI Data Display -->
@@ -150,34 +134,22 @@ body.dark-mode .midi-message:hover {
     text-align: center;
 }
 
-.midi-type.note-on {
-    background-color: #d1e7dd;
-    color: #0f5132;
-}
-
-.midi-type.note-off {
-    background-color: #f8d7da;
-    color: #721c24;
-}
-
 .midi-type.cc {
-    background-color: #cff4fc;
-    color: #055160;
+    background: none;
+    color: rgb(13, 202, 240) !important;
 }
-
 .midi-type.program {
-    background-color: #fff3cd;
-    color: #664d03;
+    background: none;
+    color: rgb(25, 135, 84) !important;
 }
-
+.midi-type.note-on,
+.midi-type.note-off {
+    background: none;
+    color: rgb(98, 119, 253) !important;
+}
 .midi-type.pitch {
-    background-color: #e2e3e5;
-    color: #41464b;
-}
-
-.midi-type.aftertouch {
-    background-color: #f8d7da;
-    color: #721c24;
+    background: none;
+    color: #f50662 !important;
 }
 
 .midi-data {
@@ -251,6 +223,10 @@ body.dark-mode .midi-data {
     overflow: hidden;
 }
 
+a {
+    color: #f50662;
+}
+
 body.dark-mode .midi-visualizer {
     background: linear-gradient(to bottom, #23272e, #161b22);
 }
@@ -280,11 +256,9 @@ class MIDIMonitor {
     constructor() {
         this.midiAccess = null;
         this.midiInput = null;
-        this.messageCount = 0;
-        this.noteCount = 0;
-        this.ccCount = 0;
         this.isConnected = false;
-        
+        this.deviceList = [];
+        this.selectedDeviceId = null;
         this.initializeElements();
         this.bindEvents();
         this.checkMIDISupport();
@@ -299,52 +273,92 @@ class MIDIMonitor {
         this.deviceName = document.getElementById('deviceName');
         this.deviceManufacturer = document.getElementById('deviceManufacturer');
         this.deviceState = document.getElementById('deviceState');
-        this.messageCountEl = document.getElementById('messageCount');
-        this.noteCountEl = document.getElementById('noteCount');
-        this.ccCountEl = document.getElementById('ccCount');
+        this.deviceSelect = document.getElementById('midiDeviceSelect');
     }
 
     bindEvents() {
-        this.connectBtn.addEventListener('click', () => this.connectMIDI());
+        this.connectBtn.addEventListener('click', () => {
+            if (this.isConnected) {
+                this.disconnectMIDI();
+            } else {
+                this.connectMIDI();
+            }
+        });
         this.clearBtn.addEventListener('click', () => this.clearLog());
+        this.deviceSelect.addEventListener('change', (e) => {
+            this.selectedDeviceId = e.target.value;
+        });
     }
 
     checkMIDISupport() {
         if (!navigator.requestMIDIAccess) {
             this.showError('Web MIDI API is not supported in this browser. Please use Chrome, Edge, or Opera.');
             this.connectBtn.disabled = true;
+            this.deviceSelect.disabled = true;
             return false;
         }
+        this.populateMIDIDevices();
         return true;
     }
 
-    async connectMIDI() {
-        if (!this.checkMIDISupport()) return;
-
+    async populateMIDIDevices(preserveSelection = true) {
         try {
-            this.midiAccess = await navigator.requestMIDIAccess();
-            this.updateConnectionStatus('Connected to MIDI', true);
-            
-            const inputs = Array.from(this.midiAccess.inputs.values());
-            
-            if (inputs.length === 0) {
-                this.showError('No MIDI input devices found. Please connect a MIDI device and try again.');
-                return;
+            if (!this.midiAccess) {
+                this.midiAccess = await navigator.requestMIDIAccess();
+                // Listen for device connection/disconnection
+                this.midiAccess.onstatechange = () => this.populateMIDIDevices();
             }
-
-            // Use the first available input
-            this.midiInput = inputs[0];
-            this.midiInput.onmidimessage = (event) => this.handleMIDIMessage(event);
-            
-            this.updateDeviceInfo();
-            this.connectBtn.innerHTML = '<i class="bi bi-plug-fill me-2"></i>Disconnect';
-            this.connectBtn.classList.remove('btn-primary');
-            this.connectBtn.classList.add('btn-danger');
-            this.isConnected = true;
-
+            const prevSelectedId = preserveSelection ? this.deviceSelect.value : null;
+            this.deviceList = Array.from(this.midiAccess.inputs.values());
+            this.deviceSelect.innerHTML = '';
+            if (this.deviceList.length === 0) {
+                this.deviceSelect.innerHTML = '<option value="">-- No devices found --</option>';
+                this.deviceSelect.disabled = true;
+            } else {
+                this.deviceList.forEach((input, idx) => {
+                    const option = document.createElement('option');
+                    option.value = input.id;
+                    option.textContent = `${input.name} (${input.manufacturer || 'Unknown'})`;
+                    this.deviceSelect.appendChild(option);
+                });
+                this.deviceSelect.disabled = false;
+                // Try to preserve previous selection if still available
+                if (prevSelectedId && this.deviceList.some(d => d.id === prevSelectedId)) {
+                    this.selectedDeviceId = prevSelectedId;
+                    this.deviceSelect.value = prevSelectedId;
+                } else {
+                    this.selectedDeviceId = this.deviceList[0].id;
+                    this.deviceSelect.value = this.selectedDeviceId;
+                }
+            }
         } catch (error) {
             this.showError('Failed to access MIDI devices: ' + error.message);
         }
+    }
+
+    async connectMIDI() {
+        if (!this.midiAccess) {
+            await this.populateMIDIDevices();
+        }
+        if (!this.deviceList.length) {
+            this.showError('No MIDI input devices found. Please connect a MIDI device and try again.');
+            return;
+        }
+        const selectedId = this.deviceSelect.value;
+        const input = this.deviceList.find(d => d.id === selectedId);
+        if (!input) {
+            this.showError('Selected MIDI device not found.');
+            return;
+        }
+        this.midiInput = input;
+        this.midiInput.onmidimessage = (event) => this.handleMIDIMessage(event);
+        this.updateConnectionStatus('Connected to MIDI', true);
+        this.updateDeviceInfo();
+        this.connectBtn.innerHTML = '<i class="bi bi-plug-fill me-2"></i>Disconnect';
+        this.connectBtn.classList.remove('btn-primary');
+        this.connectBtn.classList.add('btn-danger');
+        this.deviceSelect.disabled = true;
+        this.isConnected = true;
     }
 
     disconnectMIDI() {
@@ -354,9 +368,10 @@ class MIDIMonitor {
         }
         this.updateConnectionStatus('Disconnected', false);
         this.deviceInfo.style.display = 'none';
-        this.connectBtn.innerHTML = '<i class="bi bi-plug me-2"></i>Connect MIDI';
+        this.connectBtn.innerHTML = '<i class="bi bi-plug me-2"></i>Connect';
         this.connectBtn.classList.remove('btn-danger');
         this.connectBtn.classList.add('btn-primary');
+        this.deviceSelect.disabled = false;
         this.isConnected = false;
     }
 
@@ -379,10 +394,6 @@ class MIDIMonitor {
     handleMIDIMessage(event) {
         const data = event.data;
         const timestamp = Date.now();
-        
-        this.messageCount++;
-        this.updateCounters();
-
         const message = this.parseMIDIMessage(data, timestamp);
         this.addMessageToLog(message);
     }
@@ -391,9 +402,7 @@ class MIDIMonitor {
         const status = data[0];
         const channel = (status & 0x0F) + 1;
         const messageType = status & 0xF0;
-        
         let type, description, values = {};
-
         switch (messageType) {
             case 0x80: // Note Off
                 type = 'note-off';
@@ -401,47 +410,38 @@ class MIDIMonitor {
                 values.velocity = data[2];
                 description = `Note Off: ${this.getNoteName(data[1])} (${data[1]}) - Velocity: ${data[2]}`;
                 break;
-                
             case 0x90: // Note On
                 type = 'note-on';
                 values.note = data[1];
                 values.velocity = data[2];
                 description = `Note On: ${this.getNoteName(data[1])} (${data[1]}) - Velocity: ${data[2]}`;
-                this.noteCount++;
                 break;
-                
             case 0xB0: // Control Change
                 type = 'cc';
                 values.controller = data[1];
                 values.value = data[2];
                 description = `CC: ${data[1]} - Value: ${data[2]}`;
-                this.ccCount++;
                 break;
-                
             case 0xC0: // Program Change
                 type = 'program';
                 values.program = data[1];
                 description = `Program Change: ${data[1]}`;
                 break;
-                
             case 0xD0: // Channel Pressure
                 type = 'aftertouch';
                 values.pressure = data[1];
                 description = `Channel Pressure: ${data[1]}`;
                 break;
-                
             case 0xE0: // Pitch Bend
                 type = 'pitch';
                 const pitchValue = ((data[2] << 7) | data[1]) - 8192;
                 values.pitch = pitchValue;
                 description = `Pitch Bend: ${pitchValue}`;
                 break;
-                
             default:
                 type = 'unknown';
                 description = `Unknown: ${Array.from(data).map(b => b.toString(16).padStart(2, '0')).join(' ')}`;
         }
-
         return {
             timestamp,
             type,
@@ -462,35 +462,24 @@ class MIDIMonitor {
     addMessageToLog(message) {
         const messageEl = document.createElement('div');
         messageEl.className = 'midi-message';
-        
         const time = new Date(message.timestamp).toLocaleTimeString();
-        
         messageEl.innerHTML = `
             <span class="midi-timestamp">${time}</span>
             <span class="midi-type ${message.type}">${message.type.toUpperCase()}</span>
             <span class="midi-channel">Ch:${message.channel}</span>
             <span class="midi-data">${message.description}</span>
         `;
-        
         // Remove the "no messages" placeholder if it exists
         const placeholder = this.midiLog.querySelector('.text-center');
         if (placeholder) {
             placeholder.remove();
         }
-        
         this.midiLog.insertBefore(messageEl, this.midiLog.firstChild);
-        
         // Keep only the last 100 messages
         const messages = this.midiLog.querySelectorAll('.midi-message');
         if (messages.length > 100) {
             messages[messages.length - 1].remove();
         }
-    }
-
-    updateCounters() {
-        this.messageCountEl.textContent = this.messageCount;
-        this.noteCountEl.textContent = this.noteCount;
-        this.ccCountEl.textContent = this.ccCount;
     }
 
     clearLog() {
@@ -501,10 +490,6 @@ class MIDIMonitor {
                 <p class="small">Connect a MIDI device to start monitoring</p>
             </div>
         `;
-        this.messageCount = 0;
-        this.noteCount = 0;
-        this.ccCount = 0;
-        this.updateCounters();
     }
 
     showError(message) {
@@ -515,10 +500,8 @@ class MIDIMonitor {
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
-        
         const container = document.querySelector('.container-fluid');
         container.insertBefore(alertEl, container.firstChild);
-        
         // Auto-remove after 5 seconds
         setTimeout(() => {
             if (alertEl.parentNode) {
@@ -527,7 +510,6 @@ class MIDIMonitor {
         }, 5000);
     }
 }
-
 // Initialize MIDI Monitor when page loads
 document.addEventListener('DOMContentLoaded', () => {
     new MIDIMonitor();
