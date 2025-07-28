@@ -1,3 +1,5 @@
+{% load static%}
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -211,4 +213,5 @@
     updateMidiModesForBoard(board.value);
 
 </script>
+<script src="{% static 'js/upload.js' %}"></script>
 {% endblock %}

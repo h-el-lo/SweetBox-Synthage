@@ -1,6 +1,6 @@
 [
   {
-    "board": "Arduino Pro Micro",
+    "board": "Sparkfun Pro Micro",
     "mcu": "ATmega32U4",
     "midi_modes": ["USB"]
   },

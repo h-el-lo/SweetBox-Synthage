@@ -20,6 +20,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.urls import reverse
 from django.views.decorators.http import require_POST
+from django.core import serializers
 # Create your views here.
 
 def create_default_preset(user):
@@ -431,3 +432,24 @@ def monitor(request):
         'hide_monitor_link': True,
     }
     return render(request, 'base/monitor.html', context)
+
+@login_required(login_url='login')
+def user_presets_json(request):
+    """Return the current user's presets as JSON for AJAX auto-update."""
+    presets = Preset.objects.filter(owner=request.user).order_by('-updated')
+    # Only include fields needed for dashboard rendering
+    data = [
+        {
+            'id': p.id,
+            'name': p.name,
+            'number_of_knobs': p.number_of_knobs,
+            'number_of_buttons': p.number_of_buttons,
+            'keys_channel': p.keys_channel,
+            'has_joystick': p.has_joystick,
+            'is_private': p.is_private,
+            'created': p.created.strftime('%b %d, %Y'),
+            'updated': p.updated.strftime('%b %d, %Y'),
+        }
+        for p in presets
+    ]
+    return JsonResponse({'presets': data, 'preset_count': len(data)})

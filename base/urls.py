@@ -14,4 +14,5 @@ urlpatterns = [
     path('monitor/', views.monitor, name='monitor'),
     path('change_password/', views.change_password, name="change_password"),
     path('toggle_is_private/', views.toggle_is_private, name='toggle_is_private'),
+    path('user_presets_json/', views.user_presets_json, name='user_presets_json'),
 ]

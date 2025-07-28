@@ -85,7 +85,7 @@
         </div>
     {% else %}
         <!-- Presets Grid -->
-        <div class="row g-4">
+        <div id="preset-list" class="row g-4">
 {% for preset in presets %}
                 <div class="col-md-6 col-lg-4">
                     <div class="card h-100 border-0 shadow-sm hover-lift" style="transition: all 0.3s ease;">
@@ -497,4 +497,75 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// --- Auto-update preset list ---
+(function() {
+    let lastPresetsJson = '';
+    function renderPresets(presets) {
+        if (!presets.length) {
+            return `<div class="col-12"><div class="card border-0 shadow-sm" style="background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);"><div class="card-body text-center py-5"><div class="mb-4"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="8" width="48" height="48" rx="12" fill="#3b82f6" opacity="0.2"/><rect x="16" y="16" width="32" height="32" rx="8" fill="#3b82f6" opacity="0.1"/><circle cx="32" cy="32" r="8" fill="#3b82f6"/></svg></div><h3 class="h4 mb-3" style="color: #3b82f6;">No Presets Yet</h3><p class="text-muted mb-4">Get started by creating your first preset for your MIDI controller.</p><button class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#createPresetModal"><i class="bi bi-plus-circle me-2"></i>Create Default Preset</button></div></div></div>`;
+        }
+        return presets.map(preset => `
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm hover-lift" style="transition: all 0.3s ease;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="flex-grow-1">
+                                <h5 class="card-title mb-1" style="color: #1e293b; font-weight: 600;">
+                                    ${preset.name}
+                                    ${preset.is_private ? '<i class="bi bi-lock-fill ms-2" title="Private preset" style="color:#3b82f6;"></i>' : ''}
+                                </h5>
+                                <p class="text-muted small mb-0 d-flex align-items-center flex-wrap" style="gap: 0.5em;">
+                                    <span>${preset.number_of_knobs} knob${preset.number_of_knobs == 1 ? '' : 's'}</span>
+                                    <span class="mx-2" style="color:#6c757d;">|</span>
+                                    <span>${preset.number_of_buttons} button${preset.number_of_buttons == 1 ? '' : 's'}</span>
+                                    <span class="mx-2" style="color:#6c757d;">|</span>
+                                    <span>Channel ${preset.keys_channel}</span>
+                                    ${preset.has_joystick ? '<i class="bi bi-joystick ms-2" title="Joystick enabled" style="color:#3b82f6;"></i>' : ''}
+                                </p>
+                            </div>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Preset options">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="/portal?preset=${preset.id}" title="Configure Preset"><i class="bi bi-gear me-2"></i>Configure</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item text-danger" href="/delete_preset/${preset.id}" title="Delete Preset"><i class="bi bi-trash me-2"></i>Delete</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between text-muted small mb-1">
+                                <span>Created</span>
+                                <span>${preset.created}</span>
+                            </div>
+                            <div class="d-flex justify-content-between text-muted small">
+                                <span>Updated</span>
+                                <span>${preset.updated}</span>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <a href="/portal?preset=${preset.id}" class="btn btn-primary"><i class="bi bi-gear me-2"></i>Configure Preset</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    function fetchAndUpdatePresets() {
+        fetch('/user_presets_json/')
+            .then(resp => resp.json())
+            .then(data => {
+                const jsonStr = JSON.stringify(data.presets);
+                if (jsonStr !== lastPresetsJson) {
+                    lastPresetsJson = jsonStr;
+                    document.getElementById('preset-list').innerHTML = renderPresets(data.presets);
+                }
+            });
+    }
+    setInterval(fetchAndUpdatePresets, 5000);
+    // Optionally, fetch once on load
+    fetchAndUpdatePresets();
+})();
 </script>
