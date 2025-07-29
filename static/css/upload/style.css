@@ -206,7 +206,7 @@ div.clear {
   display: block;
   overflow: hidden;
   cursor: pointer;
-  border: 1px solid #900;
+  border: 1px solid #818b97;
   border-radius: 15px;
   transition: border 0.3s ease-in 0s;
 }
@@ -237,14 +237,14 @@ div.clear {
 .onoffswitch-inner:before {
   content: "on";
   padding-left: 6px;
-  background-color: #8ec641;
+  background-color: #2563eb;
   color: #fff;
 }
 
 .onoffswitch-inner:after {
   content: "off";
   padding-right: 6px;
-  background-color: #c64141;
+  background-color: #818b97;
   color: #fff;
   text-align: right;
 }
@@ -258,13 +258,13 @@ div.clear {
   top: 0;
   bottom: 0;
   right: 23px;
-  border: 1px solid #900;
+  border: 1px solid #818b97;
   border-radius: 15px;
   transition: all 0.3s ease-in 0s;
 }
 
 .onoffswitch-checkbox:checked + .onoffswitch-label {
-  border-color: #71ae1e;
+  border-color: #3b82f6;
 }
 
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
@@ -273,7 +273,7 @@ div.clear {
 
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
   right: 0px;
-  border-color: #67ac38;
+  border-color: #3b82f6;
 }
 
 .footer .onoffswitch {
