@@ -1,4 +1,4 @@
 from waitress import serve
 from SweetBoxSYNTHAGE.wsgi import application  # Replace with your project name
 
-serve(application, host='127.0.0.1', port=8000)
+serve(application, host='0.0.0.0', port=8000)
