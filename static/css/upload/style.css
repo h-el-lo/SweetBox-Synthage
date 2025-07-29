@@ -8,9 +8,7 @@
   height: 85px;
   line-height: 40px;
   padding: 20px 70px 0px 70px; /* TRouBLe */
-  position: fixed;
   width: 100%;
-  z-index: 1000;
   margin: 0;
   border-bottom: 5px solid #00a7e9;
 }
@@ -44,12 +42,12 @@ button,
   border-width: 2px;
 }
 
-body {
+/* body {
   font-family: proxima-nova, sans-serif;
   font-style: normal;
   font-weight: 400;
   margin: 0;
-}
+} */
 
 p {
   margin: 0;
@@ -82,7 +80,6 @@ div.clear {
 .main {
   overflow-x: hidden;
   overflow-y: auto;
-  padding-top: 80px;
 }
 
 .hidden {

@@ -1,392 +1,198 @@
 {% extends 'base.html' %}
 
+{% block content %}
+
 {% load static %}
 
-{% block content %}
-<div class="container" style="max-width: 800px; margin-top: 40px;">
-    <!-- Header Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="h2 mb-1" style="color: #3b82f6; font-weight: 600;">Firmware Upload</h1>
-                    <p class="text-muted mb-0">Upload and manage your MIDI controller firmware</p>
-                </div>
-            </div>
-        </div>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.js"></script>
+<!-- import the web page's stylesheets along with the themes -->
+<link rel="stylesheet" href="https://use.typekit.net/qtk5kiq.css" />
+<link rel="stylesheet" href="{% static 'css/upload/style.css' %}" />
+<link
+  rel="stylesheet"
+  href="{% static 'css/upload//light.css' %}"
+  id="light"
+  class="alternate"
+  disabled
+/>
+<link
+  rel="stylesheet"
+  href="{% static 'css/upload/dark.css' %}"
+  id="dark"
+  class="alternate"
+  disabled
+/>
+<script type="module" src="{% static 'js/upload.js' %}" defer></script>
+<!-- ------------------------------------------------------------- -->
+
+<div class="container-fluid py-4">
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">
+            <i class="bi bi-music-note-beamed me-2"></i>
+            ESP Firmware Uploader
+        </h4>
     </div>
-
-    <!-- Upload Form -->
-    <div class="card border-0 shadow-sm">
-        <div class="card-body p-4">
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                
-                <!-- Preset Selection -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Select Preset</label>
-                    <select name="preset_id" class="form-select" required>
-                        <option value="">Choose a preset...</option>
-                        {% for preset in presets %}
-                            <option value="{{ preset.id }}">{{ preset.name }} ({{ preset.number_of_knobs }} knobs, {{ preset.number_of_buttons }} buttons)</option>
-                        {% endfor %}
-                    </select>
-                    <div class="form-text">Select the preset you want to upload firmware for.</div>
-                </div>
-
-                <!-- Firmware Type -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Firmware Type</label>
-                    <select name="firmware_type" class="form-select" required>
-                        <option value="1">Firmware</option>
-                        <option value="2">Bootloader</option>
-                    </select>
-                    <div class="form-text">Choose the type of firmware to upload.</div>
-                </div>
-
-                <!-- Microcontroller Selection -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Microcontroller</label>
-                    <select name="mcu" id="mcu-select" class="form-select" required>
-                        {% for mcu in mcus %}
-                            <option value="{{ mcu }}">{{ mcu }}</option>
-                        {% endfor %}
-                    </select>
-                    <div class="form-text">Select your target microcontroller.</div>
-                </div>
-
-                <!-- select board options -->
-                <div class="mb-4" id="board-options" style="display: none;">
-                    <label class="form-label fw-semibold">Board</label>
-                    <select name="board" class="form-select board-select" required>
-                        {% for board in boards %}
-                            <option value="{{ board.board }}" data-mcu="{{ board.mcu }}">{{ board.board }}</option>
-                        {% endfor %}
-                    </select>
-                    <div class="form-text">Select your target Board.</div>
-                </div>
-
-        
-                <!-- midi transfer mode options -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Midi Transfer Mode</label>
-                    <select name="midi_transfer_mode" id="midi-mode-select" class="form-select" required>
-                        <!-- Options will be populated dynamically -->
-                         {% for board in boards %}
-                            {% for mode in midi_modes %}
-                                <option value="{{ mcu }}">{{ mode }}</option>
-                            {% endfor %}
-                        {% endfor %}
-                    </select>
-                </div>
-
-                <!-- File Upload -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Firmware File</label>
-                    <input type="file" name="firmware_file" class="form-control" accept=".hex,.bin,.ino" required>
-                    <div class="form-text">Upload your firmware file (.hex, .bin, or .ino format).</div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="d-flex gap-3 flex-wrap">
-                    <button type="submit" name="action" value="generate" class="btn btn-primary">
-                        <i class="bi bi-gear me-2"></i>Generate Firmware
-                    </button>
-                    <button type="submit" name="action" value="upload" class="btn btn-success">
-                        <i class="bi bi-upload me-2"></i>Upload Firmware
-                    </button>
-                    <button type="submit" name="action" value="download" class="btn btn-outline-primary">
-                        <i class="bi bi-download me-2"></i>Download Firmware
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ESP32/ESP8266 WebSerial Upload Section (hidden by default) -->
-    <div class="card border-0 shadow-sm">
-      <div class="card-header bg-light border-0">
-        <h3 class="h5 mb-0" style="color: #1e293b;">
-            <i class="bi bi-gear me-2"></i>General MIDI Settings
-        </h3>
-    </div>
-        <div class="card-body p-4">
-    <header class="header">
-        <div class="left">
-          <h3>ESP WebSerial Uploader</h3>
-        </div>
-        <div class="right">
-          <select id="baudRate"></select>
-          <button id="butConnect" type="button">Connect</button>
-        </div>
-      </header>
-      <main class="main">
-        <div id="notSupported" class="notSupported">
-          Sorry, <b>Web Serial</b> is not supported on this device, make sure
-          you're running Chrome 89 or later.
-        </div>
-        <div class="subheader">
-          <div class="title left">Adafruit WebSerial ESPTool</div>
-          <div class="right">
-            <label for="noReset"> No reset for Passthrough updates</label>
-            <div class="onoffswitch" style="margin-right: 30px;">
-              <input
-                type="checkbox"
-                name="noReset"
-                class="onoffswitch-checkbox"
-                id="noReset"
-                checked="false"
-              />
-              <label class="onoffswitch-label" for="noReset">
-                <span class="onoffswitch-inner"></span>
-                <span class="onoffswitch-switch"></span>
-              </label>
-            </div>
-            <label for="darkmode"> Dark Mode </label>
-            <div class="onoffswitch">
-              <input
-                type="checkbox"
-                name="darkmode"
-                class="onoffswitch-checkbox"
-                id="darkmode"
-              />
-              <label class="onoffswitch-label" for="darkmode">
-                <span class="onoffswitch-inner"></span>
-                <span class="onoffswitch-switch"></span>
-              </label>
-            </div>
-          </div>
-          </div>
-        </div>
-        <div id="app">
-          <div id="commands">
-            <div class="upload">
-              <label
-                >Offset: 0x
-                <input class="offset" type="text" value="0" />
-              </label>
-              <label class="firmware">
-                <input type="file" accept=".bin" />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="17"
-                  viewbox="0 0 20 17"
-                >
-                  <path
-                    d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
+    <div class="card-body p-4">
+        <header class="header">
+            <div class="left">
+                <label for="noReset"> No reset for Passthrough updates</label>
+                <div class="onoffswitch" style="margin-right: 30px;">
+                  <input
+                    type="checkbox"
+                    name="noReset"
+                    class="onoffswitch-checkbox"
+                    id="noReset"
+                    checked="false"
                   />
-                </svg>
-                <span>Choose a file&hellip;</span>
-              </label>
-              <div class="progress-bar hidden"><div></div></div>
-            </div>
-            <div class="upload">
-              <label
-                >Offset: 0x
-                <input class="offset" type="text" value="0" />
-              </label>
-              <label class="firmware">
-                <input type="file" accept=".bin" />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="17"
-                  viewbox="0 0 20 17"
-                >
-                  <path
-                    d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
+                  <label class="onoffswitch-label" for="noReset">
+                    <span class="onoffswitch-inner"></span>
+                    <span class="onoffswitch-switch"></span>
+                  </label>
+                </div>
+                <label for="darkmode"> Dark Mode </label>
+                <div class="onoffswitch">
+                  <input
+                    type="checkbox"
+                    name="darkmode"
+                    class="onoffswitch-checkbox"
+                    id="darkmode"
                   />
-                </svg>
-                <span>Choose a file&hellip;</span>
-              </label>
-              <div class="progress-bar hidden"><div></div></div>
+                  <label class="onoffswitch-label" for="darkmode">
+                    <span class="onoffswitch-inner"></span>
+                    <span class="onoffswitch-switch"></span>
+                  </label>
+                </div>
             </div>
-            <div class="upload">
-              <label
-                >Offset: 0x
-                <input class="offset" type="text" value="0" />
-              </label>
-              <label class="firmware">
-                <input type="file" accept=".bin" />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="17"
-                  viewbox="0 0 20 17"
-                >
-                  <path
-                    d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
-                  />
-                </svg>
-                <span>Choose a file&hellip;</span>
-              </label>
-              <div class="progress-bar hidden"><div></div></div>
+            <div class="right">
+              <select id="baudRate"></select>
+              <button id="butConnect" type="button">Connect</button>
             </div>
-            <div class="upload">
-              <label
-                >Offset: 0x
-                <input class="offset" type="text" value="0" />
-              </label>
-              <label class="firmware">
-                <input type="file" accept=".bin" />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="17"
-                  viewbox="0 0 20 17"
-                >
-                  <path
-                    d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
-                  />
-                </svg>
-                <span>Choose a file&hellip;</span>
-              </label>
-              <div class="progress-bar hidden"><div></div></div>
+          </header>
+          <main class="main">
+            <div id="notSupported" class="notSupported">
+              Sorry, <b>Web Serial</b> is not supported on this device, make sure
+              you're running Chrome 89 or later.
             </div>
-            <div class="buttons">
-              <button id="butErase" type="button" disabled="disabled">
-                Erase
-              </button>
-              <button id="butProgram" type="button" disabled="disabled">
-                Program
-              </button>
-            </div>
-          </div>
-          <div id="log"></div>
-        </div>
-        <div class="justify controls">
-            <div>
-              <label for="autoscroll">Autoscroll </label>
-              <div class="onoffswitch">
-                <input
-                  type="checkbox"
-                  name="autoscroll"
-                  class="onoffswitch-checkbox"
-                  id="autoscroll"
-                />
-                <label class="onoffswitch-label" for="autoscroll">
-                  <span class="onoffswitch-inner"></span>
-                  <span class="onoffswitch-switch"></span>
-                </label>
+            <div id="app">
+              <div id="commands">
+                <div class="upload">
+                  <label
+                    >Offset: 0x
+                    <input class="offset" type="text" value="0" />
+                  </label>
+                  <label class="firmware">
+                    <input type="file" accept=".bin" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="17"
+                      viewbox="0 0 20 17"
+                    >
+                      <path
+                        d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
+                      />
+                    </svg>
+                    <span>Choose a file&hellip;</span>
+                  </label>
+                  <div class="progress-bar hidden"><div></div></div>
+                </div>
+                <div class="upload">
+                  <label
+                    >Offset: 0x
+                    <input class="offset" type="text" value="0" />
+                  </label>
+                  <label class="firmware">
+                    <input type="file" accept=".bin" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="17"
+                      viewbox="0 0 20 17"
+                    >
+                      <path
+                        d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
+                      />
+                    </svg>
+                    <span>Choose a file&hellip;</span>
+                  </label>
+                  <div class="progress-bar hidden"><div></div></div>
+                </div>
+                <div class="upload">
+                  <label
+                    >Offset: 0x
+                    <input class="offset" type="text" value="0" />
+                  </label>
+                  <label class="firmware">
+                    <input type="file" accept=".bin" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="17"
+                      viewbox="0 0 20 17"
+                    >
+                      <path
+                        d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
+                      />
+                    </svg>
+                    <span>Choose a file&hellip;</span>
+                  </label>
+                  <div class="progress-bar hidden"><div></div></div>
+                </div>
+                <div class="upload">
+                  <label
+                    >Offset: 0x
+                    <input class="offset" type="text" value="0" />
+                  </label>
+                  <label class="firmware">
+                    <input type="file" accept=".bin" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="17"
+                      viewbox="0 0 20 17"
+                    >
+                      <path
+                        d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
+                      />
+                    </svg>
+                    <span>Choose a file&hellip;</span>
+                  </label>
+                  <div class="progress-bar hidden"><div></div></div>
+                </div>
+                <div class="buttons">
+                  <button id="butErase" type="button" disabled="disabled">
+                    Erase
+                  </button>
+                  <button id="butProgram" type="button" disabled="disabled">
+                    Program
+                  </button>
+                </div>
               </div>
+              <div id="log"></div>
             </div>
-            <button id="butClear" type="button">Clear Text</button>
-          </div>
-      </main>
-    </div>
-    </div>
-
-    <!-- Instructions -->
-    <div class="card border-0 shadow-sm mt-4 mb-5">
-        <div class="card-header bg-light border-0">
-            <h5 class="mb-0">
-                <i class="bi bi-info-circle me-2"></i>Upload Instructions
-            </h5>
-        </div>
-        <div class="card-body">
-            <ol class="mb-0">
-                <li>Select the preset you want to upload firmware for</li>
-                <li>Choose the appropriate firmware type and microcontroller</li>
-                <li>Upload your firmware file</li>
-                <li>Click the appropriate action button based on your needs</li>
-                <li>Follow any additional instructions that appear</li>
-            </ol>
-        </div>
+          </main>
+            <div class="justify controls footer">
+              <div>
+                <label for="autoscroll">Autoscroll </label>
+                <div class="onoffswitch">
+                  <input
+                    type="checkbox"
+                    name="autoscroll"
+                    class="onoffswitch-checkbox"
+                    id="autoscroll"
+                  />
+                  <label class="onoffswitch-label" for="autoscroll">
+                    <span class="onoffswitch-inner"></span>
+                    <span class="onoffswitch-switch"></span>
+                  </label>
+                </div>
+              </div>
+              <button id="butClear" type="button">Clear Text</button>
+            </div>
     </div>
 </div>
+</div>
 
-<style>
-.card {
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.btn {
-    border-radius: 8px;
-    font-weight: 500;
-    padding: 0.75rem 1.5rem;
-}
-
-.form-control, .form-select {
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
-}
-
-@media (max-width: 576px) {
-    .d-flex.gap-3.flex-wrap {
-        flex-direction: column;
-    }
-    
-    .btn {
-        width: 100%;
-        margin-bottom: 0.5rem;
-    }
-}
-</style>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    let mcu = document.getElementById('mcu-select');
-    let board = document.querySelector('select[name="board"]');
-    let boardContainer = document.getElementById('board-options');
-    let midi_transfer_mode = document.getElementById('midi-mode-select');
-
-    // Get all board options as an array
-    const allBoardOptions = Array.from(board.options);
-
-    // Prepare a map of board name to its midi_modes from Django context
-    const boardMidiModesMap = {};
-    // Django template to populate the map
-    {% for board in boards %}
-    boardMidiModesMap["{{ board.board|escapejs }}"] = {{ board.midi_modes|safe }};
-    {% endfor %}
-
-    function updateBoardOptionsForMCU(selectedMCU) {
-        board.innerHTML = '';
-        let hasOption = false;
-        allBoardOptions.forEach(opt => {
-            if (opt.getAttribute('data-mcu') === selectedMCU) {
-                board.appendChild(opt.cloneNode(true));
-                hasOption = true;
-            }
-        });
-        boardContainer.style.display = hasOption ? 'block' : 'none';
-        board.dispatchEvent(new Event('change'));
-    }
-
-    function updateMidiModesForBoard(selectedBoard) {
-        midi_transfer_mode.innerHTML = '';
-        const modes = boardMidiModesMap[selectedBoard] || [];
-        modes.forEach(mode => {
-            const opt = document.createElement('option');
-            opt.value = mode;
-            opt.textContent = mode;
-            midi_transfer_mode.appendChild(opt);
-        });
-    }
-
-    // On MCU change, update board options
-    mcu.addEventListener('change', function() {
-        updateBoardOptionsForMCU(mcu.value);
-    });
-
-    // On board change, update midi mode options
-    board.addEventListener('change', function() {
-        updateMidiModesForBoard(board.value);
-    });
-
-    // On page load, filter boards for the initial MCU and update midi modes
-    updateBoardOptionsForMCU(mcu.value);
-    updateMidiModesForBoard(board.value);
-
-</script>
-<script src="{% static 'js/upload.js' %}"></script>
-<link rel="stylesheet" href="{% static 'css/style.css' %}">
-{% endblock %}
+{% endblock content %}

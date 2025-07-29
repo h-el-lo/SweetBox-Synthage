@@ -1,0 +1,690 @@
+:root {
+    --primary-color: #3b82f6;
+    --primary-dark: #2563eb;
+    --secondary-color: #06b6d4;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --border-color: #e2e8f0;
+    --shadow-light: 0 4px 32px rgba(0,0,0,0.08);
+    --shadow-medium: 0 8px 32px rgba(0,0,0,0.12);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Modern Navbar Styles */
+.navbar {
+    background: #f6f8fa !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: none;
+    padding: 1rem 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    transition: var(--transition);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color) !important;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    transition: var(--transition);
+}
+
+.navbar-nav {
+    gap: 0.5rem;
+}
+
+.nav-link {
+    color: var(--text-primary) !important;
+    font-weight: 500;
+    padding: 0.75rem 1.25rem !important;
+    border-radius: 12px;
+    transition: var(--transition);
+    position: relative;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 12px;
+    opacity: 0;
+    transition: var(--transition);
+    z-index: -1;
+}
+
+.nav-link:hover::before,
+.nav-link.active::before {
+    opacity: 1;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    color: white !important;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+}
+
+.nav-link i {
+    font-size: 1.1rem;
+}
+
+/* Mobile Navigation */
+.navbar-toggler {
+    border: none;
+    padding: 0.5rem;
+    border-radius: 12px;
+    background: transparent;
+    transition: var(--transition);
+}
+
+.navbar-toggler:focus {
+    box-shadow: none;
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.hamburger {
+    width: 24px;
+    height: 24px;
+    position: relative;
+    cursor: pointer;
+}
+
+.hamburger span {
+    display: block;
+    position: absolute;
+    height: 5px;
+    width: 100%;
+    background: var(--primary-color);
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+.hamburger span:nth-child(1) {
+    top: 0px;
+}
+
+.hamburger span:nth-child(2) {
+    top: 10px;
+}
+
+.hamburger span:nth-child(3) {
+    top: 20px;
+}
+
+.hamburger.active span:nth-child(1) {
+    transform: rotate(45deg);
+    top: 10px;
+}
+
+.hamburger.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg);
+    top: 10px;
+}
+
+/* Mobile Menu */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid var(--border-color);
+        box-shadow: var(--shadow-medium);
+        padding: 1rem 0;
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: var(--transition);
+    }
+
+    .navbar-collapse.show {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .navbar-nav {
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0 1rem;
+    }
+
+    .nav-link {
+        padding: 1rem 1.5rem !important;
+        border-radius: 12px;
+        margin: 0.25rem 0;
+        font-size: 1.1rem;
+    }
+
+    .nav-link:hover {
+        transform: translateX(8px);
+    }
+}
+
+/* Theme Toggle */
+.theme-toggle {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    padding: 0.75rem;
+    border-radius: 12px;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.theme-toggle:hover {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+/* Main Content */
+.main-content {
+    margin-top: 60px;
+    min-height: calc(100vh - 80px);
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    --text-primary: #e5e7eb;
+    --text-secondary: #94a3b8;
+    --bg-primary: #1e293b;
+    --bg-secondary: #0f172a;
+    --border-color: #334155;
+}
+
+body.dark-mode .navbar {
+    background: #23272e !important;
+    border-bottom-color: rgba(51, 65, 85, 0.8);
+}
+
+body.dark-mode .nav-link {
+    color: var(--text-primary) !important;
+}
+
+body.dark-mode .navbar-collapse {
+    /* background: rgba(30, 41, 59, 0.98); */
+    border-top-color: var(--border-color);
+}
+
+body.dark-mode .hamburger span {
+    background: var(--text-primary);
+}
+
+body.dark-mode .theme-toggle {
+    color: var(--text-primary);
+}
+
+body.dark-mode .theme-toggle:hover {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+body.dark-mode footer {
+    color: #c9d1d9 !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 98vw;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+@media (max-width: 991.98px) {
+    .navbar .searchbar-wrapper {
+        margin-right: 0.5rem;
+        min-width: 120px;
+    }
+    .navbar-brand span {
+        font-size: 1rem;
+    }
+    .navbar .form-control[type="search"] {
+        font-size: 1rem;
+        height: 36px;
+    }
+    .profile-sidebar {
+        width: 90vw !important;
+        min-width: 0 !important;
+        border-radius: 0 !important;
+    }
+}
+@media (max-width: 768px) {
+    .navbar .searchbar-wrapper {
+        margin-right: 0.2rem;
+    }
+    .navbar {
+        padding: 0.5rem 0;
+    }
+    .main-content {
+        margin-top: 56px;
+        padding: 0.5rem 0.2rem;
+    }
+    .site-footer {
+        font-size: 0.95rem;
+        padding: 1rem 0.2rem;
+    }
+}
+@media (max-width: 600px) {
+    .navbar-brand span {
+        font-size: 0.95rem;
+    }
+    .logo-icon {
+        width: 28px;
+        height: 28px;
+    }
+    .main-content {
+        margin-top: 48px;
+        padding: 0.2rem 0.1rem;
+    }
+    .site-footer {
+        font-size: 0.9rem;
+        padding: 0.7rem 0.1rem;
+    }
+}
+@media (max-width: 400px) {
+    .navbar-brand span {
+        display: none;
+    }
+    .logo-icon {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+/* Searchbar Styles */
+.navbar .navbar-collapse {
+    flex-grow: 1;
+}
+.navbar .searchbar-wrapper {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    margin-right: 1.5rem;
+    min-width: 0;
+}
+.navbar .form-control[type="search"] {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    border: 1.5px solid #2d333b;
+    background: #23272e;
+    color: #e5e7eb;
+    border-radius: 10px 0 0 10px;
+    box-shadow: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+.navbar .form-control[type="search"]::placeholder {
+    color: #b6beca;
+    opacity: 1;
+}
+.navbar .form-control[type="search"]:focus {
+    border-color: #3b82f6;
+    outline: none;
+    background: #2d333b;
+}
+.navbar .btn.btn-outline-success {
+    border-radius: 0 10px 10px 0;
+    border: 1.5px solid #238636;
+    border-left: none;
+    background: #238636;
+    color: #fff;
+    font-weight: 500;
+    box-shadow: none;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.navbar .btn.btn-outline-success:hover, .navbar .btn.btn-outline-success:focus {
+    background: #196c2e;
+    color: #fff;
+    border-color: #196c2e;
+}
+@media (max-width: 768px) {
+    .navbar .searchbar-wrapper {
+        margin-right: 0.5rem;
+    }
+}
+/* --- GitHub-like Light Theme --- */
+body:not(.dark-mode) {
+    background: #f6f8fa;
+    color: #24292f;
+}
+body:not(.dark-mode) .navbar {
+    background: #f6f8fa !important;
+    border-bottom: 1px solid #d0d7de;
+    box-shadow: 0 1px 0 #d8dee4;
+}
+body:not(.dark-mode) .navbar-brand span {
+    color: var(--primary-color) !important;
+}
+body:not(.dark-mode) .hamburger span {
+    background: #24292f !important;
+}
+body:not(.dark-mode) .nav-link {
+    color: #24292f !important;
+}
+body:not(.dark-mode) .nav-link.active,
+body:not(.dark-mode) .nav-link:hover {
+    background: #f6f8fa !important;
+    color: #0969da !important;
+    box-shadow: none;
+}
+body:not(.dark-mode) .main-content {
+    background: #f6f8fa;
+}
+body:not(.dark-mode) .github-card,
+body:not(.dark-mode) .list-group-item.bg-dark,
+body:not(.dark-mode) .card,
+body:not(.dark-mode) .github-dashboard-bg {
+    background: #ffffff !important;
+    border: 1px solid #d0d7de !important;
+    color: #24292f !important;
+    box-shadow: 0 1.5px 4px rgba(27,31,35,0.04);
+}
+body:not(.dark-mode) .list-group-item {
+    background: #fff !important;
+    border: 1px solid #d0d7de !important;
+    color: #24292f !important;
+}
+body:not(.dark-mode) .badge.bg-secondary {
+    background: #eaeef2 !important;
+    color: #57606a !important;
+}
+body:not(.dark-mode) .badge.bg-info {
+    background: #ddf4ff !important;
+    color: #0969da !important;
+}
+body:not(.dark-mode) .fw-bold,
+body:not(.dark-mode) .fw-semibold {
+    color: #24292f !important;
+}
+body:not(.dark-mode) .text-muted,
+body:not(.dark-mode) .small {
+    color: #57606a !important;
+}
+body:not(.dark-mode) .btn-outline-light {
+    background: #f6f8fa !important;
+    color: #24292f !important;
+    border: 1px solid #d0d7de !important;
+}
+body:not(.dark-mode) .btn-outline-light.active,
+body:not(.dark-mode) .btn-outline-light:active {
+    background: #0969da !important;
+    color: #fff !important;
+    border-color: #0969da !important;
+}
+body:not(.dark-mode) .form-control,
+body:not(.dark-mode) .github-search {
+    background: #f6f8fa !important;
+    color: #24292f !important;
+    border: 1px solid #d0d7de !important;
+}
+body:not(.dark-mode) .form-control:focus,
+body:not(.dark-mode) .github-search:focus {
+    border-color: #0969da !important;
+    box-shadow: 0 0 0 0.2rem rgba(9,105,218,0.08) !important;
+}
+body:not(.dark-mode) .site-footer {
+    background: #f6f8fa !important;
+    color: #57606a !important;
+    border-top: 1px solid #d0d7de;
+}
+body:not(.dark-mode) .profile-sidebar,
+body:not(.dark-mode) .styled-profile-sidebar {
+    background: #fff !important;
+    color: #24292f !important;
+    border-left: 1px solid #d0d7de !important;
+}
+body:not(.dark-mode) .sidebar-item,
+body:not(.dark-mode) .sidebar-link {
+    color: #24292f !important;
+}
+body:not(.dark-mode) .sidebar-item:hover,
+body:not(.dark-mode) .sidebar-link:hover {
+    background: #eaeef2 !important;
+    color: #0969da !important;
+}
+body:not(.dark-mode) .avatar-circle {
+    background: #0969da !important;
+    color: #fff !important;
+}
+body:not(.dark-mode) .github-pill {
+    background: #f6f8fa !important;
+    color: #24292f !important;
+    border: 1px solid #d0d7de !important;
+}
+body:not(.dark-mode) .github-pill:hover,
+body:not(.dark-mode) .github-pill:focus {
+    background: #0969da !important;
+    color: #fff !important;
+    border-color: #0969da !important;
+}
+body:not(.dark-mode) .alert-success {
+    background: #dafbe1 !important;
+    color: #1a7f37 !important;
+    border: 1px solid #d0d7de !important;
+}
+/* GitHub-styled dark theme for main-content except home page */
+body.dark-mode .main-content:not(.home-main-content) {
+    background: #161b22 !important;
+    color: #c9d1d9 !important;
+    border-radius: 12px;
+    border: 1px solid #30363d;
+    box-shadow: 0 2px 8px rgba(20,23,28,0.08);
+    padding: 2.5rem 2rem;
+    margin-top: 2.5rem;
+}
+body.dark-mode .main-content:not(.home-main-content) h1,
+body.dark-mode .main-content:not(.home-main-content) h2,
+body.dark-mode .main-content:not(.home-main-content) h3,
+body.dark-mode .main-content:not(.home-main-content) h4,
+body.dark-mode .main-content:not(.home-main-content) h5 {
+    color: #c9d1d9 !important;
+}
+body.dark-mode .main-content:not(.home-main-content) .card,
+body.dark-mode .main-content:not(.home-main-content) .github-card {
+    background: #23272e !important;
+    border: 1px solid #30363d !important;
+    color: #c9d1d9 !important;
+}
+body.dark-mode .main-content:not(.home-main-content) .card-title,
+body.dark-mode .main-content:not(.home-main-content) .card-body,
+body.dark-mode .main-content:not(.home-main-content) .card-text,
+body.dark-mode .main-content:not(.home-main-content) .text-muted,
+body.dark-mode .main-content:not(.home-main-content) .small {
+    color: #c9d1d9 !important;
+}
+body.dark-mode .main-content:not(.home-main-content) .btn-primary {
+    color: #fff !important;
+}
+body.dark-mode .main-content:not(.home-main-content) .form-control {
+    background: #23272e !important;
+    color: #c9d1d9 !important;
+    border: 1px solid #30363d !important;
+}
+body.dark-mode .main-content:not(.home-main-content) .form-control:focus {
+    background: #161b22 !important;
+    color: #fff !important;
+    border-color: #3b82f6 !important;
+}
+body.dark-mode .main-content:not(.home-main-content) input,
+body.dark-mode .main-content:not(.home-main-content) select,
+body.dark-mode .main-content:not(.home-main-content) textarea {
+    background: #23272e !important;
+    color: #c9d1d9 !important;
+    border: 1px solid #30363d !important;
+}
+body.dark-mode .main-content:not(.home-main-content) input:focus,
+body.dark-mode .main-content:not(.home-main-content) select:focus,
+body.dark-mode .main-content:not(.home-main-content) textarea:focus {
+    background: #161b22 !important;
+    color: #fff !important;
+    border-color: #3b82f6 !important;
+}
+/* Dark theme for knobs/buttons table section */
+body.dark-mode .main-content:not(.home-main-content) table,
+body.dark-mode .main-content:not(.home-main-content) .formset-table,
+body.dark-mode .main-content:not(.home-main-content) thead,
+body.dark-mode .main-content:not(.home-main-content) tbody,
+body.dark-mode .main-content:not(.home-main-content) tr,
+body.dark-mode .main-content:not(.home-main-content) th,
+body.dark-mode .main-content:not(.home-main-content) td {
+    background: #23272e !important;
+    color: #c9d1d9 !important;
+    border-color: #30363d !important;
+}
+body.dark-mode .main-content:not(.home-main-content) th {
+    font-weight: 600;
+}
+body.dark-mode .main-content:not(.home-main-content) .table-bordered {
+    border: 1px solid #30363d !important;
+}
+/* Dark theme for card headers */
+body.dark-mode .main-content:not(.home-main-content) .card-header,
+body.dark-mode .main-content:not(.home-main-content) .github-card-header,
+body.dark-mode .main-content:not(.home-main-content) .card-title-bar {
+    background: #23272e !important;
+    color: #c9d1d9 !important;
+    border-bottom: 1px solid #30363d !important;
+    font-weight: 500;
+}
+/* Dark theme for .bg-light and .card.bg-light (call-to-action cards) */
+body.dark-mode .main-content:not(.home-main-content) .bg-light,
+body.dark-mode .main-content:not(.home-main-content) .card.bg-light {
+    background: #23272e !important;
+    color: #c9d1d9 !important;
+}
+body.dark-mode .main-content:not(.home-main-content) .bg-light .btn,
+body.dark-mode .main-content:not(.home-main-content) .bg-light .btn-outline-primary {
+    color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    background: transparent !important;
+}
+body.dark-mode .main-content:not(.home-main-content) .bg-light .btn-primary {
+    background: #238636 !important;
+    color: #fff !important;
+    border-color: #238636 !important;
+}
+/* Force bluish gradient for all .btn-primary buttons, regardless of Bootstrap or inline styles */
+.btn.btn-primary,
+button.btn-primary,
+input[type="submit"].btn-primary {
+    background: linear-gradient(90deg, #2186eb 0%, #3b82f6 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.08) !important;
+    background-color: #3b82f6 !important; /* fallback */
+}
+.btn.btn-primary:hover,
+.btn.btn-primary:focus,
+.btn.btn-primary:active,
+button.btn-primary:hover,
+button.btn-primary:focus,
+button.btn-primary:active,
+input[type="submit"].btn-primary:hover,
+input[type="submit"].btn-primary:focus,
+input[type="submit"].btn-primary:active {
+    background: linear-gradient(90deg, #2186eb 0%, #3b82f6 100%) !important;
+    color: #fff !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(59,130,246,0.12) !important;
+    background-color: #3b82f6 !important; /* fallback */
+}
+
+/* Fix Bootstrap switch appearance in dark mode */
+body.dark-mode .form-switch .form-check-input {
+    background-color: #23272e !important;
+    border-color: #3b82f6 !important;
+    box-shadow: none !important;
+}
+body.dark-mode .form-switch .form-check-input:checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+body.dark-mode .form-switch .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(59,130,246,0.25) !important;
+}
+body.dark-mode .form-switch .form-check-input::before {
+    background-color: #23272e !important;
+    border-radius: 1rem;
+    border: 1px solid #3b82f6 !important;
+}
+body.dark-mode .form-switch .form-check-input:checked::before {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+}
+body.dark-mode .form-switch .form-check-input::after {
+    background-color: #fff !important;
+    border-radius: 50%;
+}
+body.dark-mode .form-switch .form-check-input:checked::after {
+    background-color: #fff !important;
+}
+body.dark-mode .form-switch .form-check-label {
+    color: #c9d1d9 !important;
+}

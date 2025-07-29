@@ -267,7 +267,7 @@ def get_boards():
 
 
 @login_required(login_url='login')
-def upload(request):
+def selection(request):
     boards = get_boards()
     mcus = {board['mcu'] for board in boards}
     midi_modes = [board['midi_modes'] for board in boards]
@@ -278,4 +278,10 @@ def upload(request):
         'presets': Preset.objects.filter(owner=request.user),
         'hide_upload_link':True,
     }
-    return render(request, 'upload/upload.html', context)
+    return render(request, 'upload/selection.html', context)
+
+def upload(request):
+    context = {
+        'hide_upload_link': True,
+    } 
+    return render (request, 'upload/upload.html', context)
