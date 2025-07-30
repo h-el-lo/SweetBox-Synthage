@@ -3,9 +3,10 @@ services:
     name: sweetbox-synthage
     env: python
     buildCommand: |
-      curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
-      mv ./bin/arduino-cli /usr/local/bin/
-      arduino-cli config init
+      curl -L https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz -o arduino-cli.tar.gz
+      tar -xzf arduino-cli.tar.gz
+      mv arduino-cli /usr/local/bin/arduino-cli
+      chmod +x /usr/local/bin/arduino-cli
       pip install -r requirements.txt
     startCommand: gunicorn SweetBoxSYNTHAGE.wsgi:application
     envVars:
