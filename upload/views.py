@@ -14,6 +14,7 @@ from django.contrib import messages
 from django.urls import reverse
 from base.models import Profile
 import json
+from .utils.arduino import *
 # Create your views here.
 
 def create_default_preset(user):
@@ -285,3 +286,10 @@ def upload(request):
         'hide_upload_link': True,
     } 
     return render (request, 'upload/upload.html', context)
+
+
+def arduino_cli_check(request):
+    cli_status = check_arduino_cli_installed()
+    return HttpResponse(f"Arduino CLI Status: {cli_status}")
+
+
