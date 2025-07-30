@@ -5,9 +5,10 @@ services:
     buildCommand: |
       curl -L https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz -o arduino-cli.tar.gz
       tar -xzf arduino-cli.tar.gz
-      mv arduino-cli /usr/local/bin/arduino-cli
-      chmod +x /usr/local/bin/arduino-cli
+      mv arduino-cli ./arduino-cli
+      chmod +x ./arduino-cli
       pip install -r requirements.txt
+
     startCommand: gunicorn SweetBoxSYNTHAGE.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
