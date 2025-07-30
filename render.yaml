@@ -1,15 +1,8 @@
 services:
   - type: web
     name: sweetbox-synthage
-    env: python
-    buildCommand: |
-      curl -L https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz -o arduino-cli.tar.gz
-      tar -xzf arduino-cli.tar.gz
-      mv arduino-cli ./arduino-cli
-      chmod +x ./arduino-cli
-      pip install -r requirements.txt
-
-    startCommand: gunicorn SweetBoxSYNTHAGE.wsgi:application
+    env: docker
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: SweetBoxSYNTHAGE.settings
