@@ -3,11 +3,11 @@ services:
     name: sweetbox-synthage
     env: python
     buildCommand: |
-  curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
-  mv ./bin/arduino-cli /usr/local/bin/
-  arduino-cli config init
-  pip install -r requirements.txt
+      curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+      mv ./bin/arduino-cli /usr/local/bin/
+      arduino-cli config init
+      pip install -r requirements.txt
     startCommand: gunicorn SweetBoxSYNTHAGE.wsgi:application
     envVars:
       - key: DJANGO_SETTINGS_MODULE
-        value: SweetBoxSYNTHAGE.settings 
+        value: SweetBoxSYNTHAGE.settings
