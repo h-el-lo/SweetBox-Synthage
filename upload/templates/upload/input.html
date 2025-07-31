@@ -5,7 +5,7 @@
 </head>
 <body>
     <h2>Upload Arduino Sketch (.ino)</h2>
-    <form method="post" enctype="multipart/form-data" action="{% url 'upload2' %}">
+    <form method="post" enctype="multipart/form-data" action="{% url 'esp_upload' %}">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Compile Sketch</button>

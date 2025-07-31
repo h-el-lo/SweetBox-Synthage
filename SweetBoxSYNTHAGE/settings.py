@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'SweetBoxSYNTHAGE.urls'
@@ -128,11 +129,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
 
+# URL to access static files
+STATIC_URL = '/static/'
+
+# Directories where Django will look for static files (besides each app's /static/)
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+   BASE_DIR / 'static',  # optional, for global static files
 ]
+
+# Directory to collect static files to when running `collectstatic`
+STATIC_ROOT = BASE_DIR / 'staticfiles' # used in production
+
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'

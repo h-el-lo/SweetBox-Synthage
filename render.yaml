@@ -7,7 +7,7 @@ services:
       tar -xzf arduino-cli.tar.gz
       mv arduino-cli ./arduino-cli
       chmod +x ./arduino-cli
-      pip install -r requirements.txt
+      pip install -r requirements.txt && python manage.py collectstatic --noinput
 
     startCommand: gunicorn SweetBoxSYNTHAGE.wsgi:application
     envVars:

@@ -299,16 +299,13 @@ def arduino_cli_check(request):
     else:
         return HttpResponse(f'<p style="color: red;">❌ Not Installed: { message }</p>')
 
-from django.conf import settings
-from django.core.files.storage import default_storage
-
 from .forms import SketchUploadForm
 def upload_sketch(request):
     form = SketchUploadForm()
     return render(request, 'upload/input.html', {'form': form})
 
 
-def compile_sketch(request):
+def esp_upload(request):
     if request.method == 'POST' and request.FILES['sketch']:
         sketch_file = request.FILES['sketch']
         uid = uuid.uuid4().hex[:8]
@@ -362,11 +359,15 @@ def compile_sketch(request):
                 })
 
             context = {'output_items': output_items}
-            return render(request, 'upload/upload2.html', context)
+            return render(request, 'upload/esp_upload.html', context)
 
         except subprocess.CalledProcessError as e:
             return render(request, 'upload/output.html', {
                 'error': f"Compilation failed: {e.stderr.decode('utf-8')}"
             })
 
-    return redirect('upload')
+    return render(request, 'upload/esp_upload.html')
+
+
+def adafruit_esp_upload(request):
+    return render(request, 'upload/adafruit_esp.html')
