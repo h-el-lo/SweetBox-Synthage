@@ -326,6 +326,21 @@ div.clear {
   cursor: pointer;
 }
 
+.firmware.ready {
+  border-color: #71ae1e;
+  background-color: #f0f8f0;
+}
+
+.download-link {
+  margin-left: 10px;
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.download-link:hover {
+  color: #1d4ed8;
+}
+
 .firmware > svg {
   margin-right: 10px;
 }

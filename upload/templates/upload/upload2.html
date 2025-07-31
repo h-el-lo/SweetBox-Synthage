@@ -35,6 +35,13 @@
         </h4>
     </div>
     <div class="card-body p-4">
+        {% if output_items %}
+        <div class="alert alert-success mb-3" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            <strong>Compilation Successful!</strong> {{ output_items|length }} file(s) ready for flashing.
+            <br><small class="text-muted">Connect your ESP device and click "Connect" to begin flashing.</small>
+        </div>
+        {% endif %}
         <header class="header">
             <div class="left">
                 <label for="noReset"> No reset for Passthrough updates</label>
@@ -77,30 +84,98 @@
             </div>
             <div id="app">
               <div id="commands">
-                {% for item in output_items %}
-                <div class="upload">
-                  <label
-                    >Offset: 0x
-                    <input class="offset" type="text" value="{{ item.address }}" />
-                  </label>
-                  <label class="firmware">
-                    <input type="file" accept=".bin" />
-                    <a href="{{ item.url }}" download>{{ item.url|cut:"/media/" }}, {{ item.filename }}</a>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="17"
-                      viewbox="0 0 20 17"
-                    >
-                      <path
-                        d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
-                      />
-                    </svg>
-                    {% comment %} <span>Choose a file&hellip;</span> {% endcomment %}
-                  </label>
-                  <div class="progress-bar hidden"><div></div></div>
-                </div>
-                {% endfor %}
+                {% if output_items %}
+                  {% for item in output_items %}
+                  <div class="upload">
+                    <label
+                      >Offset: 0x
+                      <input class="offset" type="text" value="{{ item.address }}" />
+                    </label>
+                                                              <label class="firmware">
+                       <input type="file" accept=".bin" data-file-path="{{ item.file_path }}" data-file-url="{{ item.url }}" />
+                       <span>{{ item.filename }}</span>
+                       <a href="{{ item.url }}" download class="download-link" title="Download {{ item.filename }}">
+                         <svg
+                           xmlns="http://www.w3.org/2000/svg"
+                           width="20"
+                           height="17"
+                           viewbox="0 0 20 17"
+                         >
+                           <path
+                             d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
+                           />
+                         </svg>
+                       </a>
+                     </label>
+                    <div class="progress-bar hidden"><div></div></div>
+                  </div>
+                  {% endfor %}
+                {% else %}
+                  <!-- Default upload slots when no compiled files are available -->
+                  <div class="upload">
+                    <label
+                      >Offset: 0x
+                      <input class="offset" type="text" value="0" />
+                    </label>
+                    <label class="firmware">
+                      <input type="file" accept=".bin" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="17"
+                        viewbox="0 0 20 17"
+                      >
+                        <path
+                          d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
+                        />
+                      </svg>
+                      <span>Choose a file&hellip;</span>
+                    </label>
+                    <div class="progress-bar hidden"><div></div></div>
+                  </div>
+                  <div class="upload">
+                    <label
+                      >Offset: 0x
+                      <input class="offset" type="text" value="8000" />
+                    </label>
+                    <label class="firmware">
+                      <input type="file" accept=".bin" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="17"
+                        viewbox="0 0 20 17"
+                      >
+                        <path
+                          d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
+                        />
+                      </svg>
+                      <span>Choose a file&hellip;</span>
+                    </label>
+                    <div class="progress-bar hidden"><div></div></div>
+                  </div>
+                  <div class="upload">
+                    <label
+                      >Offset: 0x
+                      <input class="offset" type="text" value="10000" />
+                    </label>
+                    <label class="firmware">
+                      <input type="file" accept=".bin" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="17"
+                        viewbox="0 0 20 17"
+                      >
+                        <path
+                          d="M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z"
+                        />
+                      </svg>
+                      <span>Choose a file&hellip;</span>
+                    </label>
+                    <div class="progress-bar hidden"><div></div></div>
+                  </div>
+                {% endif %}
 
                 {% comment %} <div class="upload">
                   <label

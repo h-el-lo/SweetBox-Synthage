@@ -344,27 +344,25 @@ def compile_sketch(request):
                 'ota_data_initial.bin': 'e000',
             }
 
-            # # Find the firmware .bin (usually sketch_name.ino.bin)
-            # firmware_bin = next((f for f in output_files if f.endswith('.ino.bin')), None)
-            # if firmware_bin:
-            #     address_map[firmware_bin] = '0x10000'
-
             # Construct output list
             output_items = []
             for f in output_files:
-                for address in address_map:
-                    if f.endswith(address):
-                        flash_address = address_map[address]
+                flash_address = '10000'  # Default address
+                for filename_pattern, address in address_map.items():
+                    if f.endswith(filename_pattern):
+                        flash_address = address
+                        break
 
                 url = os.path.join(settings.MEDIA_URL, uid, f)
                 output_items.append({
                     'filename': f,
                     'url': request.build_absolute_uri(url),
+                    'file_path': os.path.join(uid, f),  # Add file path for JavaScript
                     'address': flash_address,
                 })
 
             context = {'output_items': output_items}
-            return render(request, 'upload/upload.html', context)
+            return render(request, 'upload/upload2.html', context)
 
         except subprocess.CalledProcessError as e:
             return render(request, 'upload/output.html', {

@@ -29,25 +29,45 @@ let chip = null;
 const serialLib = !navigator.serial && navigator.usb ? serial : navigator.serial;
 
 document.addEventListener("DOMContentLoaded", () => {
-    butConnect.addEventListener("click", () => {
-        clickConnect().catch(async (e) => {
-            errorMsg(e.message || e);
-            toggleUIConnected(false);
+    if (butConnect) {
+        butConnect.addEventListener("click", () => {
+            clickConnect().catch(async (e) => {
+                errorMsg(e.message || e);
+                toggleUIConnected(false);
+            });
         });
-    });
-    butClear.addEventListener("click", clickClear);
-    butErase.addEventListener("click", clickErase);
-    butProgram.addEventListener("click", clickProgram);
+    }
+    if (butClear) {
+        butClear.addEventListener("click", clickClear);
+    }
+    if (butErase) {
+        butErase.addEventListener("click", clickErase);
+    }
+    if (butProgram) {
+        butProgram.addEventListener("click", clickProgram);
+    }
     for (let i = 0; i < firmware.length; i++) {
-        firmware[i].addEventListener("change", checkFirmware);
+        if (firmware[i]) {
+            firmware[i].addEventListener("change", checkFirmware);
+        }
     }
     for (let i = 0; i < offsets.length; i++) {
-        offsets[i].addEventListener("change", checkProgrammable);
+        if (offsets[i]) {
+            offsets[i].addEventListener("change", checkProgrammable);
+        }
     }
-    autoscroll.addEventListener("click", clickAutoscroll);
-    baudRate.addEventListener("change", changeBaudRate);
-    darkMode.addEventListener("click", clickDarkMode);
-    noReset.addEventListener("change", clickNoReset);
+    if (autoscroll) {
+        autoscroll.addEventListener("click", clickAutoscroll);
+    }
+    if (baudRate) {
+        baudRate.addEventListener("change", changeBaudRate);
+    }
+    if (darkMode) {
+        darkMode.addEventListener("click", clickDarkMode);
+    }
+    if (noReset) {
+        noReset.addEventListener("change", clickNoReset);
+    }
 
     window.addEventListener("error", function (event) {
         console.log("Got an uncaught error: ", event.error);
@@ -60,10 +80,13 @@ document.addEventListener("DOMContentLoaded", () => {
     initBaudRate();
     loadAllSettings();
     updateTheme();
+    handlePrePopulatedFiles();
     writeLogLine("ESP Web Flasher loaded.");
 });
 
 function initBaudRate() {
+    if (!baudRate) return;
+    
     for (let rate of baudRates) {
         var option = document.createElement("option");
         option.text = rate + " Baud";
@@ -73,18 +96,21 @@ function initBaudRate() {
 }
 
 function pruneLog() {
+    if (!log) return;
+    
     // Remove old log content
     if (log.textContent.split("\n").length > maxLogLength + 1) {
         let logLines = log.innerHTML.replace(/(\n)/gm, "").split("<br>");
         log.innerHTML = logLines.splice(-maxLogLength).join("<br>\n");
     }
 
-    if (autoscroll.checked) {
+    if (autoscroll && autoscroll.checked) {
         log.scrollTop = log.scrollHeight;
     }
 }
 
 function writeLog(text) {
+    if (!log) return;
     log.innerHTML += text;
     pruneLog();
 }
@@ -95,7 +121,7 @@ function writeLogLine(text) {
 
 const espLoaderTerminal = {
     clean() {
-        log.innerHTML = "";
+        if (log) log.innerHTML = "";
     },
     writeLine(data) {
         writeLogLine(data);
@@ -122,10 +148,10 @@ function updateTheme() {
         enableStyleSheet(styleSheet, false);
         });
 
-    if (darkMode.checked) {
-        enableStyleSheet(darkSS, true);
+    if (darkMode && darkMode.checked) {
+        if (darkSS) enableStyleSheet(darkSS, true);
     } else {
-        enableStyleSheet(lightSS, true);
+        if (lightSS) enableStyleSheet(lightSS, true);
     }
 }
 
@@ -203,7 +229,7 @@ async function clickConnect() {
  * Change handler for the Baud Rate selector.
  */
 async function changeBaudRate() {
-    if (baudRates.includes(parseInt(baudRate.value))) {
+    if (baudRate && baudRates.includes(parseInt(baudRate.value))) {
         saveSetting("baudrate", baudRate.value);
     }
 }
@@ -213,7 +239,7 @@ async function changeBaudRate() {
  * Change handler for the Autoscroll checkbox.
  */
 async function clickAutoscroll() {
-    saveSetting("autoscroll", autoscroll.checked);
+    if (autoscroll) saveSetting("autoscroll", autoscroll.checked);
 }
 
 /**
@@ -222,7 +248,7 @@ async function clickAutoscroll() {
  */
 async function clickDarkMode() {
     updateTheme();
-    saveSetting("darkmode", darkMode.checked);
+    if (darkMode) saveSetting("darkmode", darkMode.checked);
 }
 
 /**
@@ -230,7 +256,7 @@ async function clickDarkMode() {
  * Change handler for ESP32 co-processor boards
  */
 async function clickNoReset() {
-    saveSetting("noReset", noReset.checked);
+    if (noReset) saveSetting("noReset", noReset.checked);
 }
 
 /**
@@ -241,9 +267,9 @@ async function clickErase() {
     if (
         window.confirm("This will erase the entire flash. Click OK to continue.")
     ) {
-        baudRate.disabled = true;
-        butErase.disabled = true;
-        butProgram.disabled = true;
+        if (baudRate) baudRate.disabled = true;
+        if (butErase) butErase.disabled = true;
+        if (butProgram) butProgram.disabled = true;
         try {
             writeLogLine("Erasing flash memory. Please wait...");
             let stamp = Date.now();
@@ -252,9 +278,9 @@ async function clickErase() {
         } catch (e) {
             errorMsg(e);
         } finally {
-            butErase.disabled = false;
-            baudRate.disabled = false;
-            butProgram.disabled = getValidFiles().length == 0;
+            if (butErase) butErase.disabled = false;
+            if (baudRate) baudRate.disabled = false;
+            if (butProgram) butProgram.disabled = getValidFiles().length == 0;
         }
     }
 }
@@ -280,19 +306,51 @@ async function clickProgram() {
         });
     };
 
-    baudRate.disabled = true;
-    butErase.disabled = true;
-    butProgram.disabled = true;
-    for (let i = 0; i < 4; i++) {
-        firmware[i].disabled = true;
-        offsets[i].disabled = true;
+    if (baudRate) baudRate.disabled = true;
+    if (butErase) butErase.disabled = true;
+    if (butProgram) butProgram.disabled = true;
+    for (let i = 0; i < firmware.length; i++) {
+        if (firmware[i]) firmware[i].disabled = true;
+        if (offsets[i]) offsets[i].disabled = true;
     }
 
     const fileArray = [];
     for (let file of getValidFiles()) {
-        progress[file].classList.remove("hidden");
-        let binfile = firmware[file].files[0];
-        let contents = await readUploadedFileAsBinaryString(binfile);
+        if (progress[file]) {
+            progress[file].classList.remove("hidden");
+        }
+        
+        let contents;
+        let binfile;
+        
+        // Check if this is a pre-populated file from server
+        if (firmware[file] && firmware[file].dataset.hasFile === 'true') {
+            // For pre-populated files, we need to fetch from the server
+            const fileUrl = firmware[file].dataset.fileUrl;
+            
+            if (!fileUrl) {
+                errorMsg(`No file URL found for pre-populated file`);
+                continue;
+            }
+            
+            try {
+                const response = await fetch(fileUrl);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch file: ${response.statusText}`);
+                }
+                contents = await response.text();
+            } catch (e) {
+                errorMsg(`Failed to load pre-populated file: ${e.message}`);
+                continue;
+            }
+        } else if (firmware[file] && firmware[file].files.length > 0) {
+            // Handle manually selected files
+            binfile = firmware[file].files[0];
+            contents = await readUploadedFileAsBinaryString(binfile);
+        } else {
+            continue; // Skip if no file is available
+        }
+        
         try {
             let offset = parseInt(offsets[file].value, 16);
             fileArray.push({ data: contents, address: offset });
@@ -308,7 +366,12 @@ async function clickProgram() {
             eraseAll: false,
             compress: true,
             reportProgress: (fileIndex, written, total) => {
-                progress[fileIndex].querySelector("div").style.width = Math.floor((written / total) * 100) + "%";
+                if (progress[fileIndex]) {
+                    const progressDiv = progress[fileIndex].querySelector("div");
+                    if (progressDiv) {
+                        progressDiv.style.width = Math.floor((written / total) * 100) + "%";
+                    }
+                }
             },
             calculateMD5Hash: (image) => CryptoJS.MD5(CryptoJS.enc.Latin1.parse(image)),
         };
@@ -317,15 +380,20 @@ async function clickProgram() {
         console.error(e);
         errorMsg(e.message);
     } finally {
-        for (let i = 0; i < 4; i++) {
-            firmware[i].disabled = false;
-            offsets[i].disabled = false;
-            progress[i].classList.add("hidden");
-            progress[i].querySelector("div").style.width = "0";
+        for (let i = 0; i < firmware.length; i++) {
+            if (firmware[i]) firmware[i].disabled = false;
+            if (offsets[i]) offsets[i].disabled = false;
+            if (progress[i]) {
+                progress[i].classList.add("hidden");
+                const progressDiv = progress[i].querySelector("div");
+                if (progressDiv) {
+                    progressDiv.style.width = "0";
+                }
+            }
         }
-        butErase.disabled = false;
-        baudRate.disabled = false;
-        butProgram.disabled = getValidFiles().length == 0;
+        if (butErase) butErase.disabled = false;
+        if (baudRate) baudRate.disabled = false;
+        if (butProgram) butProgram.disabled = getValidFiles().length == 0;
     }
 
     writeLogLine("To run the new firmware, please reset your device.");
@@ -337,9 +405,12 @@ function getValidFiles() {
     // and will also return a list of files to program
     let validFiles = [];
     let offsetVals = [];
-    for (let i = 0; i < 4; i++) {
+    for (let i = 0; i < firmware.length; i++) {
+        if (!firmware[i] || !offsets[i]) continue;
+        
         let offs = parseInt(offsets[i].value, 16);
-        if (firmware[i].files.length > 0 && !offsetVals.includes(offs)) {
+        // Check for both manually selected files and pre-populated files
+        if ((firmware[i].files.length > 0 || firmware[i].dataset.hasFile === 'true') && !offsetVals.includes(offs)) {
             validFiles.push(i);
             offsetVals.push(offs);
         }
@@ -352,7 +423,9 @@ function getValidFiles() {
  * Check if the conditions to program the device are sufficient
  */
 async function checkProgrammable() {
-    butProgram.disabled = getValidFiles().length == 0;
+    if (butProgram) {
+        butProgram.disabled = getValidFiles().length == 0;
+    }
 }
 
 /**
@@ -363,16 +436,31 @@ async function checkFirmware(event) {
     let filename = event.target.value.split("\\").pop();
     let label = event.target.parentNode.querySelector("span");
     let icon = event.target.parentNode.querySelector("svg");
+    
     if (filename != "") {
-        if (filename.length > 17) {
-            label.innerHTML = filename.substring(0, 14) + "&hellip;";
-        } else {
-            label.innerHTML = filename;
+        if (label) {
+            if (filename.length > 17) {
+                label.innerHTML = filename.substring(0, 14) + "&hellip;";
+            } else {
+                label.innerHTML = filename;
+            }
         }
-        icon.classList.add("hidden");
+        if (icon) {
+            icon.classList.add("hidden");
+        }
+        if (event.target.parentNode) {
+            event.target.parentNode.classList.add("ready");
+        }
     } else {
-        label.innerHTML = "Choose a file&hellip;";
-        icon.classList.remove("hidden");
+        if (label) {
+            label.innerHTML = "Choose a file&hellip;";
+        }
+        if (icon) {
+            icon.classList.remove("hidden");
+        }
+        if (event.target.parentNode) {
+            event.target.parentNode.classList.remove("ready");
+        }
     }
 
     await checkProgrammable();
@@ -384,20 +472,30 @@ async function checkFirmware(event) {
  */
 async function clickClear() {
     // reset();     Reset function wasnt declared.
-    log.innerHTML = "";
+    if (log) log.innerHTML = "";
 }
 
 function toggleUIToolbar(show) {
-    for (let i = 0; i < 4; i++) {
-        progress[i].classList.add("hidden");
-        progress[i].querySelector("div").style.width = "0";
+    // Safely handle progress bars - only iterate over existing elements
+    for (let i = 0; i < progress.length; i++) {
+        if (progress[i]) {
+            progress[i].classList.add("hidden");
+            const progressDiv = progress[i].querySelector("div");
+            if (progressDiv) {
+                progressDiv.style.width = "0";
+            }
+        }
     }
-    if (show) {
-        appDiv.classList.add("connected");
-    } else {
-        appDiv.classList.remove("connected");
+    if (appDiv) {
+        if (show) {
+            appDiv.classList.add("connected");
+        } else {
+            appDiv.classList.remove("connected");
+        }
     }
-    butErase.disabled = !show;
+    if (butErase) {
+        butErase.disabled = !show;
+    }
 }
 
 function toggleUIConnected(connected) {
@@ -407,15 +505,17 @@ function toggleUIConnected(connected) {
     } else {
         toggleUIToolbar(false);
     }
-    butConnect.textContent = lbl;
+    if (butConnect) {
+        butConnect.textContent = lbl;
+    }
 }
 
 function loadAllSettings() {
     // Load all saved settings or defaults
-    autoscroll.checked = loadSetting("autoscroll", true);
-    baudRate.value = loadSetting("baudrate", 921600);
-    darkMode.checked = loadSetting("darkmode", false);
-    noReset.checked = loadSetting("noReset", false);
+    if (autoscroll) autoscroll.checked = loadSetting("autoscroll", true);
+    if (baudRate) baudRate.value = loadSetting("baudrate", 921600);
+    if (darkMode) darkMode.checked = loadSetting("darkmode", false);
+    if (noReset) noReset.checked = loadSetting("noReset", false);
 }
 
 function loadSetting(setting, defaultValue) {
@@ -433,4 +533,38 @@ function saveSetting(setting, value) {
 
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function handlePrePopulatedFiles() {
+    // Check if there are any pre-populated files from server compilation
+    let prePopulatedCount = 0;
+    for (let i = 0; i < firmware.length; i++) {
+        const fileInput = firmware[i];
+        if (!fileInput || !fileInput.parentNode) continue;
+        
+        const label = fileInput.parentNode.querySelector('span');
+        
+        // If the span contains a filename (not "Choose a file..."), 
+        // it means we have a pre-populated file from compilation
+        if (label && label.textContent && !label.textContent.includes('Choose a file')) {
+            // Mark this as having a file for programming
+            fileInput.dataset.hasFile = 'true';
+            // Update the UI to show the file is ready
+            const icon = fileInput.parentNode.querySelector('svg');
+            if (icon) {
+                icon.classList.add('hidden');
+            }
+            // Add visual feedback that file is ready
+            fileInput.parentNode.classList.add('ready');
+            prePopulatedCount++;
+        }
+    }
+    
+    // Update the program button state
+    checkProgrammable();
+    
+    // Show success message if files are ready
+    if (prePopulatedCount > 0) {
+        writeLogLine(`✅ ${prePopulatedCount} compiled file(s) ready for flashing. Connect your ESP device to begin.`);
+    }
 }
