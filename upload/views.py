@@ -8,13 +8,12 @@ from django.http import HttpResponse, FileResponse, JsonResponse
 from presets.models import Preset, Knob, Button
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-import os
+import json, os, subprocess, uuid
 from django.conf import settings
 from django.contrib import messages
 from django.urls import reverse
 from base.models import Profile
-import json
-from .utils.arduino import *
+from .utils import arduino
 # Create your views here.
 
 def create_default_preset(user):
@@ -289,7 +288,87 @@ def upload(request):
 
 
 def arduino_cli_check(request):
-    cli_status = check_arduino_cli_installed()
-    return HttpResponse(f"Arduino CLI Status: {cli_status}")
+    is_installed, message = arduino.check_installed()
+    # context = {
+    #     "is_installed": is_installed,
+    #     "message": message,
+    # }
+    
+    if is_installed:
+        return HttpResponse(f'<p style="color: green;">✅ Installed: { message }</p>')
+    else:
+        return HttpResponse(f'<p style="color: red;">❌ Not Installed: { message }</p>')
+
+from django.conf import settings
+from django.core.files.storage import default_storage
+
+from .forms import SketchUploadForm
+def upload_sketch(request):
+    form = SketchUploadForm()
+    return render(request, 'upload/input.html', {'form': form})
 
 
+def compile_sketch(request):
+    if request.method == 'POST' and request.FILES['sketch']:
+        sketch_file = request.FILES['sketch']
+        uid = uuid.uuid4().hex[:8]
+        work_dir = os.path.join(settings.MEDIA_ROOT, uid)
+        os.makedirs(work_dir, exist_ok=True)
+
+        sketch_name = os.path.splitext(sketch_file.name)[0]
+        sketch_dir = os.path.join(work_dir, sketch_name)
+        os.makedirs(sketch_dir, exist_ok=True)
+
+        sketch_path = os.path.join(sketch_dir, sketch_file.name)
+        with open(sketch_path, 'wb+') as dest:
+            for chunk in sketch_file.chunks():
+                dest.write(chunk)
+
+        compile_cmd = [
+            'arduino-cli', 'compile',
+            '-b', 'esp32:esp32:esp32s3',
+            '-e',
+            '--output-dir', work_dir,
+            sketch_dir
+        ]
+
+        try:
+            subprocess.run(compile_cmd, check=True, capture_output=True)
+            output_files = [f for f in os.listdir(work_dir) if f.endswith('.bin') and not f.endswith('.merged.bin')]
+            
+            # Map know filenames to addresses
+            address_map = {
+                'bootloader.bin': '0',
+                'partitions.bin': '8000',
+                'ino.bin': '10000',
+                'ota_data_initial.bin': 'e000',
+            }
+
+            # # Find the firmware .bin (usually sketch_name.ino.bin)
+            # firmware_bin = next((f for f in output_files if f.endswith('.ino.bin')), None)
+            # if firmware_bin:
+            #     address_map[firmware_bin] = '0x10000'
+
+            # Construct output list
+            output_items = []
+            for f in output_files:
+                for address in address_map:
+                    if f.endswith(address):
+                        flash_address = address_map[address]
+
+                url = os.path.join(settings.MEDIA_URL, uid, f)
+                output_items.append({
+                    'filename': f,
+                    'url': request.build_absolute_uri(url),
+                    'address': flash_address,
+                })
+
+            context = {'output_items': output_items}
+            return render(request, 'upload/upload.html', context)
+
+        except subprocess.CalledProcessError as e:
+            return render(request, 'upload/output.html', {
+                'error': f"Compilation failed: {e.stderr.decode('utf-8')}"
+            })
+
+    return redirect('upload')
