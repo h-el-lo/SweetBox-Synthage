@@ -3,7 +3,7 @@ services:
     name: sweetbox-synthage
     env: python
 
-    buildCommand: |
+    buildCommand:
       chmod +x build.sh
       ./build_for_render.sh
 
