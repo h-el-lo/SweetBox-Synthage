@@ -89,12 +89,8 @@
                 <div class="mb-4">
                     <label class="form-label fw-semibold">Midi Transfer Mode</label>
                     <select name="midi_transfer_mode" id="midi-mode-select" class="form-select" required>
+                        <option value="">Select a MIDI mode...</option>
                         <!-- Options will be populated dynamically -->
-                         {% for board in boards %}
-                            {% for mode in midi_modes %}
-                                <option value="{{ mcu }}">{{ mode }}</option>
-                            {% endfor %}
-                        {% endfor %}
                     </select>
                 </div>
 
@@ -177,12 +173,13 @@
     const allBoardOptions = Array.from(board.options);
     console.log('Initial board options:', allBoardOptions.map(opt => ({value: opt.value, dataMcu: opt.getAttribute('data-mcu')})));
 
-    // Prepare a map of board name to its midi_modes from Django context
+    // Prepare a map of board fqbn to its midi_modes from Django context
     const boardMidiModesMap = {};
     // Django template to populate the map
     {% for board in boards %}
-    boardMidiModesMap["{{ board.board|escapejs }}"] = {{ board.midi_modes|safe }};
+    boardMidiModesMap["{{ board.fqbn|escapejs }}"] = {{ board.midi_modes|safe }};
     {% endfor %}
+    console.log('Board MIDI modes map:', boardMidiModesMap);
 
     function updateBoardOptionsForMCU(selectedMCU) {
         console.log('updateBoardOptionsForMCU called with:', selectedMCU);
@@ -211,8 +208,11 @@
     }
 
     function updateMidiModesForBoard(selectedBoard) {
+        console.log('updateMidiModesForBoard called with:', selectedBoard);
+        console.log('Available board modes:', Object.keys(boardMidiModesMap));
         midi_transfer_mode.innerHTML = '';
         const modes = boardMidiModesMap[selectedBoard] || [];
+        console.log('Modes for selected board:', modes);
         modes.forEach(mode => {
             const opt = document.createElement('option');
             opt.value = mode;
