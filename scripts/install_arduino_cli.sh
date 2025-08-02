@@ -1,7 +1,19 @@
 #!/bin/bash
 
-echo "Installing Arduino CLI..."
-curl -L https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz -o arduino-cli.tar.gz
+# Exit on error
+set -e
+
+# Download the latest Arduino CLI
+curl -fsSL https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz -o arduino-cli.tar.gz
+
+# Extract it
 tar -xzf arduino-cli.tar.gz
-mv arduino-cli ./arduino-cli
-chmod +x ./arduino-cli
+
+# Move the binary to a directory in PATH
+sudo mv arduino-cli /usr/local/bin/
+
+# Clean up
+rm arduino-cli.tar.gz
+
+# Optionally check version (debug log)
+arduino-cli version
