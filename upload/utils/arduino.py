@@ -139,5 +139,8 @@ int midiPState[N_POTS] = { 0 };'''
     for mode in modes:
         firmware_string += fl.libs_controls[mode]
 
+    if 'USB (OTG)' in modes:
+        firmware_string += "\n#endif"
+
     print(firmware_string)
     return firmware_string

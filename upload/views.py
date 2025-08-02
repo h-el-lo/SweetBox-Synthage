@@ -168,9 +168,56 @@ def esp_upload(request):
                 })
             preset = Preset.objects.get(id=preset_id)
             print(preset)
-            ard.generate_firmware(preset, request.POST.get('midi_transfer_mode'))
-            # For preset firmware, we don't need to compile, just return to selection
-            return redirect('selection')
+            
+            # Generate firmware string
+            firmware_string = ard.generate_firmware(preset, request.POST.get('midi_transfer_mode'))
+            
+            # Create work directory and sketch directory
+            uid = uuid.uuid4().hex[:8]
+            work_dir = os.path.join(settings.MEDIA_ROOT, uid)
+            os.makedirs(work_dir, exist_ok=True)
+            
+            # Create sketch directory with preset name
+            sketch_name = f"preset_{preset.id}_{preset.name.replace(' ', '_')}"
+            sketch_dir = os.path.join(work_dir, sketch_name)
+            os.makedirs(sketch_dir, exist_ok=True)
+            
+            # Save firmware to .ino file
+            sketch_path = os.path.join(sketch_dir, f"{sketch_name}.ino")
+            with open(sketch_path, 'w') as f:
+                f.write(firmware_string)
+            
+            # Get board context for compilation
+            context = get_boards_context(request)
+            board_fqbn = None
+            selected_board = request.POST.get('board') or request.POST.get('board_hidden')
+            selected_mcu = request.POST.get('mcu')
+            
+            # Debug: Print the selected values
+            print(f"Selected MCU: {selected_mcu}")
+            print(f"Selected board: {selected_board}")
+            print(f"Board from visible field: {request.POST.get('board')}")
+            print(f"Board from hidden field: {request.POST.get('board_hidden')}")
+            print(f"Available boards: {[board['fqbn'] for board in context['boards']]}")
+            print(f"Boards for selected MCU: {[board['fqbn'] for board in context['boards'] if board['mcu'] == selected_mcu]}")
+            
+            for board in context['boards']:
+                if board['fqbn'] == selected_board:
+                    board_fqbn = board['fqbn']
+                    break
+            
+            if not board_fqbn:
+                return render(request, 'upload/esp_upload.html', {
+                    'error': f'Please select a valid board for compilation. Selected: {selected_board}, MCU: {selected_mcu}'
+                })
+
+            compile_cmd = [
+                'arduino-cli', 'compile',
+                '-b', board_fqbn,
+                '-e',
+                '--output-dir', work_dir,
+                sketch_dir
+            ]
         
         else:
             return render(request, 'upload/esp_upload.html', {
@@ -219,14 +266,6 @@ def esp_upload(request):
 
 def adafruit_esp_upload(request):
     return render(request, 'upload/adafruit_esp.html')
-
-
-
-
-
-
-
-
-
+    
 
 import shutil
