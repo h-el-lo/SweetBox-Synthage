@@ -25,7 +25,13 @@ SECRET_KEY = 'django-insecure-#e$gp=sz=lnc_5*gl65^96ss!vw*^=y$v^-(f^)u&@3e^t2%20
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'https://*.ngrok-free.app',
+    'https://sweetbox-synthage.onrender.com',
+    # 'ea02faa1437e.ngrok-free.app',
+]
 
 # CSRF Trusted Origins for production deployment
 CSRF_TRUSTED_ORIGINS = [
@@ -33,6 +39,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
+    'https://*.ngrok-free.app',
 ]
 
 

@@ -19,13 +19,30 @@
     <!-- Upload Form -->
     <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" action="{% url 'sorter' %}">
                 {% csrf_token %}
                 
-                <!-- Preset Selection -->
+                <!-- Firmware Type Selection -->
                 <div class="mb-4">
+                    <label class="form-label fw-semibold">Firmware Type</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="firmware_type" id="preset_firmware" value="preset" checked>
+                        <label class="form-check-label" for="preset_firmware">
+                            Use Preset Firmware (Recommended)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="firmware_type" id="custom_firmware" value="custom">
+                        <label class="form-check-label" for="custom_firmware">
+                            Upload Custom Firmware (.ino file)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Preset Selection (shown by default) -->
+                <div class="mb-4" id="preset-selection">
                     <label class="form-label fw-semibold">Select Preset</label>
-                    <select name="preset_id" class="form-select" required>
+                    <select name="preset_id" class="form-select">
                         <option value="">Choose a preset...</option>
                         {% for preset in presets %}
                             <option value="{{ preset.id }}">{{ preset.name }} ({{ preset.number_of_knobs }} knobs, {{ preset.number_of_buttons }} buttons)</option>
@@ -34,14 +51,11 @@
                     <div class="form-text">Select the preset you want to upload firmware for.</div>
                 </div>
 
-                <!-- Firmware Type -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Firmware Type</label>
-                    <select name="firmware_type" class="form-select" required>
-                        <option value="1">Firmware</option>
-                        <option value="2">Bootloader</option>
-                    </select>
-                    <div class="form-text">Choose the type of firmware to upload.</div>
+                <!-- Custom Firmware Upload (hidden by default) -->
+                <div class="mb-4" id="custom-firmware-upload" style="display: none;">
+                    <label class="form-label fw-semibold">Custom Firmware File</label>
+                    <input type="file" name="custom_firmware_file" class="form-control" accept=".ino">
+                    <div class="form-text">Upload your custom firmware file (.ino format).</div>
                 </div>
 
                 <!-- Microcontroller Selection -->
@@ -80,18 +94,8 @@
                     </select>
                 </div>
 
-                <!-- File Upload -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Firmware File</label>
-                    <input type="file" name="firmware_file" class="form-control" accept=".hex,.bin,.ino" required>
-                    <div class="form-text">Upload your firmware file (.hex, .bin, or .ino format).</div>
-                </div>
-
                 <!-- Action Buttons -->
                 <div class="d-flex gap-3 flex-wrap">
-                    <button type="submit" name="action" value="generate" class="btn btn-primary">
-                        <i class="bi bi-gear me-2"></i>Generate Firmware
-                    </button>
                     <button type="submit" name="action" value="upload" class="btn btn-success">
                         <i class="bi bi-upload me-2"></i>Upload Firmware
                     </button>
@@ -112,9 +116,10 @@
         </div>
         <div class="card-body">
             <ol class="mb-0">
-                <li>Select the preset you want to upload firmware for</li>
-                <li>Choose the appropriate firmware type and microcontroller</li>
-                <li>Upload your firmware file</li>
+                <li>Choose between preset firmware (recommended) or custom firmware upload</li>
+                <li>If using preset: Select the preset you want to upload firmware for</li>
+                <li>If using custom: Upload your .ino firmware file</li>
+                <li>Choose the appropriate microcontroller and board</li>
                 <li>Click the appropriate action button based on your needs</li>
                 <li>Follow any additional instructions that appear</li>
             </ol>
@@ -198,6 +203,25 @@
         });
     }
 
+    // Handle firmware type radio button switching
+    function handleFirmwareTypeChange() {
+        const presetFirmware = document.getElementById('preset_firmware');
+        const customFirmware = document.getElementById('custom_firmware');
+        const presetSelection = document.getElementById('preset-selection');
+        const customFirmwareUpload = document.getElementById('custom-firmware-upload');
+        const presetFirmwareUpload = document.getElementById('preset-firmware-upload');
+
+        if (presetFirmware.checked) {
+            presetSelection.style.display = 'block';
+            customFirmwareUpload.style.display = 'none';
+            presetFirmwareUpload.style.display = 'block';
+        } else {
+            presetSelection.style.display = 'none';
+            customFirmwareUpload.style.display = 'block';
+            presetFirmwareUpload.style.display = 'none';
+        }
+    }
+
     // On MCU change, update board options
     mcu.addEventListener('change', function() {
         updateBoardOptionsForMCU(mcu.value);
@@ -208,9 +232,17 @@
         updateMidiModesForBoard(board.value);
     });
 
+    // On firmware type change, update form sections
+    document.getElementById('preset_firmware').addEventListener('change', handleFirmwareTypeChange);
+    document.getElementById('custom_firmware').addEventListener('change', handleFirmwareTypeChange);
+
     // On page load, filter boards for the initial MCU and update midi modes
     updateBoardOptionsForMCU(mcu.value);
     updateMidiModesForBoard(board.value);
+    
+    // Ensure default state is set on page load (override any browser-saved state)
+    document.getElementById('preset_firmware').checked = true;
+    handleFirmwareTypeChange();
 
 </script>
 {% endblock %}

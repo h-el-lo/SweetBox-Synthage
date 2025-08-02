@@ -16,189 +16,6 @@ from base.models import Profile
 from .utils import arduino
 # Create your views here.
 
-def create_default_preset(user):
-    if (Preset.objects.filter(owner=user).count() < 1) or (Preset.objects.filter(name='Default').count() < 1):
-        preset = Preset.objects.create(
-            owner = user,
-            name = 'Default',
-            keys_channel = 1,
-            number_of_knobs = 4,
-        )
-        for i in range(preset.number_of_knobs):
-            knob = Knob.objects.create(
-                preset=preset,
-                CC=i,
-                pin=i,
-            )
-
-def get_preset_defaults(user):
-    """Get default values for new presets based on user profile or model defaults"""
-    if user.is_authenticated:
-        try:
-            profile = Profile.objects.get(owner=user)
-            return {
-                'keys_channel': profile.keys_channel,
-                'number_of_knobs': profile.number_of_knobs,
-                'number_of_buttons': profile.number_of_buttons,
-                'has_joystick': profile.has_joystick,
-                'is_private': profile.is_private,
-            }
-        except Profile.DoesNotExist:
-            pass
-    
-    # Return model defaults if no user or no profile
-    return {
-        'keys_channel': 1,
-        'number_of_knobs': 4,
-        'number_of_buttons': 0,
-        'has_joystick': False,
-        'is_private': False,
-    }
-
-    user = request.user
-    search_query = request.GET.get('search', '').strip()
-    presets = None
-    if search_query:
-        from django.db.models import Q
-        presets = Preset.objects.filter(
-            (
-                Q(name__icontains=search_query) |
-                Q(owner__username__icontains=search_query)
-            ) & (
-                Q(is_private=False) |
-                Q(owner=user)
-            )
-        ).select_related('owner')
-    if user.is_authenticated:
-        create_default_preset(user)
-    context = {
-        'hide_home_link': True,
-        'presets': presets,
-        'search_query': search_query,
-    }   
-    return render(request, 'midi/home.html', context)
-
-
-def generate_firmware(request):
-    preset = Preset.objects.get(id=1)
-    # Improved firmware generation logic
-    firmware_template = '''
-// SweetBox SYNTHAGE Firmware
-// Preset: {preset_name}
-
-// Knob Configuration
-const int NUM_KNOBS = {num_knobs};
-int knobChannels[NUM_KNOBS] = {{ {channels} }};
-int knobCCs[NUM_KNOBS] = {{ {ccs} }};
-int knobMins[NUM_KNOBS] = {{ {mins} }};
-int knobMaxs[NUM_KNOBS] = {{ {maxs} }};
-int knobPins[NUM_KNOBS] = {{ {knob_pins} }};
-
-// Button Configuration
-const int NUM_BUTTONS = {num_buttons};
-int buttonChannels[NUM_BUTTONS] = {{ {button_channels} }};
-char* buttonModes[NUM_BUTTONS] = {{ {button_modes} }};  // "note" or "cc"
-int buttonNoteCCs[NUM_BUTTONS] = {{ {button_note_ccs} }};  // Note numbers or CC numbers
-int buttonVelocityMins[NUM_BUTTONS] = {{ {button_velocity_mins} }};  // Velocity for notes or min CC value
-int buttonMaxs[NUM_BUTTONS] = {{ {button_maxs} }};  // Only used for CC mode
-int buttonPins[NUM_BUTTONS] = {{ {button_pins} }};
-
-void setup() {{
-    // Initialize pins
-    for (int i = 0; i < NUM_KNOBS; i++) {{
-        pinMode(knobPins[i], INPUT);
-    }}
-    for (int i = 0; i < NUM_BUTTONS; i++) {{
-        pinMode(buttonPins[i], INPUT_PULLUP);
-    }}
-    
-    // Initialize MIDI
-    Serial.begin(31250);  // Standard MIDI baud rate
-}}
-
-void loop() {{
-    // Handle knobs
-    for (int i = 0; i < NUM_KNOBS; i++) {{
-        int rawValue = analogRead(knobPins[i]);
-        int midiValue = map(rawValue, 0, 1023, knobMins[i], knobMaxs[i]);
-        sendCC(knobChannels[i], knobCCs[i], midiValue);
-    }}
-    
-    // Handle buttons
-    static bool buttonStates[NUM_BUTTONS] = {{0}};  // Track button states
-    for (int i = 0; i < NUM_BUTTONS; i++) {{
-        bool currentState = !digitalRead(buttonPins[i]);  // Inverted because of INPUT_PULLUP
-        
-        if (currentState != buttonStates[i]) {{  // State changed
-            buttonStates[i] = currentState;
-            
-            if (strcmp(buttonModes[i], "note") == 0) {{
-                if (currentState) {{  // Button pressed
-                    sendNoteOn(buttonChannels[i], buttonNoteCCs[i], buttonVelocityMins[i]);
-                }} else {{  // Button released
-                    sendNoteOff(buttonChannels[i], buttonNoteCCs[i], 0);
-                }}
-            }} else {{  // CC mode
-                sendCC(buttonChannels[i], buttonNoteCCs[i], 
-                      currentState ? buttonMaxs[i] : buttonVelocityMins[i]);
-            }}
-        }}
-    }}
-    
-    delay(10);  // Small delay to prevent overwhelming the MIDI bus
-}}
-
-void sendNoteOn(byte channel, byte note, byte velocity) {{
-    Serial.write(0x90 | (channel - 1));
-    Serial.write(note);
-    Serial.write(velocity);
-}}
-
-void sendNoteOff(byte channel, byte note, byte velocity) {{
-    Serial.write(0x80 | (channel - 1));
-    Serial.write(note);
-    Serial.write(velocity);
-}}
-
-void sendCC(byte channel, byte cc, byte value) {{
-    Serial.write(0xB0 | (channel - 1));
-    Serial.write(cc);
-    Serial.write(value);
-}}
-'''
-    knob_objs = Knob.objects.filter(preset=preset)
-    button_objs = Button.objects.filter(preset=preset)
-    
-    # Format button modes as string literals
-    button_modes = [f'"{obj.mode}"' for obj in button_objs]
-    
-    firmware_content = firmware_template.format(
-        preset_name=preset.name,
-        # Knob configuration
-        num_knobs=knob_objs.count(),
-        channels=', '.join(str(k.channel) for k in knob_objs),
-        ccs=', '.join(str(k.CC) for k in knob_objs),
-        mins=', '.join(str(k.min) for k in knob_objs),
-        maxs=', '.join(str(k.max) for k in knob_objs),
-        knob_pins=', '.join(str(k.pin) for k in knob_objs),
-        # Button configuration
-        num_buttons=button_objs.count(),
-        button_channels=', '.join(str(b.channel) for b in button_objs),
-        button_modes=', '.join(button_modes),
-        button_note_ccs=', '.join(str(b.noteCC) for b in button_objs),
-        button_velocity_mins=', '.join(str(b.velocityMin) for b in button_objs),
-        button_maxs=', '.join(str(b.max) for b in button_objs),
-        button_pins=', '.join(str(b.pin) for b in button_objs),
-    )
-    
-    firmware_dir = os.path.join(settings.BASE_DIR, 'generated_firmware')
-    os.makedirs(firmware_dir, exist_ok=True)
-    firmware_path = os.path.join(firmware_dir, f'firmware_preset_{preset.id}.ino')
-    with open(firmware_path, 'w') as f:
-        f.write(firmware_content)
-    messages.success(request, 'Settings saved and firmware generated!')
-    return redirect(f"{reverse('portal')}?preset={preset.id}")
-
 
 @login_required(login_url='/login/')
 def download_firmware(request, preset_id):
@@ -209,83 +26,66 @@ def download_firmware(request, preset_id):
     return redirect(reverse('portal'))
 
 
-@csrf_exempt
-@login_required(login_url='/login/')
-def create_preset(request):
-    if request.method == 'POST':
-        name = request.POST.get('name')
-        keys_channel = int(request.POST.get('keys_channel', 1))
-        number_of_knobs = int(request.POST.get('number_of_knobs', 4))
-        number_of_buttons = int(request.POST.get('number_of_buttons', 0))
-        has_joystick = 'has_joystick' in request.POST
-        is_private = request.POST.get('is_private', 'false') == 'true'
-        user = request.user
-
-        preset = Preset.objects.create(
-            owner=user,
-            name=name,
-            keys_channel=keys_channel,
-            number_of_knobs=number_of_knobs,
-            number_of_buttons=number_of_buttons,
-            has_joystick=has_joystick,
-            is_private=is_private,
-        )
-        # Create the corresponding number of knob objects
-        for i in range(preset.number_of_knobs):
-            knob = Knob.objects.create(
-                preset=preset,
-                channel=1,
-                CC=i,
-                min=0,
-                max=127,
-                pin=i
-            )
-        # Create the corresponding number of button objects
-        for i in range(preset.number_of_buttons):
-            button = Button.objects.create(
-                preset=preset,
-                channel=1,
-                mode='note',
-                noteCC=i,
-                velocityMin=100,
-                max=127,
-                pin=i
-            )
-
-        messages.success(request, f'Preset "{name}" created successfully!')
-        return redirect('dashboard')
-    return redirect('dashboard')
-
-
-def get_boards():
+def get_cores():
     try:
         with open(os.path.join(settings.BASE_DIR, 'upload', 'boards.json'), 'r') as f:
-            boards = json.load(f)
+            cores = json.load(f)
+    except json.JSONDecodeError:
+        print('JSON decode error')
+        cores = []
     except FileNotFoundError:
-        boards = []
-    return boards
+        cores = []
+    return cores
+
+def get_boards_context(request):
+    cores = get_cores()  # List of dicts like [{"ATmega32U4": [...]}, {"RP2040": [...]}]
+    mcus = []
+    # This list cannot be named "boards", it would otherwise cause an infinite loop in the subsequent "for" loop
+    board_list = []
+    for core in cores:
+        for mcu, boards in core.items():
+            mcus.append(mcu)
+            for board in boards:
+                board_list.append(board)
+
+    midi_modes = set([ mode for mode in board['midi_modes'] for board in board_list])
+    
+    context = {
+        'cores': cores,
+        'mcus': sorted(mcus),
+        'midi_modes': midi_modes,
+        'boards': board_list,
+        'presets': Preset.objects.filter(owner=request.user),
+        'hide_upload_link':True,
+    }
+
+    return context
 
 
 @login_required(login_url='login')
 def selection(request):
-    boards = get_boards()
-    mcus = {board['mcu'] for board in boards}
-    midi_modes = [board['midi_modes'] for board in boards]
-    context = {
-        'mcus': sorted(mcus),
-        'midi_modes': midi_modes,
-        'boards': boards,
-        'presets': Preset.objects.filter(owner=request.user),
-        'hide_upload_link':True,
-    }
+    context = get_boards_context(request)
     return render(request, 'upload/selection.html', context)
 
-def upload(request):
-    context = {
-        'hide_upload_link': True,
-    } 
-    return render (request, 'upload/upload.html', context)
+def sorter(request):
+    if request.method == 'POST':
+        if request.POST.get('mcu').lower() == 'esp32':
+            return esp_upload(request)
+        # elif request.POST.get('mcu').lower() == 'atmega32u4':
+        #     return generate_firmware(request)
+        # elif request.POST.get('mcu').lower() == 'rp2040':
+        #     return generate_firmware(request)
+        else:
+            return redirect('selection')
+    else:
+        return redirect('selection')
 
+def generate_firmware(preset, firmware_type):
+    pass
+
+def upload(request):
+    context = {} 
+    return render (request, 'upload/upload.html', context)
 
 def arduino_cli_check(request):
     is_installed, message = arduino.check_installed()
@@ -304,70 +104,193 @@ def upload_sketch(request):
     form = SketchUploadForm()
     return render(request, 'upload/input.html', {'form': form})
 
-
 def esp_upload(request):
     if request.method == 'POST' and request.FILES['sketch']:
-        sketch_file = request.FILES['sketch']
-        uid = uuid.uuid4().hex[:8]
-        work_dir = os.path.join(settings.MEDIA_ROOT, uid)
-        os.makedirs(work_dir, exist_ok=True)
+        if request.POST.get('firmware_type') == 'custom':
+            sketch_file = request.FILES['sketch']
+            uid = uuid.uuid4().hex[:8]
+            work_dir = os.path.join(settings.MEDIA_ROOT, uid)
+            os.makedirs(work_dir, exist_ok=True)
 
-        sketch_name = os.path.splitext(sketch_file.name)[0]
-        sketch_dir = os.path.join(work_dir, sketch_name)
-        os.makedirs(sketch_dir, exist_ok=True)
+            sketch_name = os.path.splitext(sketch_file.name)[0]
+            sketch_dir = os.path.join(work_dir, sketch_name)
+            os.makedirs(sketch_dir, exist_ok=True)
 
-        sketch_path = os.path.join(sketch_dir, sketch_file.name)
-        with open(sketch_path, 'wb+') as dest:
-            for chunk in sketch_file.chunks():
-                dest.write(chunk)
+            sketch_path = os.path.join(sketch_dir, sketch_file.name)
+            with open(sketch_path, 'wb+') as dest:
+                for chunk in sketch_file.chunks():
+                    dest.write(chunk)
 
-        compile_cmd = [
-            'arduino-cli', 'compile',
-            '-b', 'esp32:esp32:esp32s3',
-            '-e',
-            '--output-dir', work_dir,
-            sketch_dir
-        ]
+            context = get_boards_context(request)
+            for board in context['boards']:
+                if board['fqbn'] == request.POST.get('board'):
+                    board_fqbn = board['fqbn']
+                    break
 
-        try:
-            subprocess.run(compile_cmd, check=True, capture_output=True)
-            output_files = [f for f in os.listdir(work_dir) if f.endswith('.bin') and not f.endswith('.merged.bin')]
-            
-            # Map know filenames to addresses
-            address_map = {
-                'bootloader.bin': '0',
-                'partitions.bin': '8000',
-                'ino.bin': '10000',
-                'ota_data_initial.bin': 'e000',
-            }
+            compile_cmd = [
+                'arduino-cli', 'compile',
+                '-b', board_fqbn,
+                '-e',
+                '--output-dir', work_dir,
+                sketch_dir
+            ]
 
-            # Construct output list
-            output_items = []
-            for f in output_files:
-                flash_address = '10000'  # Default address
-                for filename_pattern, address in address_map.items():
-                    if f.endswith(filename_pattern):
-                        flash_address = address
-                        break
+        elif request.POST.get('firmware_type') == 'preset':
+            preset_id = request.POST.get('preset_id')
+            preset = Preset.objects.get(id=preset_id)
+            generate_firmware(preset, request.POST.get('midi_mode'))
+        
+        else:
+            return redirect('selection')
 
-                url = os.path.join(settings.MEDIA_URL, uid, f)
-                output_items.append({
-                    'filename': f,
-                    'url': request.build_absolute_uri(url),
-                    'file_path': os.path.join(uid, f),  # Add file path for JavaScript
-                    'address': flash_address,
-                })
+    try:
+        subprocess.run(compile_cmd, check=True, capture_output=True)
+        output_files = [f for f in os.listdir(work_dir) if f.endswith('.bin') and not f.endswith('.merged.bin')]
+        
+        # Map know filenames to addresses
+        address_map = {
+            'bootloader.bin': '0',
+            'partitions.bin': '8000',
+            'ino.bin': '10000',
+            'ota_data_initial.bin': 'e000',
+        }
 
-            context = {'output_items': output_items}
-            return render(request, 'upload/esp_upload.html', context)
+        # Construct output list
+        output_items = []
+        for f in output_files:
+            flash_address = '10000'  # Default address
+            for filename_pattern, address in address_map.items():
+                if f.endswith(filename_pattern):
+                    flash_address = address
+                    break
 
-        except subprocess.CalledProcessError as e:
-            return render(request, 'upload/output.html', {
-                'error': f"Compilation failed: {e.stderr.decode('utf-8')}"
+            url = os.path.join(settings.MEDIA_URL, uid, f)
+            output_items.append({
+                'filename': f,
+                'url': request.build_absolute_uri(url),
+                'file_path': os.path.join(uid, f),  # Add file path for JavaScript
+                'address': flash_address,
             })
+
+        context = {'output_items': output_items}
+        return render(request, 'upload/esp_upload.html', context)
+
+    except subprocess.CalledProcessError as e:
+        return render(request, 'upload/output.html', {
+            'error': f"Compilation failed: {e.stderr.decode('utf-8')}"
+        })
 
     return render(request, 'upload/esp_upload.html')
 
-
 def adafruit_esp_upload(request):
     return render(request, 'upload/adafruit_esp.html')
+
+
+
+
+
+
+
+
+
+
+
+
+def generate_firmware(preset, functions_string):
+    firmware_string = ""
+
+    libs = {
+        'usb (otg)': '''
+#include "USB.h"
+#include "USBMIDI.h"
+''',
+    }
+
+    libs_setup = {
+        'usb (otg)': '''
+  USB.begin();
+  usbmidi.begin();''',
+    }
+    
+    knob_count = len(preset.knobs.all())
+    button_count = len(preset.buttons.all())
+    joystick = preset.joystick.all()[0] if preset.joystick.all() else None
+
+    # Knobs/Sliders Section
+    firmware_string += f"// ==========================  POTENTIOMETER VARIABLES  ===========================\n"
+    if knob_count > 0:
+        firmware_string += f"const int N_POTS = {knob_count};\n"
+
+        firmware_string += f"int potPin[N_POTS] = {{ "
+        for knob in preset.knobs.all():
+            firmware_string += f"{knob.pin}, "
+        firmware_string += f" }};\n"
+
+        firmware_string += f"int potCC[N_POTS] = {{"
+        for knob in preset.knobs.all():
+            firmware_string += f"{knob.CC}, "
+        firmware_string += f"}};\n"
+
+        firmware_string += f"int potChannel[N_POTS] = {{"
+        for knob in preset.knobs.all():
+            firmware_string += f"{knob.channel}, "
+        firmware_string += f"}};\n"
+
+        firmware_string += f"int ccMin[N_POTS] = {{"
+        for knob in preset.knobs.all():
+            firmware_string += f"{knob.cc_min}, "
+        firmware_string += f"}};\n"
+
+        firmware_string += f"int ccMax[N_POTS] = {{"
+        for knob in preset.knobs.all():
+            firmware_string += f"{knob.cc_max}, "
+        firmware_string += f"}};\n"
+
+        firmware_string += '''
+int potReading[N_POTS] = { 0 };
+int potState[N_POTS] = { 0 };
+int potPState[N_POTS] = { 0 };
+
+int midiState[N_POTS] = { 0 };
+int midiPState[N_POTS] = { 0 };
+// =================================================================================
+'''
+    else:
+        firmware_string += f"// ==========================  POTENTIOMETER VARIABLES  ===========================\n"
+        firmware_string += '''const int N_POTS = 0;
+int potPin[N_POTS] = { 0 };
+int potCC[N_POTS] = { 0 };
+int potChannel[N_POTS] = { 0 };
+int ccMin[N_POTS] = { 0 };
+int ccMax[N_POTS] = { 0 };
+
+int potReading[N_POTS] = { 0 };
+int potState[N_POTS] = { 0 };
+int potPState[N_POTS] = { 0 };
+
+int midiState[N_POTS] = { 0 };
+int midiPState[N_POTS] = { 0 };'''
+        firmware_string += f"// =================================================================================\n\n"
+
+    # Joystick Section
+    if joystick:
+        firmware_string += f"// ==========================  JOYSTICK VARIABLES  ===============================\n"
+        firmware_string += f"int joystick_y_axis[3] = {{ {joystick.y_channel}, {joystick.y_pin}, {joystick.y_cc} }};\n"
+        if joystick.x_mode == 'cc':
+            firmware_string += f"int joystick_x_axis[3] = {{ {joystick.x_axis.channel}, {joystick.x_axis.pin}, {joystick.x_axis.cc} }};\n"
+            firmware_string += f"// =================================================================================\n"
+        else:
+            firmware_string += f"// =================================================================================\n\n"
+            # firmware_string += f"// ==========================  PITCH VARIABLES  ===============================\n"
+            # firmware_string += f"int pitchPin = {joystick.x_pin};\n"
+            # firmware_string += f"int pitchCC = {joystick.x_cc};\n"
+            # firmware_string += f"int pitchChannel = {joystick.x_channel};\n"
+            # firmware_string += f"int pitchState = 0;\n"
+            # firmware_string += f"// =================================================================================\n\n"
+
+    firmware_string += f"setup() {{\n"
+    firmware_string += f"  {libs_setup[preset.firmware_type]}\n"
+    firmware_string += f"}}\n"
+
+
+    return firmware_string

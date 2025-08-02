@@ -1,5 +1,49 @@
 [
   {
+    "ATmega32U4": [
+      {
+        "board": "Sparkfun Pro Micro",
+        "midi_modes": ["USB"],
+        "fqbn": "sparkfun:avr:promicro",
+        "mcu": "ATmega32U4"
+      },
+      {
+        "board": "Arduino Micro",
+        "midi_modes": ["USB"],
+        "fqbn": "arduino:avr:micro",
+        "mcu": "ATmega32U4"
+      },
+      {
+        "board": "Arduino Leonardo",
+        "midi_modes": ["USB"],
+        "fqbn": "arduino:avr:leonardo",
+        "mcu": "ATmega32U4"
+      }
+    ]
+  },
+  {
+    "RP2040": [
+      {
+        "board": "Raspberry Pi Pico",
+        "midi_modes": ["USB"],
+        "fqbn": "rp2040:rp2040:raspberry_pi_pico",
+        "mcu": "RP2040"
+      },
+      {
+        "board": "Raspberry Pi Pico 2",
+        "midi_modes": ["USB"],
+        "fqbn": "rp2040:rp2040:raspberry_pi_pico",
+        "mcu": "RP2040"
+      },
+      {
+        "board": "Raspberry Pi Pico W",
+        "midi_modes": ["USB"],
+        "fqbn": "rp2040:rp2040:raspberry_pi_pico_w",
+        "mcu": "RP2040"
+      }
+    ]
+  },
+  {
     "ESP32": [
       {
         "board": "ESP32-WROOM-32U DevKit",
@@ -39,16 +83,6 @@
           "BLE+RTP", "USB (OTG)+BLE+RTP"
         ],
         "fqbn": "esp32:esp32:esp32s3-devkitc-1",
-        "mcu": "ESP32"
-      },
-      {
-        "board": "ESP32-S3 Dev Module",
-        "midi_modes": [
-          "USB (OTG)", "BLE", "RTP",
-          "USB (OTG)+BLE", "USB (OTG)+RTP",
-          "BLE+RTP", "USB (OTG)+BLE+RTP"
-        ],
-        "fqbn": "esp32:esp32:esp32s3",
         "mcu": "ESP32"
       },
       {
