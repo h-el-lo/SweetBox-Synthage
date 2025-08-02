@@ -1,17 +1,22 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
 set -e
 
-echo "Installing Arduino CLI…"
-curl -fsSL https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz \
-  -o arduino-cli.tar.gz
+# Create a local bin directory if it doesn't exist
+mkdir -p ./bin
+
+# Download and extract the latest Arduino CLI
+curl -fsSL https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz -o arduino-cli.tar.gz
 tar -xzf arduino-cli.tar.gz
-chmod +x arduino-cli
-mv arduino-cli /usr/local/bin/
-rm arduino-cli.tar.gz
 
-echo "Arduino CLI version:"
-arduino-cli version
+# Move the binary to ./bin
+mv arduino-cli ./bin/
 
+# Add local bin to PATH (this will be used in the build step only)
+export PATH="$PWD/bin:$PATH"
+
+# Optional: verify installation
+./bin/arduino-cli version
 
 pip install -r requirements.txt
 python manage.py collectstatic --noinput
