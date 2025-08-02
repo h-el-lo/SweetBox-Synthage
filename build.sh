@@ -12,8 +12,6 @@ tar -xzf arduino-cli.tar.gz
 # Move the binary to ./bin
 mv arduino-cli ./bin/
 
-./bin/arduino-cli version
-
 # Add local bin to PATH (this will be used in the build step only)
 export PATH="$PWD/bin:$PATH"
 
