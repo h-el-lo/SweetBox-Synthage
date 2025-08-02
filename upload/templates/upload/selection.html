@@ -72,13 +72,17 @@
                 <!-- select board options -->
                 <div class="mb-4" id="board-options" style="display: none;">
                     <label class="form-label fw-semibold">Board</label>
-                    <select name="board" class="form-select board-select" required>
+                    <select name="board" class="form-select board-select">
+                        <option value="">Select a board...</option>
                         {% for board in boards %}
-                            <option value="{{ board.board }}" data-mcu="{{ board.mcu }}">{{ board.board }}</option>
+                            <option value="{{ board.fqbn }}" data-mcu="{{ board.mcu }}">{{ board.board }}</option>
                         {% endfor %}
                     </select>
                     <div class="form-text">Select your target Board.</div>
                 </div>
+                
+                <!-- Hidden board input to ensure value is always submitted -->
+                <input type="hidden" name="board_hidden" id="board-hidden" value="">
 
         
                 <!-- midi transfer mode options -->
@@ -171,6 +175,7 @@
 
     // Get all board options as an array
     const allBoardOptions = Array.from(board.options);
+    console.log('Initial board options:', allBoardOptions.map(opt => ({value: opt.value, dataMcu: opt.getAttribute('data-mcu')})));
 
     // Prepare a map of board name to its midi_modes from Django context
     const boardMidiModesMap = {};
@@ -180,15 +185,28 @@
     {% endfor %}
 
     function updateBoardOptionsForMCU(selectedMCU) {
+        console.log('updateBoardOptionsForMCU called with:', selectedMCU);
         board.innerHTML = '';
         let hasOption = false;
         allBoardOptions.forEach(opt => {
+            console.log('Checking option:', opt.value, 'data-mcu:', opt.getAttribute('data-mcu'), 'matches:', opt.getAttribute('data-mcu') === selectedMCU);
             if (opt.getAttribute('data-mcu') === selectedMCU) {
                 board.appendChild(opt.cloneNode(true));
                 hasOption = true;
+                console.log('Added board option:', opt.value);
             }
         });
         boardContainer.style.display = hasOption ? 'block' : 'none';
+        console.log('Board container display:', boardContainer.style.display, 'hasOption:', hasOption);
+        if (hasOption) {
+            // Set the first board as default
+            const firstBoard = board.querySelector('option[value]');
+            if (firstBoard) {
+                board.value = firstBoard.value;
+                document.getElementById('board-hidden').value = firstBoard.value;
+                console.log('Set default board:', firstBoard.value);
+            }
+        }
         board.dispatchEvent(new Event('change'));
     }
 
@@ -214,21 +232,22 @@
         if (presetFirmware.checked) {
             presetSelection.style.display = 'block';
             customFirmwareUpload.style.display = 'none';
-            presetFirmwareUpload.style.display = 'block';
         } else {
             presetSelection.style.display = 'none';
             customFirmwareUpload.style.display = 'block';
-            presetFirmwareUpload.style.display = 'none';
         }
     }
 
     // On MCU change, update board options
     mcu.addEventListener('change', function() {
+        console.log('MCU changed to:', mcu.value);
         updateBoardOptionsForMCU(mcu.value);
     });
 
     // On board change, update midi mode options
     board.addEventListener('change', function() {
+        console.log('Board changed to:', board.value);
+        document.getElementById('board-hidden').value = board.value;
         updateMidiModesForBoard(board.value);
     });
 
@@ -237,12 +256,32 @@
     document.getElementById('custom_firmware').addEventListener('change', handleFirmwareTypeChange);
 
     // On page load, filter boards for the initial MCU and update midi modes
+    console.log('Page load - initial MCU:', mcu.value);
+    console.log('Available MCU options:', Array.from(mcu.options).map(opt => opt.value));
     updateBoardOptionsForMCU(mcu.value);
     updateMidiModesForBoard(board.value);
     
     // Ensure default state is set on page load (override any browser-saved state)
     document.getElementById('preset_firmware').checked = true;
     handleFirmwareTypeChange();
+    
+    // Add form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const mcu = document.getElementById('mcu-select').value;
+        const board = document.querySelector('select[name="board"]');
+        const boardContainer = document.getElementById('board-options');
+        
+        console.log('Form submission - MCU:', mcu);
+        console.log('Form submission - Board:', board.value);
+        console.log('Form submission - Board container visible:', boardContainer.style.display !== 'none');
+        
+        // If board container is visible, ensure a board is selected
+        if (boardContainer.style.display !== 'none' && (!board.value || board.value === '')) {
+            e.preventDefault();
+            alert('Please select a board for the selected microcontroller.');
+            return false;
+        }
+    });
 
 </script>
 {% endblock %}

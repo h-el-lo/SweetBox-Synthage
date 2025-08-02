@@ -50,6 +50,11 @@ def get_boards_context(request):
 
     midi_modes = set([ mode for mode in board['midi_modes'] for board in board_list])
     
+    # Debug: Print the context data
+    print(f"Available MCUs: {mcus}")
+    print(f"Available boards: {[board['board'] for board in board_list]}")
+    print(f"Board MCUs: {[board['mcu'] for board in board_list]}")
+    
     context = {
         'cores': cores,
         'mcus': sorted(mcus),
@@ -69,13 +74,17 @@ def selection(request):
 
 def sorter(request):
     if request.method == 'POST':
-        if request.POST.get('mcu').lower() == 'esp32':
+        mcu = request.POST.get('mcu')
+        print(f"Sorter received MCU: {mcu}")
+        if mcu and mcu.lower() == 'esp32':
+            print(f"Routing to esp_upload for MCU: {mcu}")
             return esp_upload(request)
         # elif request.POST.get('mcu').lower() == 'atmega32u4':
         #     return generate_firmware(request)
         # elif request.POST.get('mcu').lower() == 'rp2040':
         #     return generate_firmware(request)
         else:
+            print(f"Redirecting to selection for MCU: {mcu}")
             return redirect('selection')
     else:
         return redirect('selection')
@@ -105,9 +114,15 @@ def upload_sketch(request):
     return render(request, 'upload/input.html', {'form': form})
 
 def esp_upload(request):
-    if request.method == 'POST' and request.FILES['sketch']:
+    if request.method == 'POST':
+        # Check if we have a custom firmware file
         if request.POST.get('firmware_type') == 'custom':
-            sketch_file = request.FILES['sketch']
+            if 'custom_firmware_file' not in request.FILES:
+                return render(request, 'upload/esp_upload.html', {
+                    'error': 'No custom firmware file was uploaded. Please select a .ino file.'
+                })
+            
+            sketch_file = request.FILES['custom_firmware_file']
             uid = uuid.uuid4().hex[:8]
             work_dir = os.path.join(settings.MEDIA_ROOT, uid)
             os.makedirs(work_dir, exist_ok=True)
@@ -122,10 +137,27 @@ def esp_upload(request):
                     dest.write(chunk)
 
             context = get_boards_context(request)
+            board_fqbn = None
+            selected_board = request.POST.get('board') or request.POST.get('board_hidden')
+            selected_mcu = request.POST.get('mcu')
+            
+            # Debug: Print the selected values
+            print(f"Selected MCU: {selected_mcu}")
+            print(f"Selected board: {selected_board}")
+            print(f"Board from visible field: {request.POST.get('board')}")
+            print(f"Board from hidden field: {request.POST.get('board_hidden')}")
+            print(f"Available boards: {[board['fqbn'] for board in context['boards']]}")
+            print(f"Boards for selected MCU: {[board['fqbn'] for board in context['boards'] if board['mcu'] == selected_mcu]}")
+            
             for board in context['boards']:
-                if board['fqbn'] == request.POST.get('board'):
+                if board['fqbn'] == selected_board:
                     board_fqbn = board['fqbn']
                     break
+            
+            if not board_fqbn:
+                return render(request, 'upload/esp_upload.html', {
+                    'error': f'Please select a valid board for compilation. Selected: {selected_board}, MCU: {selected_mcu}'
+                })
 
             compile_cmd = [
                 'arduino-cli', 'compile',
@@ -137,48 +169,57 @@ def esp_upload(request):
 
         elif request.POST.get('firmware_type') == 'preset':
             preset_id = request.POST.get('preset_id')
+            if not preset_id:
+                return render(request, 'upload/esp_upload.html', {
+                    'error': 'Please select a preset for preset firmware.'
+                })
             preset = Preset.objects.get(id=preset_id)
-            generate_firmware(preset, request.POST.get('midi_mode'))
+            generate_firmware(preset, request.POST.get('midi_transfer_mode'))
+            # For preset firmware, we don't need to compile, just return to selection
+            return redirect('selection')
         
         else:
-            return redirect('selection')
-
-    try:
-        subprocess.run(compile_cmd, check=True, capture_output=True)
-        output_files = [f for f in os.listdir(work_dir) if f.endswith('.bin') and not f.endswith('.merged.bin')]
-        
-        # Map know filenames to addresses
-        address_map = {
-            'bootloader.bin': '0',
-            'partitions.bin': '8000',
-            'ino.bin': '10000',
-            'ota_data_initial.bin': 'e000',
-        }
-
-        # Construct output list
-        output_items = []
-        for f in output_files:
-            flash_address = '10000'  # Default address
-            for filename_pattern, address in address_map.items():
-                if f.endswith(filename_pattern):
-                    flash_address = address
-                    break
-
-            url = os.path.join(settings.MEDIA_URL, uid, f)
-            output_items.append({
-                'filename': f,
-                'url': request.build_absolute_uri(url),
-                'file_path': os.path.join(uid, f),  # Add file path for JavaScript
-                'address': flash_address,
+            return render(request, 'upload/esp_upload.html', {
+                'error': 'Please select a firmware type (preset or custom).'
             })
 
-        context = {'output_items': output_items}
-        return render(request, 'upload/esp_upload.html', context)
+        # Only try to compile if we have a custom firmware
+        try:
+            subprocess.run(compile_cmd, check=True, capture_output=True)
+            output_files = [f for f in os.listdir(work_dir) if f.endswith('.bin') and not f.endswith('.merged.bin')]
+            
+            # Map know filenames to addresses
+            address_map = {
+                'bootloader.bin': '0',
+                'partitions.bin': '8000',
+                'ino.bin': '10000',
+                'ota_data_initial.bin': 'e000',
+            }
 
-    except subprocess.CalledProcessError as e:
-        return render(request, 'upload/output.html', {
-            'error': f"Compilation failed: {e.stderr.decode('utf-8')}"
-        })
+            # Construct output list
+            output_items = []
+            for f in output_files:
+                flash_address = '10000'  # Default address
+                for filename_pattern, address in address_map.items():
+                    if f.endswith(filename_pattern):
+                        flash_address = address
+                        break
+
+                url = os.path.join(settings.MEDIA_URL, uid, f)
+                output_items.append({
+                    'filename': f,
+                    'url': request.build_absolute_uri(url),
+                    'file_path': os.path.join(uid, f),  # Add file path for JavaScript
+                    'address': flash_address,
+                })
+
+            context = {'output_items': output_items}
+            return render(request, 'upload/esp_upload.html', context)
+
+        except subprocess.CalledProcessError as e:
+            return render(request, 'upload/output.html', {
+                'error': f"Compilation failed: {e.stderr.decode('utf-8')}"
+            })
 
     return render(request, 'upload/esp_upload.html')
 
@@ -194,9 +235,9 @@ def adafruit_esp_upload(request):
 
 
 
+import shutil
 
-
-def generate_firmware(preset, functions_string):
+def generate_firmware(preset, modes_string):
     firmware_string = ""
 
     libs = {
@@ -213,8 +254,26 @@ def generate_firmware(preset, functions_string):
     }
     
     knob_count = len(preset.knobs.all())
-    button_count = len(preset.buttons.all())
+    # button_count = len(preset.buttons.all())
     joystick = preset.joystick.all()[0] if preset.joystick.all() else None
+
+    if 'usb (otg)' in modes_string:
+        firmware_string += '''
+#if ARDUINO_USB_MODE
+#warning This sketch should be used when USB is in OTG mode
+
+void setup() {}
+void loop() {}
+
+#else
+
+'''
+        for mode in modes_string.split('+'):
+            firmware_string += libs[mode]
+
+    else:
+        for mode in modes_string.split('+'):
+            firmware_string += libs[mode]
 
     # Knobs/Sliders Section
     firmware_string += f"// ==========================  POTENTIOMETER VARIABLES  ===========================\n"

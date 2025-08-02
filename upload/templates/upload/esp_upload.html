@@ -42,6 +42,13 @@
             <br><small class="text-muted">Connect your ESP device and click "Connect" to begin flashing.</small>
         </div>
         {% endif %}
+        
+        {% if error %}
+        <div class="alert alert-danger mb-3" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>Error:</strong> {{ error }}
+        </div>
+        {% endif %}
         <header class="header">
             <div class="left">
                 <label for="noReset"> No reset for Passthrough updates</label>
