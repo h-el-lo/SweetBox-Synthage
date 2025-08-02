@@ -29,7 +29,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'https://*.ngrok-free.app',
-    'https://sweetbox-synthage.onrender.com',
+    'sweetbox-synthage.onrender.com',
     # 'ea02faa1437e.ngrok-free.app',
 ]
 
