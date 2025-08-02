@@ -18,7 +18,7 @@ export PATH="$PWD/bin:$PATH"
 # Optional: verify installation
 ./bin/arduino-cli version
 
-./bin/arduino-cli core install arduino:avr
+# ./bin/arduino-cli core install arduino:avr
 ./bin/arduino-cli core install esp32:esp32
 
 pip install --upgrade pip
