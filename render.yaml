@@ -2,14 +2,22 @@ services:
   - type: web
     name: sweetbox-synthage
     env: python
+
     buildCommand: |
-      curl -L https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz -o arduino-cli.tar.gz
-      tar -xzf arduino-cli.tar.gz
-      mv arduino-cli ./arduino-cli
-      chmod +x ./arduino-cli
-      pip install -r requirements.txt && python manage.py collectstatic --noinput
+      ./scripts/install_arduino_cli.sh
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
 
     startCommand: gunicorn SweetBoxSYNTHAGE.wsgi:application
+
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: SweetBoxSYNTHAGE.settings
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        value: YOUR_SECRET_KEY_HERE
+      - key: ALLOWED_HOSTS
+        value: sweetbox-synthage.onrender.com
