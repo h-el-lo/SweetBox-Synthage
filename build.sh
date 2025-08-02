@@ -9,8 +9,12 @@ mkdir -p ./bin
 curl -fsSL https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz -o arduino-cli.tar.gz
 tar -xzf arduino-cli.tar.gz
 
+arduino-cli version
+
 # Move the binary to ./bin
 mv arduino-cli ./bin/
+
+arduino-cli version
 
 # Add local bin to PATH (this will be used in the build step only)
 export PATH="$PWD/bin:$PATH"
