@@ -217,7 +217,7 @@ def esp_upload(request):
             return render(request, 'upload/esp_upload.html', context)
 
         except subprocess.CalledProcessError as e:
-            return render(request, 'upload/output.html', {
+            return render(request, 'upload/error.html', {
                 'error': f"Compilation failed: {e.stderr.decode('utf-8')}"
             })
 
