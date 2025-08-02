@@ -13,7 +13,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.urls import reverse
 from base.models import Profile
-from .utils import arduino
+from .utils import arduino as ard  
 # Create your views here.
 
 
@@ -89,13 +89,6 @@ def sorter(request):
     else:
         return redirect('selection')
 
-def generate_firmware(preset, firmware_type):
-    pass
-
-def upload(request):
-    context = {} 
-    return render (request, 'upload/upload.html', context)
-
 def arduino_cli_check(request):
     is_installed, message = arduino.check_installed()
     # context = {
@@ -170,11 +163,12 @@ def esp_upload(request):
         elif request.POST.get('firmware_type') == 'preset':
             preset_id = request.POST.get('preset_id')
             if not preset_id:
-                return render(request, 'upload/esp_upload.html', {
+                return render(request, 'upload/error.html', {
                     'error': 'Please select a preset for preset firmware.'
                 })
             preset = Preset.objects.get(id=preset_id)
-            generate_firmware(preset, request.POST.get('midi_transfer_mode'))
+            print(preset)
+            ard.generate_firmware(preset, request.POST.get('midi_transfer_mode'))
             # For preset firmware, we don't need to compile, just return to selection
             return redirect('selection')
         
@@ -183,7 +177,7 @@ def esp_upload(request):
                 'error': 'Please select a firmware type (preset or custom).'
             })
 
-        # Only try to compile if we have a custom firmware
+        # Only try to compile if we have a custom firmware/ preset firmware
         try:
             subprocess.run(compile_cmd, check=True, capture_output=True)
             output_files = [f for f in os.listdir(work_dir) if f.endswith('.bin') and not f.endswith('.merged.bin')]
@@ -236,120 +230,3 @@ def adafruit_esp_upload(request):
 
 
 import shutil
-
-def generate_firmware(preset, modes_string):
-    firmware_string = ""
-
-    libs = {
-        'usb (otg)': '''
-#include "USB.h"
-#include "USBMIDI.h"
-''',
-    }
-
-    libs_setup = {
-        'usb (otg)': '''
-  USB.begin();
-  usbmidi.begin();''',
-    }
-    
-    knob_count = len(preset.knobs.all())
-    # button_count = len(preset.buttons.all())
-    joystick = preset.joystick.all()[0] if preset.joystick.all() else None
-
-    if 'usb (otg)' in modes_string:
-        firmware_string += '''
-#if ARDUINO_USB_MODE
-#warning This sketch should be used when USB is in OTG mode
-
-void setup() {}
-void loop() {}
-
-#else
-
-'''
-        for mode in modes_string.split('+'):
-            firmware_string += libs[mode]
-
-    else:
-        for mode in modes_string.split('+'):
-            firmware_string += libs[mode]
-
-    # Knobs/Sliders Section
-    firmware_string += f"// ==========================  POTENTIOMETER VARIABLES  ===========================\n"
-    if knob_count > 0:
-        firmware_string += f"const int N_POTS = {knob_count};\n"
-
-        firmware_string += f"int potPin[N_POTS] = {{ "
-        for knob in preset.knobs.all():
-            firmware_string += f"{knob.pin}, "
-        firmware_string += f" }};\n"
-
-        firmware_string += f"int potCC[N_POTS] = {{"
-        for knob in preset.knobs.all():
-            firmware_string += f"{knob.CC}, "
-        firmware_string += f"}};\n"
-
-        firmware_string += f"int potChannel[N_POTS] = {{"
-        for knob in preset.knobs.all():
-            firmware_string += f"{knob.channel}, "
-        firmware_string += f"}};\n"
-
-        firmware_string += f"int ccMin[N_POTS] = {{"
-        for knob in preset.knobs.all():
-            firmware_string += f"{knob.cc_min}, "
-        firmware_string += f"}};\n"
-
-        firmware_string += f"int ccMax[N_POTS] = {{"
-        for knob in preset.knobs.all():
-            firmware_string += f"{knob.cc_max}, "
-        firmware_string += f"}};\n"
-
-        firmware_string += '''
-int potReading[N_POTS] = { 0 };
-int potState[N_POTS] = { 0 };
-int potPState[N_POTS] = { 0 };
-
-int midiState[N_POTS] = { 0 };
-int midiPState[N_POTS] = { 0 };
-// =================================================================================
-'''
-    else:
-        firmware_string += f"// ==========================  POTENTIOMETER VARIABLES  ===========================\n"
-        firmware_string += '''const int N_POTS = 0;
-int potPin[N_POTS] = { 0 };
-int potCC[N_POTS] = { 0 };
-int potChannel[N_POTS] = { 0 };
-int ccMin[N_POTS] = { 0 };
-int ccMax[N_POTS] = { 0 };
-
-int potReading[N_POTS] = { 0 };
-int potState[N_POTS] = { 0 };
-int potPState[N_POTS] = { 0 };
-
-int midiState[N_POTS] = { 0 };
-int midiPState[N_POTS] = { 0 };'''
-        firmware_string += f"// =================================================================================\n\n"
-
-    # Joystick Section
-    if joystick:
-        firmware_string += f"// ==========================  JOYSTICK VARIABLES  ===============================\n"
-        firmware_string += f"int joystick_y_axis[3] = {{ {joystick.y_channel}, {joystick.y_pin}, {joystick.y_cc} }};\n"
-        if joystick.x_mode == 'cc':
-            firmware_string += f"int joystick_x_axis[3] = {{ {joystick.x_axis.channel}, {joystick.x_axis.pin}, {joystick.x_axis.cc} }};\n"
-            firmware_string += f"// =================================================================================\n"
-        else:
-            firmware_string += f"// =================================================================================\n\n"
-            # firmware_string += f"// ==========================  PITCH VARIABLES  ===============================\n"
-            # firmware_string += f"int pitchPin = {joystick.x_pin};\n"
-            # firmware_string += f"int pitchCC = {joystick.x_cc};\n"
-            # firmware_string += f"int pitchChannel = {joystick.x_channel};\n"
-            # firmware_string += f"int pitchState = 0;\n"
-            # firmware_string += f"// =================================================================================\n\n"
-
-    firmware_string += f"setup() {{\n"
-    firmware_string += f"  {libs_setup[preset.firmware_type]}\n"
-    firmware_string += f"}}\n"
-
-
-    return firmware_string

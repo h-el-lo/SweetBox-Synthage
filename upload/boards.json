@@ -2,9 +2,9 @@
   {
     "ESP32": [
       {
-        "board": "ESP32-WROOM-32U DevKit",
+        "board": "ESP32 Dev Module",
         "midi_modes": ["BLE", "RTP", "BLE+RTP"],
-        "fqbn": "esp32:esp32:esp32dev",
+        "fqbn": "esp32:esp32:esp32",
         "mcu": "ESP32"
       },
       {
