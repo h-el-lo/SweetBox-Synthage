@@ -13,5 +13,5 @@ echo "Arduino CLI version:"
 arduino-cli version
 
 
-pip install requirements.txt
+pip install -r requirements.txt
 python manage.py collectstatic --noinput
