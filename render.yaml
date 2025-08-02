@@ -5,7 +5,7 @@ services:
 
     buildCommand: |
       chmod +x build.sh
-      ./build.sh
+      ./build_for_render.sh
 
     startCommand: uvicorn SweetBoxSYNTHAGE.asgi:application --host 0.0.0.0 --port 8000
 
