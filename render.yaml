@@ -4,7 +4,6 @@ services:
     env: python
 
     buildCommand: |
-      chmod +x ./scripts/install_arduino_cli.sh
       ./scripts/install_arduino_cli.sh
       pip install -r requirements.txt
       python manage.py collectstatic --noinput
