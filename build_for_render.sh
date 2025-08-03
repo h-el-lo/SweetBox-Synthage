@@ -12,18 +12,22 @@ tar -xzf arduino-cli.tar.gz
 # Move the binary to ./bin
 mv arduino-cli ./bin/
 
-# Add local bin to PATH (this will be used in the build step only)
-export PATH="$PWD/bin:$PATH"
-
 # Optional: verify installation
 ./bin/arduino-cli version
 ./bin/arduino-cli board listall
 
-# Remove problematic board URLs from config
+# Add local bin to PATH (this will be used in the build step only)
+export PATH="$PWD/bin:$PATH"
+export ARDUINO_DATA_DIR=/opt/render/.arduino15
+
+rm -rf $ARDUINO_DATA_DIR
 ./bin/arduino-cli config init --overwrite
-./bin/arduino-cli config set board_manager.additional_urls \
-https://downloads.arduino.cc/packages/package_index.json,\
-https://espressif.github.io/arduino-esp32/package_esp32_index.json
+
+# Remove problematic board URLs from config
+# ./bin/arduino-cli config init --overwrite
+# ./bin/arduino-cli config set board_manager.additional_urls \
+# https://downloads.arduino.cc/packages/package_index.json,\
+# https://espressif.github.io/arduino-esp32/package_esp32_index.json
 
 
 # ./bin/arduino-cli config add board_manager.additional_urls \
