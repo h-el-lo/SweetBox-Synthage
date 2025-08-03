@@ -17,6 +17,7 @@ export PATH="$PWD/bin:$PATH"
 
 # Optional: verify installation
 ./bin/arduino-cli version
+./bin/arduino-cli board listall
 
 # ./bin/arduino-cli config add board_manager.additional_urls \
 # https://www.arduino.cc/en/packages/package_index.json,\
@@ -42,7 +43,6 @@ export PATH="$PWD/bin:$PATH"
 
 ./bin/arduino-cli board listall arduino:avr
 ./bin/arduino-cli board listall esp32:esp32
-./bin/arduino-cli board listall
 
 
 
