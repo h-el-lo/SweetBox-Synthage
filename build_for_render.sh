@@ -42,6 +42,7 @@ export PATH="$PWD/bin:$PATH"
 
 ./bin/arduino-cli board listall arduino:avr
 ./bin/arduino-cli board listall esp32:esp32
+./bin/arduino-cli board listall
 
 
 
