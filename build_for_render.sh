@@ -19,6 +19,12 @@ export PATH="$PWD/bin:$PATH"
 ./bin/arduino-cli version
 ./bin/arduino-cli board listall
 
+# Remove problematic board URLs from config
+./bin/arduino-cli config init
+./bin/arduino-cli config set board_manager.additional_urls https://downloads.arduino.cc/packages/package_index.json,\
+https://espressif.github.io/arduino-esp32/package_esp32_index.json
+
+
 # ./bin/arduino-cli config add board_manager.additional_urls \
 # https://www.arduino.cc/en/packages/package_index.json,\
 # https://espressif.github.io/arduino-esp32/package_esp32_index.json,\
@@ -27,7 +33,7 @@ export PATH="$PWD/bin:$PATH"
 # # https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/main/package_stmicroelectronics_index.json\
 # # https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json
 
-./bin/arduino-cli core update-index
+# ./bin/arduino-cli core update-index
 
 
 
@@ -41,8 +47,8 @@ export PATH="$PWD/bin:$PATH"
 
 ./bin/arduino-cli core list
 
-./bin/arduino-cli board listall arduino:avr
-./bin/arduino-cli board listall esp32:esp32
+# ./bin/arduino-cli board listall arduino:avr
+# ./bin/arduino-cli board listall esp32:esp32
 
 
 
