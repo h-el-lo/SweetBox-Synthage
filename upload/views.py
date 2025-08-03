@@ -90,7 +90,7 @@ def sorter(request):
         return redirect('selection')
 
 def arduino_cli_check(request):
-    is_installed, message = arduino.check_installed()
+    is_installed, message = ard.check_installed()
     # context = {
     #     "is_installed": is_installed,
     #     "message": message,
