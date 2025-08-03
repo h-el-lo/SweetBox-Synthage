@@ -170,7 +170,7 @@ def esp_upload(request):
             print(preset)
             
             # Generate firmware string
-            firmware_string = ard.generate_firmware(preset, request.POST.get('midi_transfer_mode'))
+            firmware_string = ard.generate_esp_firmware(preset, request.POST.get('midi_transfer_mode'))
             
             # Create work directory and sketch directory
             uid = uuid.uuid4().hex[:8]

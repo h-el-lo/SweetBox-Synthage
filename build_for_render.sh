@@ -20,8 +20,9 @@ export PATH="$PWD/bin:$PATH"
 ./bin/arduino-cli board listall
 
 # Remove problematic board URLs from config
-./bin/arduino-cli config init
-./bin/arduino-cli config set board_manager.additional_urls https://downloads.arduino.cc/packages/package_index.json,\
+./bin/arduino-cli config init --overwrite
+./bin/arduino-cli config set board_manager.additional_urls \
+https://downloads.arduino.cc/packages/package_index.json,\
 https://espressif.github.io/arduino-esp32/package_esp32_index.json
 
 

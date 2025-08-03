@@ -24,7 +24,7 @@ def check_installed():
 
 
 
-def generate_firmware(preset, modes_string):
+def generate_esp_firmware(preset, modes_string):
     firmware_string = ""
     modes = modes_string.split('+')
     
@@ -143,4 +143,16 @@ int midiPState[N_POTS] = { 0 };'''
         firmware_string += "\n#endif"
 
     print(firmware_string)
+    return firmware_string
+
+
+    
+
+def generate_avr_firmware(preset, modes_string):
+    firmware_string = ""
+    modes = modes_string.split('+')
+
+    print(modes_string, '\n\n\n\n\n')
+    print(preset)
+
     return firmware_string
