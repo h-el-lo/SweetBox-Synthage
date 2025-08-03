@@ -1,5 +1,27 @@
 [
   {
+    "ATmega32U4": [
+      {
+        "board": "Sparkfun Pro Micro",
+        "midi_modes": ["USB"],
+        "fqbn": "arduino:avr:leonardo",
+        "mcu": "ATmega32U4"
+      },
+      {
+        "board": "Arduino Micro",
+        "midi_modes": ["USB"],
+        "fqbn": "arduino:avr:micro",
+        "mcu": "ATmega32U4"
+      },
+      {
+        "board": "Arduino Leonardo",
+        "midi_modes": ["USB"],
+        "fqbn": "arduino:avr:leonardo",
+        "mcu": "ATmega32U4"
+      }
+    ]
+  },
+  {
     "ESP32": [
       {
         "board": "ESP32 Dev Module",
