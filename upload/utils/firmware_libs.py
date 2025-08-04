@@ -185,7 +185,9 @@ void pitchBend(byte channel, int value) {
 
 def knobs_buttons_joystick(preset):
     knob_count = len(preset.knob_set.all())
+    knobs = preset.knob_set.all()
     # button_count = len(preset.button_set.all())
+    # buttons = preset.button_set.all()
     joystick = preset.joystick_set.all()[0] if preset.joystick_set.all() else None
     firmware_string = ""
 
@@ -219,7 +221,14 @@ def knobs_buttons_joystick(preset):
             firmware_string += f"{knob.max}, "
         firmware_string += f"}};\n"
 
-        firmware_string += '''
+        firmware_string += f'''
+
+// ==========================  POTENTIOMETER VARIABLES  ===========================
+const int N_POTS = {{{knob_count}}};
+int potPin[N_POTS] = {{ {knob.pin for knob in knobs} }};
+
+
+
 int potReading[N_POTS] = { 0 };
 int potState[N_POTS] = { 0 };
 int potPState[N_POTS] = { 0 };
