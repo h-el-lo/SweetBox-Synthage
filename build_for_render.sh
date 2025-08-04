@@ -15,10 +15,10 @@ mv arduino-cli ./bin/
 # Optional: verify installation
 ./bin/arduino-cli version
 
-./bin/arduino-cli config init --overwrite
-
 # Add local bin to PATH (this will be used in the build step only)
 export PATH="$PWD/bin:$PATH"
+
+./bin/arduino-cli config init --overwrite
 
 # Install required cores
 arduino-cli core install arduino:avr
