@@ -1,5 +1,6 @@
 export PATH="$PWD/bin:$PATH"
-arduino-cli config init --overwrite
+
+
 arduino-cli board listall
 
 # uvicorn SweetBoxSYNTHAGE.wsgi:application --host 0.0.0.0 --port 8000
