@@ -1,4 +1,5 @@
 export PATH="$PWD/bin:$PATH"
+arduino-cli core update-index
 
 arduino-cli config set directories.data "$PWD/arduino-data"
 

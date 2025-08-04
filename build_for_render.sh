@@ -17,11 +17,16 @@ export PATH="$PWD/bin:$PATH"
 ./bin/arduino-cli config init --overwrite
 ./bin/arduino-cli config set directories.data "$PWD/arduino-data"
 
+# Add links to board manager
+arduino-cli config add board_manager.additional_urls https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+arduino-cli config add board_manager.additional_urls https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+
 # Install cores
 arduino-cli core update-index
 arduino-cli core install arduino:avr
 arduino-cli core install esp32:esp32
 arduino-cli core install rp2040:rp2040
+arduino-cli core install STMicroelectronics:stm32
 
 # Install libraries
 arduino-cli lib install "MIDIUSB"
