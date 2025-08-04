@@ -24,6 +24,7 @@ arduino-cli config set directories.downloads "$PWD/arduino-downloads"
 # Add links to board manager
 arduino-cli config add board_manager.additional_urls https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
 arduino-cli config add board_manager.additional_urls https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json
+arduino-cli config add board_manager.additional_urls https://dan.drown.org/stm32duino/package_STM32duino_index.json
 
 # Install cores
 arduino-cli core update-index
