@@ -21,7 +21,9 @@ export PATH="$PWD/bin:$PATH"
 export ARDUINO_DATA_DIR=/opt/render/.arduino15
 
 arduino-cli version
+echo "hello"
 ./bin/arduino-cli version
+echo "hi"
 
 rm -rf $ARDUINO_DATA_DIR
 ./bin/arduino-cli config init --overwrite
