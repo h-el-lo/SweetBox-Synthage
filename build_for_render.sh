@@ -23,7 +23,7 @@ export PATH="$PWD/bin:$PATH"
 ./bin/arduino-cli core install esp32:esp32
 
 # Install libraries
-./bin/arduino-cli lib install "MidiUSB"
+./bin/arduino-cli lib install "MIDIUSB"
 
 # Confirm installations
 ./bin/arduino-cli core list
