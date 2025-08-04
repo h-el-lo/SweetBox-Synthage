@@ -18,16 +18,18 @@ export PATH="$PWD/bin:$PATH"
 ./bin/arduino-cli config set directories.data "$PWD/arduino-data"
 
 # Install cores
-./bin/arduino-cli core update-index
-./bin/arduino-cli core install arduino:avr
-./bin/arduino-cli core install esp32:esp32
+arduino-cli core update-index
+arduino-cli core install arduino:avr
+arduino-cli core install esp32:esp32
+arduino-cli core install rp2040:rp2040
 
 # Install libraries
-./bin/arduino-cli lib install "MIDIUSB"
+arduino-cli lib install "MIDIUSB"
 
 # Confirm installations
-./bin/arduino-cli core list
-./bin/arduino-cli board listall
+arduino-cli core list
+arduino-cli lib list
+arduino-cli board listall
 
 # Install Python dependencies
 pip install --upgrade pip
