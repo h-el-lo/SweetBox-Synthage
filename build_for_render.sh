@@ -24,7 +24,11 @@ export PATH="$PWD/bin:$PATH"
 arduino-cli core install arduino:avr
 arduino-cli core install esp32:esp32
 
+# Install required libraries
+arduino-cli lib install "LibraryName"
+
 arduino-cli board listall
+arduino-cli lib listall
 
 arduino-cli version
 echo "hello"
