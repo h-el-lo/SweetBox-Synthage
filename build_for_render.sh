@@ -41,21 +41,18 @@ rm -rf $ARDUINO_DATA_DIR
 # ./bin/arduino-cli core update-index
 
 
+# ./bin/arduino-cli core install arduino:avr
+# ./bin/arduino-cli core install esp32:esp32
 
-./bin/arduino-cli core install arduino:avr
+arduino-cli core install arduino:avr
+arduino-cli core install esp32:esp32
+
+
 # ./bin/arduino-cli core install arduino:sam
 # ./bin/arduino-cli core install arduino:samd
-./bin/arduino-cli core install esp32:esp32
 # ./bin/arduino-cli core install STMicroelectronics:stm32
 
-
-
 ./bin/arduino-cli core list
-
-# ./bin/arduino-cli board listall arduino:avr
-# ./bin/arduino-cli board listall esp32:esp32
-
-
 
 pip install --upgrade pip
 pip install -r requirements.txt

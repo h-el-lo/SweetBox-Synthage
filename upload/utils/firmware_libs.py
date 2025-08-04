@@ -197,37 +197,31 @@ def knobs_buttons_joystick(preset):
         firmware_string += f"const int N_POTS = {knob_count};\n"
 
         firmware_string += f"int potPin[N_POTS] = {{ "
-        for knob in preset.knob_set.all():
+        for knob in knobs:
             firmware_string += f"{knob.pin}, "
         firmware_string += f"}};\n"
 
         firmware_string += f"int potCC[N_POTS] = {{ "
-        for knob in preset.knob_set.all():
+        for knob in knobs:
             firmware_string += f"{knob.CC}, "
         firmware_string += f"}};\n"
 
         firmware_string += f"int potChannel[N_POTS] = {{ "
-        for knob in preset.knob_set.all():
+        for knob in knobs:
             firmware_string += f"{knob.channel}, "
         firmware_string += f"}};\n"
 
         firmware_string += f"int ccMin[N_POTS] = {{ "
-        for knob in preset.knob_set.all():
+        for knob in knobs:
             firmware_string += f"{knob.min}, "
         firmware_string += f"}};\n"
 
         firmware_string += f"int ccMax[N_POTS] = {{ "
-        for knob in preset.knob_set.all():
+        for knob in knobs:
             firmware_string += f"{knob.max}, "
         firmware_string += f"}};\n"
 
         firmware_string += f'''
-
-// ==========================  POTENTIOMETER VARIABLES  ===========================
-const int N_POTS = {{{knob_count}}};
-int potPin[N_POTS] = {{ {knob.pin for knob in knobs} }};
-
-
 
 int potReading[N_POTS] = { 0 };
 int potState[N_POTS] = { 0 };

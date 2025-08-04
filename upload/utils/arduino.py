@@ -36,6 +36,25 @@ def installed_boards():
     except subprocess.CalledProcessError as e:
         return False, f"Error executing arduino-cli: {e.stderr.strip() if e.stderr else 'Unknown error'}"
 
+def compile_arduino_sketch(sketch_path, fqbn):
+    env = os.environ.copy()
+    env["ARDUINO_DATA_DIR"] = "/opt/render/.arduino15"  # Make sure it's consistent
+
+    command = [
+        "arduino-cli",
+        "compile",
+        "--fqbn", fqbn,
+        sketch_path
+    ]
+
+    result = subprocess.run(command, capture_output=True, text=True, env=env)
+
+    return {
+        "success": result.returncode == 0,
+        "stdout": result.stdout,
+        "stderr": result.stderr,
+    }
+
 
 def generate_esp_firmware(preset, modes_string):
     firmware_string = ""
