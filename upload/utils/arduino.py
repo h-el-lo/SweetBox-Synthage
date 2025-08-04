@@ -79,3 +79,22 @@ def generate_avr_firmware(preset, modes_string):
     print(firmware_string)
 
     return firmware_string
+
+
+def generate_pico_firmware(preset, modes_string):
+    firmware_string = ""
+    modes = modes_string.split('+')
+    
+    print(f'the modes are: {modes}')
+    
+    return firmware_string
+
+
+def generate_stm_firmware(preset, modes_string):
+    firmware_string = ""
+    modes = modes_string.split('+')
+
+    print(f'the modes are: {modes}')
+
+    return firmware_string
+
