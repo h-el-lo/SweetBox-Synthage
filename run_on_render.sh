@@ -1,5 +1,4 @@
 export PATH="$PWD/bin:$PATH"
-export ARDUINO_DATA_DIR=/opt/render/.arduino15
 
 arduino-cli board listall
 
