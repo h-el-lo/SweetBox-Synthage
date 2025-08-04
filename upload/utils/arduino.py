@@ -24,11 +24,13 @@ def check_installed():
 
 def installed_boards():
     try:
+        env = os.environ.copy()
+        env["ARDUINO_DATA_DIR"] = "/opt/render/.arduino15"
         result = subprocess.run(
             ["arduino-cli", "board", "listall"],
             capture_output=True,
             text=True,
-            check=True
+            check=True, env=env
         )
         return True, result.stdout.strip()
     except FileNotFoundError:
