@@ -2,6 +2,8 @@ export PATH="$PWD/bin:$PATH"
 arduino-cli core update-index
 
 arduino-cli config set directories.data "$PWD/arduino-data"
+arduino-cli config set directories.user "$PWD/arduino-user"
+arduino-cli config set directories.downloads "$PWD/arduino-downloads"
 
 arduino-cli board listall
 arduino-cli lib list

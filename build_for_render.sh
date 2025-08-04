@@ -4,6 +4,8 @@ set -e
 # Directories
 mkdir -p ./bin
 mkdir -p ./arduino-data
+mkdir -p ./arduino-user
+mkdir -p ./arduino-downloads
 
 # Download Arduino CLI
 curl -fsSL https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz -o arduino-cli.tar.gz
@@ -14,8 +16,10 @@ mv arduino-cli ./bin/
 export PATH="$PWD/bin:$PATH"
 
 # Set CLI config to use local data directory
-./bin/arduino-cli config init --overwrite
-./bin/arduino-cli config set directories.data "$PWD/arduino-data"
+arduino-cli config init --overwrite
+arduino-cli config set directories.data "$PWD/arduino-data"
+arduino-cli config set directories.user "$PWD/arduino-user"
+arduino-cli config set directories.downloads "$PWD/arduino-downloads"
 
 # Add links to board manager
 arduino-cli config add board_manager.additional_urls https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
@@ -27,6 +31,8 @@ arduino-cli core install arduino:avr
 arduino-cli core install esp32:esp32
 arduino-cli core install rp2040:rp2040
 arduino-cli core install STMicroelectronics:stm32
+arduino-cli core install stm32duino:STM32F4
+arduino-cli core install stm32duino:STM32F1
 
 # Install libraries
 arduino-cli lib install "MIDIUSB"
