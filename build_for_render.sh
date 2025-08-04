@@ -14,47 +14,35 @@ mv arduino-cli ./bin/
 
 # Optional: verify installation
 ./bin/arduino-cli version
-./bin/arduino-cli board listall
 
 # Add local bin to PATH (this will be used in the build step only)
 export PATH="$PWD/bin:$PATH"
-export ARDUINO_DATA_DIR=/opt/render/.arduino15
+
+# Install required cores
+arduino-cli core install arduino:avr
+arduino-cli core install esp32:esp32
+
+arduino-cli board listall
 
 arduino-cli version
 echo "hello"
 ./bin/arduino-cli version
 echo "hi"
 
-rm -rf $ARDUINO_DATA_DIR
+# export ARDUINO_DATA_DIR=/opt/render/.arduino15
+
+arduino-cli config set directories.data /opt/render/.arduino15
+
+
+
+# rm -rf $ARDUINO_DATA_DIR
 ./bin/arduino-cli config init --overwrite
 
 # Remove problematic board URLs from config
 # ./bin/arduino-cli config init --overwrite
 # ./bin/arduino-cli config set board_manager.additional_urls \
-# https://downloads.arduino.cc/packages/package_index.json,\
-# https://espressif.github.io/arduino-esp32/package_esp32_index.json
+# https://downloads.arduino.cc/packages/package_index.json
 
-
-# ./bin/arduino-cli config add board_manager.additional_urls \
-# https://www.arduino.cc/en/packages/package_index.json,\
-# https://espressif.github.io/arduino-esp32/package_esp32_index.json,\
-# https://arduino.esp8266.com/stable/package_esp8266com_index.json
-# # https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
-# # https://raw.githubusercontent.com/stm32duino/BoardManagerFiles/main/package_stmicroelectronics_index.json\
-# # https://raw.githubusercontent.com/sparkfun/Arduino_Boards/master/IDE_Board_Manager/package_sparkfun_index.json
-
-# ./bin/arduino-cli core update-index
-
-
-# ./bin/arduino-cli core install arduino:avr
-# ./bin/arduino-cli core install esp32:esp32
-
-arduino-cli core install arduino:avr
-arduino-cli core install esp32:esp32
-
-
-# ./bin/arduino-cli core install arduino:sam
-# ./bin/arduino-cli core install arduino:samd
 # ./bin/arduino-cli core install STMicroelectronics:stm32
 
 ./bin/arduino-cli core list
