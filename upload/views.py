@@ -100,6 +100,13 @@ def arduino_cli_check(request):
     else:
         return HttpResponse(f'<p style="color: red;">❌ Not Installed: { message }</p>')
 
+def arduino_boards_check(request):
+    is_installed, message = ard.installed_boards()
+    if is_installed:
+        return HttpResponse(f'<p style="color: green;">✅ Installed: { message }</p>')
+    else:
+        return HttpResponse(f'<p style="color: red;">❌ Not Installed: { message }</p>')
+
 from .forms import SketchUploadForm
 def upload_sketch(request):
     form = SketchUploadForm()
