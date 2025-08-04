@@ -15,6 +15,8 @@ mv arduino-cli ./bin/
 # Optional: verify installation
 ./bin/arduino-cli version
 
+./bin/arduino-cli config init --overwrite
+
 # Add local bin to PATH (this will be used in the build step only)
 export PATH="$PWD/bin:$PATH"
 
@@ -36,7 +38,6 @@ arduino-cli config set directories.data /opt/render/.arduino15
 
 
 # rm -rf $ARDUINO_DATA_DIR
-./bin/arduino-cli config init --overwrite
 
 # Remove problematic board URLs from config
 # ./bin/arduino-cli config init --overwrite
