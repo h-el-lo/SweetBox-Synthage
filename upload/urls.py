@@ -5,7 +5,6 @@ urlpatterns = [
     path('', views.selection, name='selection'),
     path('esp_upload/', views.esp_upload, name='esp_upload'),
     path('avr_upload/', views.avr_upload, name='avr_upload'),
-    path('adafruit_esp_upload/', views.adafruit_esp_upload, name='adafruit_esp_upload'),
     path('pico_upload/', views.pico_upload, name='pico_upload'),
     path('stm_upload/', views.stm_upload, name='stm_upload'),
     path('arduino/', views.arduino_cli_check, name='arduino'),

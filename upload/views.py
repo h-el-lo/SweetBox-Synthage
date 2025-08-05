@@ -200,10 +200,6 @@ def preset_firmware_compile_cmd(request):
 
 
 
-
-
-def adafruit_esp_upload(request):
-    return render(request, 'upload/adafruit_esp.html')
  
 def esp_upload(request):
     if request.method == 'POST':
