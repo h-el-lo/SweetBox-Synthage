@@ -95,24 +95,6 @@ The application is configured for deployment on Render.com. The `render.yaml` fi
 - **Joystick**: Connect analog joystick to X and Y axis pins
 - **MIDI Output**: The firmware will output MIDI data via USB
 
-## 📁 Project Structure
-
-```
-SweetBox-Synthage/
-├── SweetBoxSYNTHAGE/          # Django project settings
-├── upload/                    # Firmware generation and upload app
-│   ├── utils/                 # Arduino CLI utilities
-│   ├── firmware/              # Generated firmware files
-│   └── boards.json           # Board configurations
-├── presets/                   # Preset management app
-│   ├── models.py             # Preset, Knob, Button, Joystick models
-│   └── forms.py              # Preset creation forms
-├── base/                      # User authentication and profiles
-├── templates/                 # HTML templates
-├── static/                    # CSS, JS, and static assets
-└── requirements.txt           # Python dependencies
-```
-
 ## 🔧 Configuration
 
 ### Board Support
@@ -140,12 +122,6 @@ The application supports the following boards:
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- Arduino team for the arduino-cli tool
-- Django community for the excellent web framework
-- MIDI specification for the communication protocol
 
 ## 📞 Support
 
