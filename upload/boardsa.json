@@ -4,7 +4,7 @@
       {
         "board": "Sparkfun Pro Micro",
         "midi_modes": ["USB"],
-        "fqbn": "sparkfun:avr:promicro",
+        "fqbn": "arduino:avr:leonardo",
         "mcu": "ATmega32U4"
       },
       {
@@ -22,33 +22,11 @@
     ]
   },
   {
-    "RP2040": [
-      {
-        "board": "Raspberry Pi Pico",
-        "midi_modes": ["USB"],
-        "fqbn": "rp2040:rp2040:raspberry_pi_pico",
-        "mcu": "RP2040"
-      },
-      {
-        "board": "Raspberry Pi Pico 2",
-        "midi_modes": ["USB"],
-        "fqbn": "rp2040:rp2040:raspberry_pi_pico",
-        "mcu": "RP2040"
-      },
-      {
-        "board": "Raspberry Pi Pico W",
-        "midi_modes": ["USB"],
-        "fqbn": "rp2040:rp2040:raspberry_pi_pico_w",
-        "mcu": "RP2040"
-      }
-    ]
-  },
-  {
     "ESP32": [
       {
-        "board": "ESP32-WROOM-32U DevKit",
+        "board": "ESP32 Dev Module",
         "midi_modes": ["BLE", "RTP", "BLE+RTP"],
-        "fqbn": "esp32:esp32:esp32dev",
+        "fqbn": "esp32:esp32:esp32",
         "mcu": "ESP32"
       },
       {
@@ -86,6 +64,16 @@
         "mcu": "ESP32"
       },
       {
+        "board": "ESP32-S3 Dev Module",
+        "midi_modes": [
+          "USB (OTG)", "BLE", "RTP",
+          "USB (OTG)+BLE", "USB (OTG)+RTP",
+          "BLE+RTP", "USB (OTG)+BLE+RTP"
+        ],
+        "fqbn": "esp32:esp32:esp32s3",
+        "mcu": "ESP32"
+      },
+      {
         "board": "ESP32-S3 Box / Box Lite",
         "midi_modes": [
           "USB (OTG)", "BLE", "RTP",
@@ -118,11 +106,33 @@
     ]
   },
   {
+    "RP2040": [
+      {
+        "board": "Raspberry Pi Pico",
+        "midi_modes": ["USB"],
+        "fqbn": "rp2040:rp2040:raspberry_pi_pico",
+        "mcu": "RP2040"
+      },
+      {
+        "board": "Raspberry Pi Pico 2",
+        "midi_modes": ["USB"],
+        "fqbn": "rp2040:rp2040:raspberry_pi_pico",
+        "mcu": "RP2040"
+      },
+      {
+        "board": "Raspberry Pi Pico W",
+        "midi_modes": ["USB"],
+        "fqbn": "rp2040:rp2040:raspberry_pi_pico_w",
+        "mcu": "RP2040"
+      }
+    ]
+  },
+  {
     "STM32": [
       {
-        "board": "STM32 Board",
-        "midi_modes": ["USB (OTG)"],
-        "fqbn": "stm32:stm32:GenericSTM32F103C",
+        "board": "STM32 Board F103C (Blue Pill)",
+        "midi_modes": ["USB"],
+        "fqbn": "stm32duino:STM32F1:genericSTM32F103C",
         "mcu": "STM32"
       }
     ]

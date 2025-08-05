@@ -106,11 +106,39 @@
     ]
   },
   {
+    "RP2040": [
+      {
+        "board": "Raspberry Pi Pico",
+        "midi_modes": ["USB"],
+        "fqbn": "rp2040:rp2040:rpipico",
+        "mcu": "RP2040"
+      },
+      {
+        "board": "Raspberry Pi Pico 2",
+        "midi_modes": ["USB"],
+        "fqbn": "rp2040:rp2040:rpipico2",
+        "mcu": "RP2040"
+      },
+      {
+        "board": "Raspberry Pi Pico W",
+        "midi_modes": ["USB"],
+        "fqbn": "rp2040:rp2040:rpipicow",
+        "mcu": "RP2040"
+      },
+      {
+        "board": "Raspberry Pi Pico 2W",
+        "midi_modes": ["USB"],
+        "fqbn": "rp2040:rp2040:rpipico2w",
+        "mcu": "RP2040"
+      }
+    ]
+  },
+  {
     "STM32": [
       {
-        "board": "STM32 Board",
-        "midi_modes": ["USB (OTG)"],
-        "fqbn": "stm32:stm32:GenericSTM32F103C",
+        "board": "STM32 Board F103C (Blue Pill)",
+        "midi_modes": ["USB"],
+        "fqbn": "stm32duino:STM32F1:genericSTM32F103C",
         "mcu": "STM32"
       }
     ]

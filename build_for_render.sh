@@ -37,6 +37,8 @@ arduino-cli core install stm32duino:STM32F1
 
 # Install libraries
 arduino-cli lib install "MIDIUSB"
+unzip ./libraries/Adafruit_TinyUSB_MIDI.zip -d lib/Adafruit_TinyUSB_MIDI-main
+cp -r ./libraries/Adafruit_TinyUSB_MIDI-main "$PWD/arduino-user"
 
 # Confirm installations
 arduino-cli core list

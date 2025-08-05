@@ -1,3 +1,20 @@
+# =========================================== ESP32 BOARDS VARIABLES ================================
+
+OTG_WARNING = '''
+#if ARDUINO_USB_MODE
+#warning This sketch should be used when USB is in OTG mode
+
+void setup() {}
+void loop() {}
+
+#else
+'''
+
+OTG_END = '''
+#endif
+'''
+
+
 libs = {
     'USB (OTG)': '''
 #include "USB.h"
@@ -117,10 +134,11 @@ void loop() {
 ''', 
 }
 
+# ===============================================================================================
 
 
 
-
+# =========================================== OTHER BOARDS VARIABLES ============================
 
 avr = {
   'setup': '''
@@ -183,6 +201,117 @@ void pitchBend(byte channel, int value) {
 }
 
 
+pico = {
+  'setup': '''
+void setup() {
+  MIDI.begin();
+}''',
+  'loop': '''
+void loop() {
+    // ============  READ THROUGH ALL POTS MINUS PITCH AND MOD WHEELS  =====================
+    for (int i = 0; i < N_POTS; i++) {
+      potReading[i] = analogRead(potPin[i]);
+      potState[i] = potReading[i];
+      midiState[i] = map(potState[i], 0, 1023, ccMin[i], ccMax[i]);
+  
+      int potVar = abs(potState[i] - potPState[i]);
+  
+      if (potVar > potThreshold) {
+        pPotTime[i] = millis();
+      }
+  
+      potTimer[i] = millis() - pPotTime[i];
+  
+      if (potTimer[i] < POT_TIMEOUT) {
+        if (midiState[i] != midiPState[i]) {
+          // Starts with 0 (channel 1)
+          controlChange(potChannel[i] - 1, potCC[i], midiState[i]);
+          midiPState[i] = midiState[i];
+        }
+        potPState[i] = potState[i];
+      }
+    }
+}
+''',
+  'functions': '''
+void controlChange(byte channel, byte control, byte value) {
+  MIDI.sendControlChange(control, value, channel);
+}
+
+void noteOn(byte channel, byte note, byte velocity) {
+  MIDI.sendNoteOn(note, velocity, channel);
+}
+
+void noteOff(byte channel, byte note, byte velocity) {
+  MIDI.sendNoteOff(note, velocity, channel);
+}
+
+void pitchBend(byte channel, int value) {
+  MIDI.sendPitchBend(value, channel);
+}
+''',
+}
+
+stm = {
+  'setup': '''
+void setup() {
+    USBComposite.setProductId(0x0031);
+    MIDI.begin();
+    while (!USBComposite);
+}''',
+  'loop': '''
+void loop() {
+    // ============  READ THROUGH ALL POTS MINUS PITCH AND MOD WHEELS  =====================
+    for (int i = 0; i < N_POTS; i++) {
+      potReading[i] = analogRead(potPin[i]);
+      potState[i] = potReading[i];
+      midiState[i] = map(potState[i], 0, 1023, ccMin[i], ccMax[i]);
+  
+      int potVar = abs(potState[i] - potPState[i]);
+  
+      if (potVar > potThreshold) {
+        pPotTime[i] = millis();
+      }
+  
+      potTimer[i] = millis() - pPotTime[i];
+  
+      if (potTimer[i] < POT_TIMEOUT) {
+        if (midiState[i] != midiPState[i]) {
+          // Starts with 0 (channel 1)
+          controlChange(potChannel[i] - 1, potCC[i], midiState[i]);
+          midiPState[i] = midiState[i];
+        }
+        potPState[i] = potState[i];
+      }
+    }
+}
+''',
+  'functions': '''
+void controlChange(byte channel, byte control, byte value) {
+  MIDI.sendControlChange(control, value, channel);
+}
+
+void noteOn(byte channel, byte note, byte velocity) {
+  MIDI.sendNoteOn(note, velocity, channel);
+}
+
+void noteOff(byte channel, byte note, byte velocity) {
+  MIDI.sendNoteOff(note, velocity, channel);
+}
+
+void pitchBend(unsigned int value) {
+  MIDI.sendPitchChange(value);
+}
+''',
+}
+
+# ======================================================================================
+
+
+
+
+# ===========================DEFINED FUNCTIONS===========================
+
 def knobs_buttons_joystick(preset):
     knob_count = len(preset.knob_set.all())
     knobs = preset.knob_set.all()
@@ -221,7 +350,7 @@ def knobs_buttons_joystick(preset):
             firmware_string += f"{knob.max}, "
         firmware_string += f"}};\n"
 
-        firmware_string += f'''
+        firmware_string += '''
 
 int potReading[N_POTS] = { 0 };
 int potState[N_POTS] = { 0 };
