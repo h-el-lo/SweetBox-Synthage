@@ -27,6 +27,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# CSRF Trusted Origins for production deployment
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'https://*.ngrok-free.app',
+]
+
+
 
 # Application definition
 
