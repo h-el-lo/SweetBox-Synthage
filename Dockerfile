@@ -38,7 +38,6 @@ RUN arduino-cli config init --overwrite && \
     arduino-cli config set directories.user /app/arduino-user && \
     arduino-cli config set directories.downloads /app/arduino-downloads && \
     arduino-cli config add board_manager.additional_urls https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json && \
-    arduino-cli config add board_manager.additional_urls https://github.com/stm32duino/BoardManagerFiles/raw/main/package_stmicroelectronics_index.json && \
     arduino-cli config add board_manager.additional_urls https://dan.drown.org/stm32duino/package_STM32duino_index.json
 
 # Install board cores
@@ -46,7 +45,6 @@ RUN arduino-cli core update-index && \
     arduino-cli core install arduino:avr && \
     arduino-cli core install esp32:esp32 && \
     arduino-cli core install rp2040:rp2040 && \
-    arduino-cli core install STMicroelectronics:stm32 && \
     arduino-cli core install stm32duino:STM32F4 && \
     arduino-cli core install stm32duino:STM32F1
 
