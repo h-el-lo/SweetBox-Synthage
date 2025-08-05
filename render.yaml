@@ -1,22 +1,8 @@
 services:
   - type: web
     name: sweetbox-synthage
-    env: python
-
-    buildCommand:
-      chmod +x build.sh
-      ./build_for_render.sh
-
-    startCommand: uvicorn SweetBoxSYNTHAGE.asgi:application --host 0.0.0.0 --port 8000
-
+    env: docker
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: DJANGO_SETTINGS_MODULE
         value: SweetBoxSYNTHAGE.settings
-      - key: PYTHONUNBUFFERED
-        value: "1"
-      - key: DEBUG
-        value: "False"
-      - key: SECRET_KEY
-        value: YOUR_SECRET_KEY_HERE
-      - key: ALLOWED_HOSTS
-        value: sweetbox-synthage.onrender.com
