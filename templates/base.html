@@ -46,13 +46,11 @@
                         <input type="text" name="search" class="form-control" style="background:#23272e; color:#b6beca; border:1.5px solid #444; border-radius:8px; padding-left:2.2rem; height:40px;" placeholder="Type / to search" value="{{ request.GET.search|default:'' }}" autocomplete="off">
                     </form>
         </div>
-                <!-- Nav items -->
                 <ul class="navbar-nav ms-auto align-items-center" style="margin-left: 1rem;">
             {% if not request.user.is_authenticated %}
             <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}" href="{% url 'login' %}">Sign In</a></li>
             <li class="nav-item"><a class="nav-link {% if request.resolver_match.url_name == 'signup' %}active{% endif %}" href="{% url 'signup' %}">Sign Up</a></li>
             {% endif %}
-            <!-- Theme toggle removed from navbar -->
                 {% if request.user.is_authenticated %}
                 <button class="btn btn-link nav-link p-0 ms-2" id="profileSidebarToggle" title="Profile menu" style="font-size: 2.2rem;">
                     <i class="bi bi-list"></i>
