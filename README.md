@@ -2,7 +2,7 @@
 
 A Django-based web application for generating and managing MIDI controller firmware for Arduino-compatible boards. SweetBox Synthage allows users to create custom presets with knobs, buttons, and joysticks, then generate and flash firmware to various microcontroller boards.
 
-## 🎹 Features
+## Features
 
 - **MIDI Controller Preset Management**: Create, edit, and manage custom MIDI controller configurations
 - **Multi-Board Support**: Generate firmware for ATMega32U4, RP2040, and ESP32-S3 boards
