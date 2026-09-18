@@ -14,7 +14,7 @@ A Django-based web application for generating and managing MIDI controller firmw
 - **User Authentication**: Secure user accounts with private preset support
 - **Web-Based Interface**: Intuitive web UI for preset creation and management
 
-## 🛠️ Technology Stack
+## Technology Stack
 
 - **Backend**: Django 4.2.18
 - **Database**: SQLite (development) / PostgreSQL (production)
@@ -22,13 +22,13 @@ A Django-based web application for generating and managing MIDI controller firmw
 - **Arduino Integration**: arduino-cli for firmware compilation and flashing
 - **Deployment**: Render.com
 
-## 📋 Prerequisites
+## Prerequisites
 
 - Python 3.8+
 - Arduino CLI
 - Supported boards: ATMega32U4, RP2040, ESP32-S3
 
-## 🚀 Installation
+## Installation
 
 ### Local Development
 
@@ -70,7 +70,7 @@ A Django-based web application for generating and managing MIDI controller firmw
 
 The application is configured for deployment on Render.com. The `render.yaml` file contains the deployment configuration.
 
-## 🎛️ Usage
+## Usage
 
 ### Creating a Preset
 
@@ -95,7 +95,7 @@ The application is configured for deployment on Render.com. The `render.yaml` fi
 - **Joystick**: Connect analog joystick to X and Y axis pins
 - **MIDI Output**: The firmware will output MIDI data via USB
 
-## 🔧 Configuration
+## Configuration
 
 ### Board Support
 
@@ -111,7 +111,7 @@ The application supports the following boards:
 - **Note Numbers**: 0-127 (MIDI note numbers)
 - **Value Ranges**: 0-127 (MIDI value range)
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
@@ -119,14 +119,14 @@ The application supports the following boards:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## 📞 Support
+## Support
 
 For support, please open an issue on GitHub or contact the development team.
 
 ---
 
-**SweetBox Synthage** - Making MIDI controller firmware generation easy and accessible! 🎵
+**SweetBox Synthage** - Making MIDI controller firmware generation easy and accessible.
