@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+This is the stm upload page
+</br>
+
+{% if error %}
+    {{ error }}
+{% endif %}
+
+{% if output_items %}
+    {{ output_items }}
+{% endif %}
+
+{% endblock %}

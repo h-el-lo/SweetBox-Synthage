@@ -19,13 +19,30 @@
     <!-- Upload Form -->
     <div class="card border-0 shadow-sm">
         <div class="card-body p-4">
-            <form method="post" enctype="multipart/form-data">
+            <form method="post" enctype="multipart/form-data" action="">
                 {% csrf_token %}
                 
-                <!-- Preset Selection -->
+                <!-- Firmware Type Selection -->
                 <div class="mb-4">
+                    <label class="form-label fw-semibold">Firmware Type</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="firmware_type" id="preset_firmware" value="preset" checked>
+                        <label class="form-check-label" for="preset_firmware">
+                            Use Preset Firmware (Recommended)
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="firmware_type" id="custom_firmware" value="custom">
+                        <label class="form-check-label" for="custom_firmware">
+                            Upload Custom Firmware (.ino file)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Preset Selection (shown by default) -->
+                <div class="mb-4" id="preset-selection">
                     <label class="form-label fw-semibold">Select Preset</label>
-                    <select name="preset_id" class="form-select" required>
+                    <select name="preset_id" class="form-select">
                         <option value="">Choose a preset...</option>
                         {% for preset in presets %}
                             <option value="{{ preset.id }}">{{ preset.name }} ({{ preset.number_of_knobs }} knobs, {{ preset.number_of_buttons }} buttons)</option>
@@ -34,14 +51,11 @@
                     <div class="form-text">Select the preset you want to upload firmware for.</div>
                 </div>
 
-                <!-- Firmware Type -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Firmware Type</label>
-                    <select name="firmware_type" class="form-select" required>
-                        <option value="1">Firmware</option>
-                        <option value="2">Bootloader</option>
-                    </select>
-                    <div class="form-text">Choose the type of firmware to upload.</div>
+                <!-- Custom Firmware Upload (hidden by default) -->
+                <div class="mb-4" id="custom-firmware-upload" style="display: none;">
+                    <label class="form-label fw-semibold">Custom Firmware File</label>
+                    <input type="file" name="custom_firmware_file" class="form-control" accept=".ino">
+                    <div class="form-text">Upload your custom firmware file (.ino format).</div>
                 </div>
 
                 <!-- Microcontroller Selection -->
@@ -58,40 +72,30 @@
                 <!-- select board options -->
                 <div class="mb-4" id="board-options" style="display: none;">
                     <label class="form-label fw-semibold">Board</label>
-                    <select name="board" class="form-select board-select" required>
+                    <select name="board" class="form-select board-select">
+                        <option value="">Select a board...</option>
                         {% for board in boards %}
-                            <option value="{{ board.board }}" data-mcu="{{ board.mcu }}">{{ board.board }}</option>
+                            <option value="{{ board.fqbn }}" data-mcu="{{ board.mcu }}">{{ board.board }}</option>
                         {% endfor %}
                     </select>
                     <div class="form-text">Select your target Board.</div>
                 </div>
+                
+                <!-- Hidden board input to ensure value is always submitted -->
+                <input type="hidden" name="board_hidden" id="board-hidden" value="">
 
         
                 <!-- midi transfer mode options -->
                 <div class="mb-4">
                     <label class="form-label fw-semibold">Midi Transfer Mode</label>
                     <select name="midi_transfer_mode" id="midi-mode-select" class="form-select" required>
+                        <option value="">Select a MIDI mode...</option>
                         <!-- Options will be populated dynamically -->
-                         {% for board in boards %}
-                            {% for mode in midi_modes %}
-                                <option value="{{ mcu }}">{{ mode }}</option>
-                            {% endfor %}
-                        {% endfor %}
                     </select>
-                </div>
-
-                <!-- File Upload -->
-                <div class="mb-4">
-                    <label class="form-label fw-semibold">Firmware File</label>
-                    <input type="file" name="firmware_file" class="form-control" accept=".hex,.bin,.ino" required>
-                    <div class="form-text">Upload your firmware file (.hex, .bin, or .ino format).</div>
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="d-flex gap-3 flex-wrap">
-                    <button type="submit" name="action" value="generate" class="btn btn-primary">
-                        <i class="bi bi-gear me-2"></i>Generate Firmware
-                    </button>
                     <button type="submit" name="action" value="upload" class="btn btn-success">
                         <i class="bi bi-upload me-2"></i>Upload Firmware
                     </button>
@@ -112,9 +116,10 @@
         </div>
         <div class="card-body">
             <ol class="mb-0">
-                <li>Select the preset you want to upload firmware for</li>
-                <li>Choose the appropriate firmware type and microcontroller</li>
-                <li>Upload your firmware file</li>
+                <li>Choose between preset firmware (recommended) or custom firmware upload</li>
+                <li>If using preset: Select the preset you want to upload firmware for</li>
+                <li>If using custom: Upload your .ino firmware file</li>
+                <li>Choose the appropriate microcontroller and board</li>
                 <li>Click the appropriate action button based on your needs</li>
                 <li>Follow any additional instructions that appear</li>
             </ol>
@@ -166,30 +171,48 @@
 
     // Get all board options as an array
     const allBoardOptions = Array.from(board.options);
+    console.log('Initial board options:', allBoardOptions.map(opt => ({value: opt.value, dataMcu: opt.getAttribute('data-mcu')})));
 
-    // Prepare a map of board name to its midi_modes from Django context
+    // Prepare a map of board fqbn to its midi_modes from Django context
     const boardMidiModesMap = {};
     // Django template to populate the map
     {% for board in boards %}
-    boardMidiModesMap["{{ board.board|escapejs }}"] = {{ board.midi_modes|safe }};
+    boardMidiModesMap["{{ board.fqbn|escapejs }}"] = {{ board.midi_modes|safe }};
     {% endfor %}
+    console.log('Board MIDI modes map:', boardMidiModesMap);
 
     function updateBoardOptionsForMCU(selectedMCU) {
+        console.log('updateBoardOptionsForMCU called with:', selectedMCU);
         board.innerHTML = '';
         let hasOption = false;
         allBoardOptions.forEach(opt => {
+            console.log('Checking option:', opt.value, 'data-mcu:', opt.getAttribute('data-mcu'), 'matches:', opt.getAttribute('data-mcu') === selectedMCU);
             if (opt.getAttribute('data-mcu') === selectedMCU) {
                 board.appendChild(opt.cloneNode(true));
                 hasOption = true;
+                console.log('Added board option:', opt.value);
             }
         });
         boardContainer.style.display = hasOption ? 'block' : 'none';
+        console.log('Board container display:', boardContainer.style.display, 'hasOption:', hasOption);
+        if (hasOption) {
+            // Set the first board as default
+            const firstBoard = board.querySelector('option[value]');
+            if (firstBoard) {
+                board.value = firstBoard.value;
+                document.getElementById('board-hidden').value = firstBoard.value;
+                console.log('Set default board:', firstBoard.value);
+            }
+        }
         board.dispatchEvent(new Event('change'));
     }
 
     function updateMidiModesForBoard(selectedBoard) {
+        console.log('updateMidiModesForBoard called with:', selectedBoard);
+        console.log('Available board modes:', Object.keys(boardMidiModesMap));
         midi_transfer_mode.innerHTML = '';
         const modes = boardMidiModesMap[selectedBoard] || [];
+        console.log('Modes for selected board:', modes);
         modes.forEach(mode => {
             const opt = document.createElement('option');
             opt.value = mode;
@@ -198,19 +221,67 @@
         });
     }
 
+    // Handle firmware type radio button switching
+    function handleFirmwareTypeChange() {
+        const presetFirmware = document.getElementById('preset_firmware');
+        const customFirmware = document.getElementById('custom_firmware');
+        const presetSelection = document.getElementById('preset-selection');
+        const customFirmwareUpload = document.getElementById('custom-firmware-upload');
+        const presetFirmwareUpload = document.getElementById('preset-firmware-upload');
+
+        if (presetFirmware.checked) {
+            presetSelection.style.display = 'block';
+            customFirmwareUpload.style.display = 'none';
+        } else {
+            presetSelection.style.display = 'none';
+            customFirmwareUpload.style.display = 'block';
+        }
+    }
+
     // On MCU change, update board options
     mcu.addEventListener('change', function() {
+        console.log('MCU changed to:', mcu.value);
         updateBoardOptionsForMCU(mcu.value);
     });
 
     // On board change, update midi mode options
     board.addEventListener('change', function() {
+        console.log('Board changed to:', board.value);
+        document.getElementById('board-hidden').value = board.value;
         updateMidiModesForBoard(board.value);
     });
 
+    // On firmware type change, update form sections
+    document.getElementById('preset_firmware').addEventListener('change', handleFirmwareTypeChange);
+    document.getElementById('custom_firmware').addEventListener('change', handleFirmwareTypeChange);
+
     // On page load, filter boards for the initial MCU and update midi modes
+    console.log('Page load - initial MCU:', mcu.value);
+    console.log('Available MCU options:', Array.from(mcu.options).map(opt => opt.value));
     updateBoardOptionsForMCU(mcu.value);
     updateMidiModesForBoard(board.value);
+    
+    // Ensure default state is set on page load (override any browser-saved state)
+    document.getElementById('preset_firmware').checked = true;
+    handleFirmwareTypeChange();
+    
+    // Add form validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const mcu = document.getElementById('mcu-select').value;
+        const board = document.querySelector('select[name="board"]');
+        const boardContainer = document.getElementById('board-options');
+        
+        console.log('Form submission - MCU:', mcu);
+        console.log('Form submission - Board:', board.value);
+        console.log('Form submission - Board container visible:', boardContainer.style.display !== 'none');
+        
+        // If board container is visible, ensure a board is selected
+        if (boardContainer.style.display !== 'none' && (!board.value || board.value === '')) {
+            e.preventDefault();
+            alert('Please select a board for the selected microcontroller.');
+            return false;
+        }
+    });
 
 </script>
 {% endblock %}

@@ -48,31 +48,41 @@ def portal(request):
     else:
         knobs = Knob.objects.none()
         buttons = Button.objects.none()
-    firmware_path = None
-
-    knob_queryset = Knob.objects.filter(preset=preset)
-    button_queryset = Button.objects.filter(preset=preset)
 
     if request.method == 'POST':
         knob_formset = KnobFormSet(request.POST, instance=preset)
         button_formset = ButtonFormSet(request.POST, instance=preset)
         midi_form = KeypressChannelForm(request.POST)
         preset_name_value = request.POST.get('preset_name', preset.name if preset else '')
-        joystick_instance = getattr(preset, 'joystick', None)
-        if joystick_instance:
-            joystick_form = JoystickForm(instance=joystick_instance)
+        # Get existing joystick instance for this preset
+        joystick_instance = None
+        if preset and preset.has_joystick:
+            joystick_instance = Joystick.objects.filter(preset=preset).first()
+        
+        # Handle joystick form with POST data
+        joystick_enabled = 'has_joystick' in request.POST
+        if joystick_enabled:
+            joystick_form = JoystickForm(request.POST, instance=joystick_instance)
         else:
-            joystick_form = JoystickForm(initial={
-                'x_channel': 1,
-                'x_mode': 'pitch',
-                'x_cc': 0,
-                'x_pin': 0,
-                'y_channel': 1,
-                'y_cc': 2,
-                'y_pin': 1,
-            })
+            if joystick_instance:
+                joystick_form = JoystickForm(instance=joystick_instance)
+            else:
+                joystick_form = JoystickForm(initial={
+                    'x_channel': 1,
+                    'x_mode': 'pitch',
+                    'x_cc': 0,
+                    'x_pin': 0,
+                    'y_channel': 1,
+                    'y_cc': 2,
+                    'y_pin': 1,
+                })
 
-        if knob_formset.is_valid() and button_formset.is_valid() and midi_form.is_valid():
+        # Check if joystick form is valid when joystick is enabled
+        joystick_valid = True
+        if joystick_enabled:
+            joystick_valid = joystick_form.is_valid()
+
+        if knob_formset.is_valid() and button_formset.is_valid() and midi_form.is_valid() and joystick_valid:
             # Persist each knob form
             knobs_saved = 0
             for form in knob_formset:
@@ -98,6 +108,18 @@ def portal(request):
                 button.save()
                 buttons_saved += 1
 
+            # --- Joystick Save Logic ---
+            if joystick_enabled:
+                joystick = joystick_form.save(commit=False)
+                joystick.preset = preset
+                joystick.save()
+            else:
+                # If joystick is disabled, delete any existing joystick for this preset
+                if preset and preset.has_joystick:
+                    joystick_instance = Joystick.objects.filter(preset=preset).first()
+                    if joystick_instance:
+                        joystick_instance.delete()
+
             # Update preset
             preset.number_of_knobs = knobs_saved
             preset.number_of_buttons = buttons_saved
@@ -108,41 +130,6 @@ def portal(request):
             # Handle has_joystick toggle
             preset.has_joystick = 'has_joystick' in request.POST
             preset.save()
-
-            # --- Joystick Save Logic ---
-            from .models import Joystick
-            joystick_instance = getattr(preset, 'joystick', None)
-            if preset.has_joystick:
-                joystick_form = JoystickForm(request.POST, instance=joystick_instance)
-                if joystick_form.is_valid():
-                    joystick = joystick_form.save(commit=False)
-                    joystick.preset = preset
-                    joystick.save()
-                else:
-                    messages.error(request, 'Please correct the errors in the Joystick form.')
-                    context = {
-                        'knob_formset': knob_formset,
-                        'button_formset': button_formset,
-                        'preset': preset,
-                        'presets': presets,
-                        'download_url': None,
-                        'hide_portal_link': True,
-                        'midi_form': midi_form,
-                        'preset_name_value': preset_name_value,
-                        'joystick_form': joystick_form,
-                        'form_errors': (
-                            knob_formset.non_form_errors() + 
-                            button_formset.non_form_errors() + 
-                            (midi_form.errors.get('__all__', []) if midi_form.errors else [])
-                        ),
-                        'num_knobs_db': knobs.count() if preset else 0,
-                        'num_buttons_db': buttons.count() if preset else 0,
-                    }
-                    return render(request, 'midi/portal.html', context)
-            else:
-                # If joystick is disabled, delete any existing joystick for this preset
-                if joystick_instance:
-                    joystick_instance.delete()
 
             messages.success(request, f'Preset "{preset.name}" saved successfully!')
             return redirect(f"{reverse('portal')}?preset={preset.id}")
@@ -162,12 +149,13 @@ def portal(request):
                 'form_errors': (
                     knob_formset.non_form_errors() + 
                     button_formset.non_form_errors() + 
-                    (midi_form.errors.get('__all__', []) if midi_form.errors else [])
+                    (midi_form.errors.get('__all__', []) if midi_form.errors else []) +
+                    (joystick_form.errors.get('__all__', []) if joystick_form.errors else [])
                 ),
                 'num_knobs_db': knobs.count() if preset else 0,
                 'num_buttons_db': buttons.count() if preset else 0,
             }
-            return render(request, 'midi/portal.html', context)
+            return render(request, 'presets/portal.html', context)
     else:
         default_knob_initial = {'channel': 1, 'CC': 0, 'min': 0, 'max': 127, 'pin': 0}
         default_button_initial = {'channel': 1, 'mode': 'note', 'noteCC': 0, 'velocityMin': 100, 'max': 127, 'pin': 0}
@@ -175,7 +163,11 @@ def portal(request):
         button_formset = ButtonFormSet(instance=preset, initial=[default_button_initial])
         midi_form = KeypressChannelForm(initial={'midi_channel': preset.keys_channel if preset else 1})
         preset_name_value = preset.name if preset else ''
-        joystick_instance = getattr(preset, 'joystick', None)
+        # Get existing joystick instance for this preset
+        joystick_instance = None
+        if preset and preset.has_joystick:
+            joystick_instance = Joystick.objects.filter(preset=preset).first()
+        
         if joystick_instance:
             joystick_form = JoystickForm(instance=joystick_instance)
         else:
@@ -189,16 +181,11 @@ def portal(request):
                 'y_pin': 1,
             })
 
-    download_url = None
-    if firmware_path:
-        download_url = f'/download_firmware/{preset.id}/'
-
     context = {
         'knob_formset': knob_formset,
         'button_formset': button_formset,
         'preset': preset,
         'presets': presets,
-        'download_url': download_url,
         'hide_portal_link': True,
         'midi_form': midi_form,
         'joystick_form': joystick_form,

@@ -110,25 +110,19 @@
       {
         "board": "Raspberry Pi Pico",
         "midi_modes": ["USB"],
-        "fqbn": "rp2040:rp2040:rpipico",
+        "fqbn": "rp2040:rp2040:raspberry_pi_pico",
         "mcu": "RP2040"
       },
       {
         "board": "Raspberry Pi Pico 2",
         "midi_modes": ["USB"],
-        "fqbn": "rp2040:rp2040:rpipico2",
+        "fqbn": "rp2040:rp2040:raspberry_pi_pico",
         "mcu": "RP2040"
       },
       {
         "board": "Raspberry Pi Pico W",
         "midi_modes": ["USB"],
-        "fqbn": "rp2040:rp2040:rpipicow",
-        "mcu": "RP2040"
-      },
-      {
-        "board": "Raspberry Pi Pico 2W",
-        "midi_modes": ["USB"],
-        "fqbn": "rp2040:rp2040:rpipico2w",
+        "fqbn": "rp2040:rp2040:raspberry_pi_pico_w",
         "mcu": "RP2040"
       }
     ]

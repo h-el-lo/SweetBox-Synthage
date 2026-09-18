@@ -25,7 +25,23 @@ SECRET_KEY = 'django-insecure-#e$gp=sz=lnc_5*gl65^96ss!vw*^=y$v^-(f^)u&@3e^t2%20
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    # '127.0.0.1',
+    # 'localhost',
+    # 'https://*.ngrok-free.app',
+    # 'sweetbox-synthage.onrender.com',
+    # 'ea02faa1437e.ngrok-free.app',
+    '*',
+]
+
+# CSRF Trusted Origins for production deployment
+CSRF_TRUSTED_ORIGINS = [
+    'https://sweetbox-synthage.onrender.com',
+    'https://*.onrender.com',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'https://*.ngrok-free.app',
+]
 
 # CSRF Trusted Origins for production deployment
 CSRF_TRUSTED_ORIGINS = [
@@ -59,6 +75,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'SweetBoxSYNTHAGE.urls'
@@ -137,11 +154,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+
+# URL to access static files
+STATIC_URL = '/static/'
+
+# Directories where Django will look for static files (besides each app's /static/)
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+   BASE_DIR / 'static',  # optional, for global static files
 ]
 
+# Directory to collect static files to when running `collectstatic`
+STATIC_ROOT = BASE_DIR / 'staticfiles' # used in production
+
+
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 

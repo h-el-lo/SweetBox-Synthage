@@ -1,0 +1,49 @@
+[
+    {
+        "ATmega32U4": [
+            {
+                "board": "Sparkfun Pro Micro",
+                "midi_modes": ["USB"],
+                "fqbn": "arduino:avr:leonardo"
+            },
+            {
+                "board": "Arduino Micro",
+                "midi_modes": ["USB"],
+                "fqbn": "arduino:avr:micro"
+            },
+            {
+                "board": "Arduino Leonardo",
+                "midi_modes": ["USB"],
+                "fqbn": "arduino:avr:leonardo"
+            }
+        ]
+    },
+    {
+        "RP2040": [
+            {
+                "board": "Raspberry Pi Pico",
+                "midi_modes": ["USB"],
+                "fqbn": "rp2040:rp2040:raspberry_pi_pico"
+            },
+            {
+                "board": "Raspberry Pi Pico 2",
+                "midi_modes": ["USB"],
+                "fqbn": "rp2040:rp2040:raspberry_pi_pico"
+            },
+            {
+                "board": "Raspberry Pi Pico W",
+                "midi_modes": ["USB"],
+                "fqbn": "rp2040:rp2040:raspberry_pi_pico_w"
+            }
+        ]
+    },
+    {
+        "STM32": [
+            {
+                "board": "STM32 Board",
+                "midi_modes": ["USB (OTG)"],
+                "fqbn": "stm32:stm32:GenericSTM32F103C"
+            }
+        ]
+    }
+]
